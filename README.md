@@ -1,13 +1,7 @@
-# ToIP Specification Template
+# DTG Core Credentials V1.0
 
-The purpose of this repo is for collaborating on development of a standard template for Trust Over IP (ToIP) technical specifications. This template will standardize the following elements:
+This repo is the home for the DTG Core Credentials V1.0 specification, a deliverable of the [DTG Credentials Task Force repo](https://github.com/trustoverip/dtgwg-cred-tf).
 
-- Specification look and feel
-- Boilerplate sections (provenance, status, IPR, etc.)
-- Structure (e.g., standard section headings, order)
-- Formatting
-- Use of [Spec-Up-T](https://trustoverip.github.io/spec-up-t-website/) for glossary management
+Following the LF Joint Development Foundation (JDF) process, the repo will host a series of **Working Drafts**, numbered sequentially starting from 01, until the Task Force is ready to submit the specification for a vote as a **Working Group Approved Deliverable**.
 
-The work on this repo, which began in March 2026, supercedes [an earlier ToIP spec template repo](https://github.com/trustoverip/specification-template) that was created: a) before ToIP came under LF Decentralized Trust, and b) before development of [Spec-Up-T](https://trustoverip.github.io/spec-up-t-website/). The intent is for this new ToIP spec template to be used for new ToIP specifications going forward.
-
-See [Discussions](https://github.com/trustoverip/toip-template/discussions) for more background.
+For general discussions about DTG credentials (i.e., not specific to this specification), please see [the discussions section](https://github.com/trustoverip/dtgwg-cred-tf/discussions) of the DTG Credentials Task Force repo.
