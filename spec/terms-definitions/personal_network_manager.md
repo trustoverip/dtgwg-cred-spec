@@ -1,0 +1,3 @@
+[[def: PNM, personal network manager, PNMs, personal network managers]]
+
+~ A [user agent](https://en.wikipedia.org/wiki/User_agent) that serves as a [[ref: VTA]] for an individual person to control and manage their [trust relationships](https://glossary.trustoverip.org/#term:trust-relationship) and [trust tasks](https://glossary.trustoverip.org/#term:trust-tasks) within one or more [[ref: VTCs]] and [[ref: VTNs]]. A PNM may be either a [[ref: local VTA]] or a [[ref: cloud VTA]]. If a person uses more than one PNM—for example a local VTA on multiple devices—these PNMs may work together with a cloud VTA as a [[ref: personal VTA network]]. Also sometimes called a "VTA client." VTA clients may also serve as "Community Network Managers" managing elements of a VTC.

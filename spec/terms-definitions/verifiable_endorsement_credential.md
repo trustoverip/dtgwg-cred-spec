@@ -1,0 +1,3 @@
+[[def: VEC, verifiable endorsement credential, VECs, verifiable endorsement credentials]]
+
+~ A [[ref: DTG annotation credential]] that enables one party to a [[ref: DTG edge]] trust relationship to issue verifiable assertions about the counterparty. The "verifiability" applies to cryptographic assurance in the issuer's digital signature, not to the truth of the assertions (which must be evaluated independently). The assertion vocabulary for a VEC may be defined by a [[ref: VTC]] or a [[ref: VTN]]. VECs can be used in conjunction with other [[ref: DTG credentials]] as a basis for a contextual [reputation system](https://glossary.trustoverip.org/#term:reputation-system).

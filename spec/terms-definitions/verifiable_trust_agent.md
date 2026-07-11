@@ -1,0 +1,3 @@
+[[def: VTA, verifiable trust agent, VTAs, verifiable trust agents]]
+
+~ A [digital agent](https://glossary.trustoverip.org/#term:digital-agent) that represents a [[ref: DTG node]]. The network endpoint for a VTA is discoverable via the [[ref: DTG verifiable identifier]] (VID) for the entity it represents. A VTA may represent a person, device, AI agent, or [[ref: VTC]]. A VTA may be either a [[ref: local VTA]] or a [[ref: cloud VTA]]. Note: to control [correlation privacy](https://glossary.trustoverip.org/#term:correlation-privacy), individuals may have multiple VIDs and [[ref: VTA network endpoints]] all controlled by the same underlying VTA or [[ref: VTA network]].

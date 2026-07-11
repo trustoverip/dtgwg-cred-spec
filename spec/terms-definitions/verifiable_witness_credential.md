@@ -1,0 +1,3 @@
+[[def: VWC, verifiable witness credential, VWCs, verifiable witness credentials]]
+
+~ A [[ref: DTG annotation credential]] that enables one party to a [[ref: DTG edge]] trust relationship to issue a verifiable assertion about the authenticity of another DTG edge represented by a [[ref: VRC]]. The issuer could be a person who personally witnesses the two parties exchanging VRCs, or it may be a [[ref: VTA]], such as the VTA for a [[ref: VTC]] who applies the VTC's policies for witnessing a relationship. For example: both parties provided: a) proof to the VTA that they were at the same event at the same time, and/or b) proof of biometric liveness at the time of relationship formation.

@@ -1,0 +1,3 @@
+[[def: VTA network endpoint, VTA network endpoints]]
+
+~ A [network address](https://glossary.trustoverip.org/#term:network-address) for communicating with a [[ref: VTA]]. The VTA network endpoint can be discovered via the [[ref: DTG verifiable identifier]] (VID) for the entity identified by the VID and represented by the VTA. Note: to control [correlation privacy](https://glossary.trustoverip.org/#term:correlation-privacy), individuals may have multiple VIDs and VTA network endpoints all controlled by the same underlying VTA or [[ref: VTA network]]. This form of herd privacy can be offered by a [[ref: VTSP]].
