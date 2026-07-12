@@ -6,9 +6,9 @@ A [[ref: decentralized trust graph]] (DTG) is a graph of trust relationships bet
 
 The six credential types fall into three functional categories:
 
-1. **Edge credentials** — create nodes and relationships in the trust graph:
-    - [[ref: VMC]] (verifiable membership credential) — establishes a node (membership in a [[ref: VTC]] or [[ref: VTN]])
-    - [[ref: VRC]] (verifiable relationship credential) — creates a directed trust edge between two nodes
+1. **Edge credentials** — establish relationships between existing entities (nodes) in the DTG:
+    - [[ref: VMC]] (verifiable membership credential) — attests to the membership of an entity in a community; membership is verified through a bi-directional pair of VMCs
+    - [[ref: VRC]] (verifiable relationship credential) — attests to a relationship between two entities; the relationship is verified through a bi-directional pair of VRCs
 
 2. **Invitation credentials** — bootstrap new members into communities:
     - [[ref: VIC]] (verifiable invitation credential) — authorizes onboarding of a prospective member

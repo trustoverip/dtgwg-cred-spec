@@ -20,8 +20,8 @@ graph TB
         end
 
         subgraph Edge["Edge Credentials"]
-            VMC["VMC<br/><small>MembershipCredential</small><br/><i>Creates membership node</i>"]
-            VRC["VRC<br/><small>RelationshipCredential</small><br/><i>Creates directed edge</i>"]
+            VMC["VMC<br/><small>MembershipCredential</small><br/><i>Creates membership relationship</i>"]
+            VRC["VRC<br/><small>RelationshipCredential</small><br/><i>Creates peer-to-peer relationship</i>"]
         end
     end
 
@@ -199,11 +199,11 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 This section is normative.
 
-Edge credentials create the structure of the DTG: [[ref: VMCs]] establish nodes through community membership, and [[ref: VRCs]] establish directed trust edges between nodes.
+Edge credentials establish relationships between existing entities (nodes) in the DTG: [[ref: VMCs]] attest to community membership, and [[ref: VRCs]] attest to relationships between two entities. In both cases, a bi-directional pair of credentials forms a complete [[ref: DTG edge]].
 
 ### VMC (Verifiable Membership Credential)
 
-**Purpose:** Establishes a node in the DTG by defining membership in a [[ref: VTC]] or [[ref: VTN]].
+**Purpose:** Attests to the membership of an entity in a [[ref: VTC]] or [[ref: VTN]]; two VMCs (one each direction) form a complete [[ref: DTG edge]].
 
 **Schema:**
 
@@ -233,7 +233,7 @@ Edge credentials create the structure of the DTG: [[ref: VMCs]] establish nodes 
 
 ### VRC (Verifiable Relationship Credential)
 
-**Purpose:** Creates a directed trust edge between two nodes. Two VRCs (one each direction) form a complete [[ref: DTG edge]].
+**Purpose:** Attests to a relationship between two entities; two VRCs (one each direction) form a complete [[ref: DTG edge]].
 
 **Schema:**
 

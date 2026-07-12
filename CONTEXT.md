@@ -7,19 +7,19 @@ The specification defining the W3C Verifiable Credential types that create and a
 ### Graph structure
 
 **DTG (Decentralized Trust Graph)**:
-The graph whose nodes are memberships and whose directed edges are relationships, established entirely through verifiable credentials.
+The graph whose nodes are entities (persons, devices, AI agents, VTCs) and whose edges are trust relationships (membership or peer-to-peer), established entirely through verifiable credentials.
 
 **Edge Credential**:
-A credential that creates graph structure — a node (VMC) or a directed edge (VRC). Descriptive category only; never appears in schemas.
+A credential that establishes a relationship between existing entities (nodes) in the DTG — membership (VMC) or peer-to-peer (VRC). Descriptive category only; never appears in schemas.
 
 **Annotation Credential**:
 A credential that attaches data to existing edges or parties without creating graph structure (VPC, VEC, VWC). Descriptive category only.
 
 **VMC (verifiable membership credential)**:
-Establishes a node in the DTG by defining membership in a VTC or VTN. Issuer is always the VTC's C-DID.
+Attests to the membership of an entity in a VTC or VTN; two VMCs (one per direction) form a complete DTG edge. Issuer is always the VTC's C-DID.
 
 **VRC (verifiable relationship credential)**:
-Creates one directed trust edge between two nodes; two VRCs (one per direction) form a complete DTG edge.
+Attests to a relationship between two entities; two VRCs (one per direction) form a complete DTG edge.
 
 **VIC (verifiable invitation credential / DTG invitation credential)**:
 Authorizes onboarding of a prospective member into a VTC or VTN. One W3C type (`InvitationCredential`); the glossary's VTC/VTN invitation subtypes are prose distinctions expressed via issuer/subject rules, not separate type strings.
