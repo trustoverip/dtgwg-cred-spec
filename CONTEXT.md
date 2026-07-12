@@ -15,11 +15,11 @@ A credential that establishes a relationship between existing entities (nodes) i
 **Annotation Credential**:
 A credential that attaches data to existing edges or parties without creating graph structure (VPC, VEC, VWC). Descriptive category only.
 
-**VMC (verifiable membership credential)**:
-Attests to the membership of an entity in a VTC or VTN; two VMCs (one per direction) form a complete DTG edge. Issuer is always the VTC's C-DID.
-
 **VRC (verifiable relationship credential)**:
 Attests to a relationship between two entities; two VRCs (one per direction) form a complete DTG edge.
+
+**VMC (verifiable membership credential)**:
+Attests to the membership of an entity in a VTC or VTN; two VMCs (one per direction) form a complete DTG edge. Issuer is always the VTC's C-DID.
 
 **VIC (verifiable invitation credential / DTG invitation credential)**:
 Authorizes onboarding of a prospective member into a VTC or VTN. One W3C type (`InvitationCredential`); the glossary's VTC/VTN invitation subtypes are prose distinctions expressed via issuer/subject rules, not separate type strings.
@@ -39,6 +39,17 @@ _Avoid_: W-DID (not an official DTG identifier type)
 **DTG verifiable identifier (VID)**:
 A verifiable identifier for a DTG node; this spec version uses DIDs. Exactly four official DID types: R-DID (relationship), M-DID (membership), C-DID (community), P-DID (persona).
 _Avoid_: W-DID
+
+### Proofs
+
+**Pairwise ZKP**:
+A ZKP construction available to any two VRC holders, regardless of shared community membership. Selectively discloses attributes (e.g., P-DIDs) while hiding R-DIDs; confers no community-level assurance by itself.
+
+**Community-anchored ZKP**:
+A ZKP construction available when both VRC parties hold VMCs from the same community. Three-part proof (VRC + VMC + same C-DID); carries forward whatever assurances the community attaches to its VMCs (e.g., personhood).
+
+**ZKPs by default**:
+DTG credentials MAY be presented via standard W3C VC methods, but implementations SHOULD default to ZKP presentation so privacy requires no user opt-in. Community membership is never a precondition for issuing, holding, or presenting a VRC.
 
 ### Trust-task boundary
 
