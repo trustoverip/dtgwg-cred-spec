@@ -2,7 +2,7 @@
 
 ## Terminology
 
-This section is informative.
+*This section is informative.*
 
 This section defines the terms required for a reader to understand this specification. These terms and definitions are drawn from the [DTG Glossary](https://lf-toip.atlassian.net/wiki/spaces/HOME/pages/442073089/DTG+Glossary) maintained by the [[ref: DTGWG]] and are managed using the Spec-Up-T glossary features.
 

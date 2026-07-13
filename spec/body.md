@@ -1,46 +1,35 @@
 ## DTG Credential Taxonomy
 
-This section is informative.
+*This section is informative.*
 
 This section provides a visual overview of the DTG Core Credential types and their formal type hierarchy. The three functional categories (edge, invitation, annotation) are descriptive aids only; they do not appear in credential schemas.
 
 ```mermaid
 graph TB
-    subgraph Types["DTG Credential Types"]
-        direction TB
+    DTG[DTGCredential]
 
-        subgraph Annotation["Annotation Credentials"]
-            VPC["VPC<br/><small>PersonaCredential</small><br/><i>Links persona to edge</i>"]
-            VEC["VEC<br/><small>EndorsementCredential</small><br/><i>Endorses party</i>"]
-            VWC["VWC<br/><small>WitnessCredential</small><br/><i>Attests to edge</i>"]
-        end
+    DTG --> EC(Edge Credentials)
+    DTG --> IC(Invitation Credentials)
+    DTG --> AC(Annotation Credentials)
 
-        subgraph Invitation["Invitation Credentials"]
-            INV["VIC<br/><small>InvitationCredential</small><br/><i>Authorizes onboarding</i>"]
-        end
+    EC --> VMC["VMC<br/>MembershipCredential"]
+    EC --> VRC["VRC<br/>RelationshipCredential"]
+    IC --> VIC["VIC<br/>InvitationCredential"]
+    AC --> VPC["VPC<br/>PersonaCredential"]
+    AC --> VEC["VEC<br/>EndorsementCredential"]
+    AC --> VWC["VWC<br/>WitnessCredential"]
 
-        subgraph Edge["Edge Credentials"]
-            VMC["VMC<br/><small>MembershipCredential</small><br/><i>Creates membership relationship</i>"]
-            VRC["VRC<br/><small>RelationshipCredential</small><br/><i>Creates peer-to-peer relationship</i>"]
-        end
-    end
-
-    subgraph Legend[" "]
-        direction LR
-        L1["🔵 Edge Credentials<br/><i>Create graph structure</i>"]
-        L2["🟠 Invitation Credentials<br/><i>Bootstrap membership</i>"]
-        L3["🟣 Annotation Credentials<br/><i>Attach to existing edges</i>"]
-    end
-
+    classDef parent fill:#f5f5f5,stroke:#555,stroke-width:2px,color:#000
+    classDef cat fill:#eeeeee,stroke:#999,stroke-width:1px,color:#555
     classDef edge fill:#bbdefb,stroke:#1976d2,stroke-width:2px,color:#000
     classDef inv fill:#ffe0b2,stroke:#f57c00,stroke-width:2px,color:#000
     classDef ann fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#000
-    classDef legend fill:#f5f5f5,stroke:#666,stroke-width:1px,color:#000
 
+    class DTG parent
+    class EC,IC,AC cat
     class VMC,VRC edge
-    class INV inv
+    class VIC inv
     class VPC,VEC,VWC ann
-    class L1,L2,L3 legend
 ```
 
 ### Formal W3C Type Hierarchy
@@ -488,7 +477,7 @@ A verifier MUST NOT interpret a `taskContext`-bearing credential as proof that t
 
 ## Supporting Concepts
 
-This section is informative.
+*This section is informative.*
 
 ### Personhood Credentials (PHC)
 
@@ -542,30 +531,30 @@ No additional schema fields are required. PHC status is determined by governance
 
 ## Security Considerations
 
-This section is normative.
+*This section is informative.*
 
-1. **Proof verification.** Verifiers MUST cryptographically verify the `proof` of every DTG credential, including resolution of the issuer's DID and validation of the verification method, before relying on any claim in the credential.
-2. **Validity period enforcement.** Verifiers MUST reject credentials outside their `validFrom`/`validUntil` window (or v1.1 equivalents) and SHOULD check applicable revocation status via the governing trust registry.
-3. **Issuer authorization.** A cryptographically valid credential is not necessarily an authorized one. Verifiers MUST evaluate whether the issuer is authorized for the claimed role (e.g., a VMC issuer being a recognized VTC, a VIC issuer being permitted to invite) using the applicable trust registry or governance framework.
-4. **Digest integrity (VWC).** When a VWC includes a `digest` of the witnessed VRC, verifiers relying on the attestation SHOULD recompute the digest from the canonical representation of the VRC and confirm the match; a mismatch invalidates the attestation.
-5. **Context collapse.** A credential presented outside the trust task exchange in which it was issued may be misinterpreted as evidence of a completed ceremony. The requirements of [Trust Task Context Binding](#trust-task-context-binding) exist to prevent this class of attack and MUST be enforced by verifiers.
-6. **Replay of invitation credentials.** VICs SHOULD be issued with short validity periods and SHOULD be treated as single-use by the accepting [[ref: VTA]]/[[ref: PEP]], to prevent replay of an intercepted invitation.
+1. **Proof verification.** Verifiers must cryptographically verify the `proof` of every DTG credential, including resolution of the issuer's DID and validation of the verification method, before relying on any claim in the credential.
+2. **Validity period enforcement.** Verifiers must reject credentials outside their `validFrom`/`validUntil` window (or v1.1 equivalents) and should check applicable revocation status via the governing trust registry.
+3. **Issuer authorization.** A cryptographically valid credential is not necessarily an authorized one. Verifiers must evaluate whether the issuer is authorized for the claimed role (e.g., a VMC issuer being a recognized VTC, a VIC issuer being permitted to invite) using the applicable trust registry or governance framework.
+4. **Digest integrity (VWC).** When a VWC includes a `digest` of the witnessed VRC, verifiers relying on the attestation should recompute the digest from the canonical representation of the VRC and confirm the match; a mismatch invalidates the attestation.
+5. **Context collapse.** A credential presented outside the trust task exchange in which it was issued may be misinterpreted as evidence of a completed ceremony. The requirements of [Trust Task Context Binding](#trust-task-context-binding) exist to prevent this class of attack and must be enforced by verifiers.
+6. **Replay of invitation credentials.** VICs should be issued with short validity periods and should be treated as single-use by the accepting [[ref: VTA]]/[[ref: PEP]], to prevent replay of an intercepted invitation.
 7. **Key compromise.** Compromise of the private key controlling any DID used in a DTG credential (issuer or subject) undermines all credentials anchored to it. Key rotation and revocation procedures are governed by the applicable DID methods and trust registries.
 
 ## Privacy Considerations
 
-This section is normative.
+*This section is informative.*
 
-1. **M-DID reuse.** Reuse of an [[ref: M-DID]] across multiple relationships is allowed for bootstrapping, but implementers SHOULD carefully consider correlation risks. Migration from M-DID-based to [[ref: R-DID]]-based edges is RECOMMENDED post-bootstrapping for enhanced privacy.
-2. **R-DID uniqueness.** As required in [Unilateral Relationship Identification](#unilateral-relationship-identification), each entity MUST generate a new, unique R-DID for every entity it connects with. Reusing an R-DID across counterparties creates unintended correlation.
-3. **Intentional correlation via personas.** Correlation across relationships SHOULD occur only through the holder's deliberate assertion of a [[ref: persona]] (via a [[ref: VPC]]) or an M-DID — never as a side effect of credential structure.
+1. **M-DID reuse.** Reuse of an [[ref: M-DID]] across multiple relationships is allowed for bootstrapping, but implementers should carefully consider correlation risks. Migration from M-DID-based to [[ref: R-DID]]-based edges is recommended post-bootstrapping for enhanced privacy.
+2. **R-DID uniqueness.** As required in [Unilateral Relationship Identification](#unilateral-relationship-identification), each entity must generate a new, unique R-DID for every entity it connects with. Reusing an R-DID across counterparties creates unintended correlation.
+3. **Intentional correlation via personas.** Correlation across relationships should occur only through the holder's deliberate assertion of a [[ref: persona]] (via a [[ref: VPC]]) or an M-DID — never as a side effect of credential structure.
 4. **Minimal disclosure.** DTG credential schemas are intentionally minimal so that holders can satisfy common predicates (membership, relationship existence) using zero-knowledge or selective disclosure mechanisms without revealing underlying DIDs or credential contents.
-5. **Witness data.** The optional `witnessContext` of a [[ref: VWC]] may reveal information about where and when parties met. Issuers SHOULD include only what the witnessing purpose requires, and holders SHOULD be able to withhold `witnessContext` details when proving the attestation.
-6. **ZKPs by default.** Implementations SHOULD use ZKP presentation by default so that privacy preservation does not require any extra effort on behalf of users.
+5. **Witness data.** The optional `witnessContext` of a [[ref: VWC]] may reveal information about where and when parties met. Issuers should include only what the witnessing purpose requires, and holders should be able to withhold `witnessContext` details when proving the attestation.
+6. **ZKPs by default.** Implementations should use ZKP presentation by default so that privacy preservation does not require any extra effort on behalf of users.
 
 ## Governance Considerations
 
-This section is informative.
+*This section is informative.*
 
 This specification deliberately delegates most policy decisions to the governance frameworks of individual [[ref: VTCs]] and [[ref: VTNs]], consistent with the [ToIP Governance Metamodel](https://trustoverip.org/wp-content/uploads/ToIP-Governance-Metamodel-Specification-V1.0-2021-12-21.pdf):
 
@@ -576,13 +565,13 @@ This specification deliberately delegates most policy decisions to the governanc
 
 ## Internationalization Considerations
 
-This section is informative.
+*This section is informative.*
 
 Human-readable values in DTG credentials (e.g., endorsement names, witness event names) are community-defined and may appear in any language. Detailed internationalization guidance will be completed before this specification advances beyond Working Draft status.
 
 ## Accessibility Considerations
 
-This section is informative.
+*This section is informative.*
 
 This specification defines data structures rather than user interfaces. Accessibility guidance for implementations presenting DTG credentials to users will be completed before this specification advances beyond Working Draft status.
 
