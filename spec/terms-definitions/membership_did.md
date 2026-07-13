@@ -1,0 +1,3 @@
+[[def: M-DID, membership DID, M-DIDs]]
+
+~ A [decentralized identifier](https://glossary.trustoverip.org/#term:decentralized-identifier) (DID) asserted by a member of a [[ref: VTC]] to uniquely identify that member in the context of that VTC. A [[ref: VMC]] is issued from the VTC's [[ref: C-DID]] to the member's M-DID. The member may assert the same M-DID across multiple VTCs if the member wishes to be correlated across those VTCs. In this respect, it functions as a type of [[ref: persona]]. The member may also assert the M-DID in any [[ref: VRC]] where the member wishes to assert a VTC relationship. This is especially relevant in the context of a [[ref: VTN]] in which the VTC is recognized as a [[ref: VTN trust anchor]].

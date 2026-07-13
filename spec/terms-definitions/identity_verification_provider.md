@@ -1,0 +1,3 @@
+[[def: IDVP, identity verification provider, IDVPs, identity verification providers]]
+
+~ A commercial provider of [identity verification services](https://en.wikipedia.org/wiki/Identity_verification_service). Examples of providers of identity verification services include Veriff, Jumio, Yoti, Onfido, ID.me, Socure, and Trulioo. If a VTC has a requirement for new members to obtain a qualified [[ref: IDVC]], the VTC [governing body](https://glossary.trustoverip.org/#term:governing-body) can determine the qualifications an IDVP must meet to be approved to issue an IDVC acceptable to the [[ref: VTC]].

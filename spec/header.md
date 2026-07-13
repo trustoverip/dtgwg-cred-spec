@@ -1,30 +1,31 @@
-{{INSTRUCTIONS ABOUT THE USE OF THIS TEMPLATE: All editorial instructions are enclosed in {{double curly braces}} and MUST be either removed from or replaced in the specification document. All other text MUST be included in the specification document. NOTE: As of 2026, ToIP specifications are required to use [Spec-Up-T](https://trustoverip.github.io/spec-up-t-website/). It will automatically generate a table of contents for the entire specification document.}}
+# Decentralized Trust Graph Credentials - Core Specification
 
-# {{Document Title}}
+_Version:_ 1.0  
+_Document Status:_ Working Draft  
+<!-- _DOI:_ To be assigned when this specification reaches ToIP Approved Deliverable status. See https://lf-toip.atlassian.net/wiki/spaces/HOME/pages/767787009/ToIP+Approved+Deliverable+Process#Persistent-DOI-Link -->
 
-_Version:_ {{MUST be in X.X or X.XX format}}  
-_Document Status:_ {{MUST be one of: Working Draft, Working Group Approved Deliverable, ToIP Approved Deliverable}}  
-_DOI:_ {{see [this wiki page](https://lf-toip.atlassian.net/wiki/spaces/HOME/pages/767787009/ToIP+Approved+Deliverable+Process#Persistent-DOI-Link) for instructions about how to add a DOI}}
+_Editors:_
 
-_Editors:_ {{MUST list the full names, optional OrcID and official LF affiliations of each editor.}}
+- Alberto Leon, Applied Social Media Lab, Berkman Klein Center at Harvard University
+- Brendan A. Miller, Applied Social Media Lab, Berkman Klein Center at Harvard University
+- Geoff Turk, First Person Project
+- Martina Kolpondinos, First Person Project
+- Drummond Reed, First Person Project
 
-- {{Editor 1, Org A}}
-- {{Editor 2, Org B}}
+_Contributors:_
 
-_Contributors:_ {{MUST list the full names and official LF affiliations of each substantial contributor — all other acknowledgements go in the Acknowledgements Appendix at the end.}}
-
-- {{Contributor 1, Org C}}
-- {{Contributor 2, Org A}}
+- Sankarshan Mukhopadhyay
+- Glenn Gore
+- The participants of the Decentralized Trust Graph Working Group (DTGWG)
 
 **Abstract**
 
-{{REQUIRED. MUST be a concise summary of the specification written so someone without domain-specific knowledge can quickly understand what it covers.}}
+A Decentralized Trust Graph (DTG) is a graph of cryptographically verifiable trust relationships between people, organizations, devices, and AI agents. This specification defines the DTG Core Credentials: six W3C Verifiable Credential types that create and annotate the nodes and edges of a DTG. Two edge credentials establish graph structure — membership in a verifiable trust community (VMC) and peer-to-peer relationships (VRC). One invitation credential (VIC) supports onboarding of new members. Three annotation credentials attach information to existing graph structure: personas for intentional correlation (VPC), endorsements for community-governed reputation assertions (VEC), and witness attestations of relationship formation (VWC). These credentials enable privacy-preserving zero-knowledge proofs of personhood, community membership, and relationships while minimizing correlation across contexts. The specification also defines how a credential may be bound to the context of the Trust Task exchange in which it was issued, so that verifiers can distinguish durable graph claims from task-dependent claims.
 
 **Intellectual Property Rights**
 
-This specification is provided under the [Joint Development Foundation (JDF) charter](https://cdn.platform.linuxfoundation.org/agreements/ToIP.pdf) for [Trust Over IP](https://trustoverip.org) (ToIP) and is subject to the intellectual property rights policy of the **{{insert name of}} Working Group**:
+This specification is provided under the [Joint Development Foundation (JDF) charter](https://cdn.platform.linuxfoundation.org/agreements/ToIP.pdf) for [Trust Over IP](https://trustoverip.org) (ToIP) and is subject to the intellectual property rights policy of the **Decentralized Trust Graph Working Group (DTGWG)**:
 
-{{modify the following bullets to reflect the IPR terms of the Working Group}}  
 _Copyright:_ [Creative Commons Attribution 4.0 International (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/)  
 _Patent:_ W3C Mode (based on the [W3C Patent Policy](https://www.w3.org/Consortium/Patent-Policy-20040205/))  
 _Source Code:_ [Apache License, Version 2.0](https://www.apache.org/licenses/LICENSE-2.0)

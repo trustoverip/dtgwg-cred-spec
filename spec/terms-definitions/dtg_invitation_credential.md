@@ -1,0 +1,3 @@
+[[def: VIC, DTG invitation credential, verifiable invitation credential, DTG invitation credentials, VICs]]
+
+~ A type of [[ref: DTG credential]] issued by an existing [[ref: VTN]], [[ref: VTC]], or [[ref: VTC member]] to invite a new member. The purpose of DTG invitation credentials is to automate onboarding of a new member by a [[ref: VTA]]. A proof of the DTG invitation credential is intended to at least partially satisfy the membership requirements (some VTCs may have additional membership requirements). There are two subtypes of DTG invitation credentials: [[ref: VTC invitation credentials]] and [[ref: VTN invitation credentials]].

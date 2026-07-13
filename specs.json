@@ -1,8 +1,8 @@
 {
   "specs": [
     {
-      "title": "ToIP Specification Template",
-      "description": "Create technical specifications in markdown. Based on the original Spec-Up, extended with Terminology tooling",
+      "title": "Decentralized Trust Graph Credentials - Core Specification",
+      "description": "Defines the DTG Core Credentials: six W3C Verifiable Credential types that create and annotate a Decentralized Trust Graph",
       "author": "Trust over IP Foundation",
       "spec_directory": "./spec",
       "spec_terms_directory": "terms-definitions",
@@ -20,7 +20,7 @@
       "source": {
         "host": "github",
         "account": "trustoverip",
-        "repo": "toip-template"
+        "repo": "dtgwg-cred-spec"
       },
       "external_specs": [
         {

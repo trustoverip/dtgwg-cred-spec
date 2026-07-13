@@ -1,0 +1,3 @@
+[[def: VRC, verifiable relationship credential, VRCs, verifiable relationship credentials]]
+
+~ A [[ref: DTG edge credential]] that represents one half of a bidirectional peer-to-peer [trust relationship](https://glossary.trustoverip.org/#term:trust-relationship) in a [[ref: DTG]]. A VRC may contain either [[ref: R-DIDs]] or [[ref: M-DIDs]]. A VRC is only verifiable as a [[ref: DTG edge]] in the context of a specific [[ref: VTN]] if: a) it contains M-DIDs for both peers, b) both peers have signed the VRC using their M-DID private keys, c) both M-DIDs are verifiable via [[ref: VMCs]] issued by [[ref: VTCs]], and d) those VTCs are recognized as [[ref: VTN trust anchors]] in that VTN.
