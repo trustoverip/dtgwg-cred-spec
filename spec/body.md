@@ -405,6 +405,8 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 
 Because the meaning of a witness attestation depends on the conditions under which the witnessing occurred, a VWC MUST be bound to the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange in which it was issued via the `taskContext` property (see [Trust Task Context Binding](#trust-task-context-binding)).
 
+A witnessed exchange of a complete [[ref: DTG edge]] is bidirectional: two VRCs, one in each direction, are formed in a single witnessing event. For such exchanges the witness SHOULD issue one VWC per direction. In each VWC, `credentialSubject.id` MUST be the DID of the issuer of the VRC that the VWC attests (the VRC referenced by `digest`, when present), so that the two VWCs of an exchange are unambiguously bound to their respective directions.
+
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"WitnessCredential"`
