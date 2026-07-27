@@ -412,7 +412,7 @@ Because the meaning of a witness attestation depends on the conditions under whi
 - `taskContext` (string, REQUIRED): `threadId` of the trust task exchange in which the witnessing occurred
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the observed party
-  - `digest` (string, OPTIONAL): A cryptographic hash of the witnessed VRC. A SHA‑256 hash of the verifiable credential's canonical representation. The hash is encoded as a multibase string (multihash + multibase).
+  - `digest` (string, OPTIONAL): A cryptographic hash of the witnessed VRC. The hash MUST be computed as the SHA-256 hash of the credential's JSON representation canonicalized with the JSON Canonicalization Scheme ([JCS, RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)), and MUST be encoded as the string `sha256:` followed by the lowercase hexadecimal digest.
   - `witnessContext` (object, OPTIONAL): Context of the witnessing event
     - `event` (string, OPTIONAL): Human-readable event name
     - `sessionId` (string, OPTIONAL): Session or nonce identifier
@@ -536,7 +536,7 @@ No additional schema fields are required. PHC status is determined by governance
 1. **Proof verification.** Verifiers must cryptographically verify the `proof` of every DTG credential, including resolution of the issuer's DID and validation of the verification method, before relying on any claim in the credential.
 2. **Validity period enforcement.** Verifiers must reject credentials outside their `validFrom`/`validUntil` window (or v1.1 equivalents) and should check applicable revocation status via the governing trust registry.
 3. **Issuer authorization.** A cryptographically valid credential is not necessarily an authorized one. Verifiers must evaluate whether the issuer is authorized for the claimed role (e.g., a VMC issuer being a recognized VTC, a VIC issuer being permitted to invite) using the applicable trust registry or governance framework.
-4. **Digest integrity (VWC).** When a VWC includes a `digest` of the witnessed VRC, verifiers relying on the attestation should recompute the digest from the canonical representation of the VRC and confirm the match; a mismatch invalidates the attestation.
+4. **Digest integrity (VWC).** When a VWC includes a `digest` of the witnessed VRC, verifiers relying on the attestation should recompute the SHA-256 hash over the JCS (RFC 8785) canonical form of the VRC and confirm the match; a mismatch invalidates the attestation.
 5. **Context collapse.** A credential presented outside the trust task exchange in which it was issued may be misinterpreted as evidence of a completed ceremony. The requirements of [Trust Task Context Binding](#trust-task-context-binding) exist to prevent this class of attack and must be enforced by verifiers.
 6. **Replay of invitation credentials.** VICs should be issued with short validity periods and should be treated as single-use by the accepting [[ref: VTA]]/[[ref: PEP]], to prevent replay of an intercepted invitation.
 7. **Key compromise.** Compromise of the private key controlling any DID used in a DTG credential (issuer or subject) undermines all credentials anchored to it. Key rotation and revocation procedures are governed by the applicable DID methods and trust registries.
@@ -599,6 +599,7 @@ Conformance test suites for this specification have not yet been defined and are
 - [W3C Verifiable Credentials Data Model v1.1](https://www.w3.org/TR/vc-data-model/)
 - [W3C Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-1.0/)
 - [IETF RFC 2119: Key words for use in RFCs to Indicate Requirement Levels](https://datatracker.ietf.org/doc/html/rfc2119)
+- [IETF RFC 8785: JSON Canonicalization Scheme (JCS)](https://datatracker.ietf.org/doc/html/rfc8785)
 - [ISO 8601: Date and time format](https://www.iso.org/iso-8601-date-and-time-format.html)
 
 ### Informative References
