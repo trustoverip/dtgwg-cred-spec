@@ -6,8 +6,8 @@ _Document Status:_ Working Draft
 
 _Editors:_
 
-- Alberto Leon, Applied Social Media Lab, Berkman Klein Center at Harvard University
-- Brendan A. Miller, Applied Social Media Lab, Berkman Klein Center at Harvard University
+- Alberto Leon, Applied Technology Lab at Harvard University
+- Brendan A. Miller, Applied Technology Lab at Harvard University
 - Geoff Turk, First Person Project
 - Martina Kolpondinos, First Person Project
 - Drummond Reed, First Person Project
