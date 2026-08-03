@@ -245,12 +245,19 @@ The holder of a VRC MAY construct a zero-knowledge proof that demonstrates posse
 
 **Schema:**
 
-- `type` (array, REQUIRED): MUST include `"MembershipCredential"`
-- `issuer` (string, REQUIRED): [[ref: C-DID]] of the VTC or VTN
-- `credentialSubject` (object, REQUIRED):
-  - `id` (string, REQUIRED): [[ref: M-DID]] of the member (person/device/agent) OR C-DID (for VTN-to-VTC membership)
+A VMC is issued in each direction of a membership edge. The two directions are distinguished by issuer and subject rules, not by separate type strings.
 
-**Example:**
+- `type` (array, REQUIRED): MUST include `"MembershipCredential"`
+- `issuer` (string, REQUIRED):
+  - For the community-issued VMC (the membership grant): [[ref: C-DID]] of the VTC or VTN
+  - For the member-issued VMC (the membership acknowledgement): [[ref: M-DID]] of the member, OR the member VTC's C-DID (for VTN membership)
+- `credentialSubject` (object, REQUIRED):
+  - `id` (string, REQUIRED):
+    - For the community-issued VMC: [[ref: M-DID]] of the member (person/device/agent) OR the member VTC's C-DID (for VTN-to-VTC membership)
+    - For the member-issued VMC: C-DID of the VTC or VTN
+  - `digest` (string, REQUIRED on the member-issued VMC, MUST be omitted on the community-issued VMC): A cryptographic hash of the community-issued VMC being acknowledged. The hash MUST be computed as the SHA-256 hash of the credential's JSON representation canonicalized with the JSON Canonicalization Scheme ([JCS, RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)), and MUST be encoded as the string `sha256:` followed by the lowercase hexadecimal digest.
+
+**Example (community-issued VMC — membership grant):**
 
 ```json
 {
@@ -269,6 +276,40 @@ The holder of a VRC MAY construct a zero-knowledge proof that demonstrates posse
 }
 ```
 
+**Example (member-issued VMC — membership acknowledgement):**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://firstperson.network/credentials/dtg/v1",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
+  "issuer": "did:key:z6MkpTHR8VNs...",
+  "validFrom": "2026-01-06T10:05:00Z",
+  "credentialSubject": {
+    "id": "did:web:chess-club.example",
+    "digest": "sha256:9f2c4a17be0d3e5581cc7a4b6d90f3128e7ab5c46019d2f83b7e1a05cd64927f"
+  },
+  "proof": { "//": "..." }
+}
+```
+
+#### Membership Edge Completion
+
+A membership edge is complete only when both VMCs of the pair exist and are valid: the community-issued VMC that grants membership, and the member-issued VMC that acknowledges it.
+
+The community-issued VMC MUST be issued first, and the member-issued VMC MUST carry a `digest` of it. A member-issued VMC whose `digest` does not match a valid community-issued VMC MUST NOT be treated as completing a membership edge.
+
+Where the subject of a community-issued VMC presents that credential as evidence of its own membership, together with proof of control of the subject DID, a verifier MAY accept it. The act of presentation itself demonstrates the member's participation. This is the case that the [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) and [Personhood Credentials](#personhood-credentials-phc) rely on.
+
+Where a [[ref: VTC]], [[ref: VTN]], or any party other than the member asserts that an entity is a member, the verifier MUST require the member-issued VMC. A community-issued VMC alone MUST NOT be accepted as evidence that the named entity is a member. A community asserting an entity's membership MUST be able to produce the member-issued VMC that completes the edge.
+
+The member-issued VMC is the member's consent artifact, and this is why the pair is required rather than a single directed credential. A community can always issue a credential naming someone as a member, but it cannot produce the acknowledgement without that party's signature. Requiring the acknowledgement therefore makes unconsented membership claims unprovable — and a community that cannot show one is visibly asserting a membership that was never agreed to.
+
+> **Editor's note — membership lifecycle:** Withdrawal, revocation, and re-issuance of either VMC, and the protocol by which the pair is exchanged, are deferred to the planned DTG Core Trust Task Protocols specification (see [Related Specifications](#related-specifications)). Because the member is the issuer of the member-issued VMC, withdrawal of consent is self-sovereign and requires no cooperation from the community. The open question left to that specification is where a verifier discovers the status of a member-issued VMC, which must be under the member's control rather than the community's trust registry, so that a member never depends on the community to invalidate their own credential.
+
 #### Community-Anchored Zero-Knowledge Proof
 
 A VRC is a signed verifiable credential. It MAY be presented and verified using standard W3C VC presentation methods when privacy preservation is not required, and it SHOULD be presented using a zero-knowledge proof whenever privacy preservation is desired. Community membership is **not** a precondition for issuing, holding, or presenting a VRC; two entities that do not share (or do not hold) a [[ref: VMC]] can still exchange VRCs, and the resulting edges are valid trust attestations standing on their cryptographic signatures and on whatever real-world context the parties bring to them.
@@ -276,7 +317,7 @@ A VRC is a signed verifiable credential. It MAY be presented and verified using 
 When both parties to a VRC hold VMCs from the same community, the holder MAY construct a community-anchored ZKP of the relationship. In such a proof, the holder demonstrates:
 
 1. Possession of the VRC
-2. Possession of the underlying VMC (proving membership in the community)
+2. Possession of the underlying community-issued VMC (proving membership in the community)
 3. The VRC issuer possesses a VMC from the *same* [[ref: C-DID]] (community DID)
 
 This allows the relationship's existence to be proven within a shared community's governance context without revealing the specific DIDs or other credential details. Whatever assurances the community's trust registry attaches to its VMCs (e.g., personhood, when the VMCs qualify as [[ref: PHCs]]) carry forward into the proof.
@@ -368,9 +409,9 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 
 Because the meaning of a witness attestation depends on the conditions under which the witnessing occurred, a VWC MUST be bound to the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange in which it was issued via the `taskContext` property (see [Trust Task Context Binding](#trust-task-context-binding)).
 
-A witnessed exchange of a complete [[ref: DTG edge]] is bidirectional: two VRCs, one in each direction, are formed in a single witnessing event. For such exchanges the witness SHOULD issue one VWC per direction. In each VWC, `credentialSubject.id` MUST be the DID of the issuer of the VRC that the VWC attests (the VRC referenced by `digest`), so that the two VWCs of an exchange are unambiguously bound to their respective directions.
+A witnessed exchange of a complete [[ref: DTG edge]] is bidirectional: two edge credentials, one in each direction, are formed in a single witnessing event — two VRCs for a peer-to-peer edge, or the two VMCs of a membership edge. For such exchanges the witness SHOULD issue one VWC per direction. In each VWC, `credentialSubject.id` MUST be the DID of the issuer of the edge credential that the VWC attests (the credential referenced by `digest`), so that the two VWCs of an exchange are unambiguously bound to their respective directions.
 
-A VWC's `credentialSubject.id` and `taskContext` alone identify only the observed party and the trust task exchange, not the edge being witnessed. Binding a VWC to a specific edge therefore requires `digest`: a verifier holding the referenced VRC can recover both relationship endpoints (the VRC's `issuer` and `credentialSubject.id`) and confirm the exact credential the witness attested to. This binding is only as strong as the verifier's access to that VRC — a `digest` without the referenced VRC to hand is an opaque hash, not an identified edge. Issuers and holders presenting a VWC as evidence of a specific edge SHOULD make the referenced VRC available alongside it.
+A VWC's `credentialSubject.id` and `taskContext` alone identify only the observed party and the trust task exchange, not the edge being witnessed. Binding a VWC to a specific edge therefore requires `digest`: a verifier holding the referenced edge credential can recover both endpoints of the edge (the credential's `issuer` and `credentialSubject.id`) and confirm the exact credential the witness attested to. This binding is only as strong as the verifier's access to that credential — a `digest` without the referenced credential to hand is an opaque hash, not an identified edge. Issuers and holders presenting a VWC as evidence of a specific edge SHOULD make the referenced edge credential available alongside it.
 
 **Schema:**
 
@@ -379,7 +420,7 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
 - `taskContext` (string, REQUIRED): `threadId` of the trust task exchange in which the witnessing occurred
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the observed party
-  - `digest` (string, REQUIRED): A cryptographic hash of the witnessed VRC, binding the VWC to the specific edge established. The hash MUST be computed as the SHA-256 hash of the credential's JSON representation canonicalized with the JSON Canonicalization Scheme ([JCS, RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)), and MUST be encoded as the string `sha256:` followed by the lowercase hexadecimal digest.
+  - `digest` (string, REQUIRED): A cryptographic hash of the witnessed edge credential, binding the VWC to the specific edge established. The hash MUST be computed as the SHA-256 hash of the credential's JSON representation canonicalized with the JSON Canonicalization Scheme ([JCS, RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)), and MUST be encoded as the string `sha256:` followed by the lowercase hexadecimal digest.
   - `witnessContext` (object, OPTIONAL): Context of the witnessing event
     - `event` (string, OPTIONAL): Human-readable event name
     - `sessionId` (string, OPTIONAL): Session or nonce identifier
@@ -485,7 +526,7 @@ A verifier MUST NOT interpret a `taskContext`-bearing credential as proof that t
 
 ### Personhood Credentials (PHC)
 
-A [[ref: PHC]] is simply a [[ref: VMC]] issued by a [[ref: VTC]] whose governance enforces:
+A [[ref: PHC]] is the community-issued [[ref: VMC]] of a membership edge in a [[ref: VTC]] whose governance enforces:
 
 - Real human personhood
 - Exactly one membership per person
@@ -528,7 +569,7 @@ No additional schema fields are required. PHC status is determined by governance
 - This specification is **format-agnostic** (no binding to BBS+, SD-JWT-VC, etc.)
 - Two ZKP constructions are defined for proving relationships: the [Pairwise Zero-Knowledge Proof](#pairwise-zero-knowledge-proof) (available to any two VRC holders) and the [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) (available when both parties hold VMCs from the same community)
 - Schemas are kept simple to enable common predicates:
-  - "Holder has valid VMC from recognized VTC"
+  - "Holder has valid community-issued VMC from recognized VTC"
   - "Issuer is authorized member"
   - "Two distinct VRCs exist"
 - Detailed ZK protocols and registry-ZK interactions are left to future work
@@ -540,10 +581,11 @@ No additional schema fields are required. PHC status is determined by governance
 1. **Proof verification.** Verifiers must cryptographically verify the `proof` of every DTG credential, including resolution of the issuer's DID and validation of the verification method, before relying on any claim in the credential.
 2. **Validity period enforcement.** Verifiers must reject credentials outside their `validFrom`/`validUntil` window (or v1.1 equivalents) and should check applicable revocation status via the governing trust registry.
 3. **Issuer authorization.** A cryptographically valid credential is not necessarily an authorized one. Verifiers must evaluate whether the issuer is authorized for the claimed role (e.g., a VMC issuer being a recognized VTC, a VIC issuer being permitted to invite) using the applicable trust registry or governance framework.
-4. **Digest integrity (VWC).** A verifier relying on a VWC's binding to a specific edge must have the referenced VRC available, recompute the SHA-256 hash over its JCS (RFC 8785) canonical form, and confirm it matches `digest`; a mismatch invalidates the attestation. Without the referenced VRC in hand, `digest` cannot be resolved to an edge, and the VWC should not be treated as evidence of which edge was witnessed.
+4. **Digest integrity.** A verifier relying on a VWC's binding to a specific edge must have the referenced edge credential available, recompute the SHA-256 hash over its JCS (RFC 8785) canonical form, and confirm it matches `digest`; a mismatch invalidates the attestation. Without the referenced credential in hand, `digest` cannot be resolved to an edge, and the VWC should not be treated as evidence of which edge was witnessed. The same requirement applies to the `digest` that a member-issued VMC carries of the community-issued VMC it acknowledges: a mismatch invalidates the acknowledgement, and the membership edge is not complete.
 5. **Context collapse.** A credential presented outside the trust task exchange in which it was issued may be misinterpreted as evidence of a completed ceremony. The requirements of [Trust Task Context Binding](#trust-task-context-binding) exist to prevent this class of attack and must be enforced by verifiers.
 6. **Replay of invitation credentials.** VICs should be issued with short validity periods and should be treated as single-use by the accepting [[ref: VTA]]/[[ref: PEP]], to prevent replay of an intercepted invitation.
 7. **Key compromise.** Compromise of the private key controlling any DID used in a DTG credential (issuer or subject) undermines all credentials anchored to it. Key rotation and revocation procedures are governed by the applicable DID methods and trust registries.
+8. **Unconsented membership assertion.** A community-issued VMC alone does not establish that the named entity agreed to be a member, since a community can issue one without that party's involvement. Verifiers evaluating a membership claim made by anyone other than the member should require the member-issued VMC of the pair, per [Membership Edge Completion](#membership-edge-completion).
 
 ## Privacy Considerations
 
