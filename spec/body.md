@@ -5,19 +5,19 @@
 This section provides a visual overview of the DTG Core Credential types and their formal type hierarchy. The three functional categories (edge, invitation, annotation) are descriptive aids only; they do not appear in credential schemas.
 
 ```mermaid
-graph TB
+graph LR
     DTG[DTGCredential]
 
     DTG --> EC(Edge Credentials)
     DTG --> IC(Invitation Credentials)
     DTG --> AC(Annotation Credentials)
 
-    EC --> VMC["VMC<br/>MembershipCredential"]
-    EC --> VRC["VRC<br/>RelationshipCredential"]
-    IC --> VIC["VIC<br/>InvitationCredential"]
-    AC --> VPC["VPC<br/>PersonaCredential"]
-    AC --> VEC["VEC<br/>EndorsementCredential"]
-    AC --> VWC["VWC<br/>WitnessCredential"]
+    EC --> VRC["VRC - RelationshipCredential"]
+    EC --> VMC["VMC - MembershipCredential"]
+    IC --> VIC["VIC - InvitationCredential"]
+    AC --> VPC["VPC - PersonaCredential"]
+    AC --> VWC["VWC - WitnessCredential"]
+    AC --> VEC["VEC - EndorsementCredential"]
 
     classDef parent fill:#f5f5f5,stroke:#555,stroke-width:2px,color:#000
     classDef cat fill:#eeeeee,stroke:#999,stroke-width:1px,color:#555
@@ -362,43 +362,6 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 }
 ```
 
-### VEC (Verifiable Endorsement Credential)
-
-**Purpose:** Attaches endorsements (skills, reputation) to a party. The verifiability applies to cryptographic assurance in the issuer's signature, not to the truth of the assertions, whose vocabulary is defined by the governing [[ref: VTC]] or [[ref: VTN]].
-
-**Schema:**
-
-- `type` (array, REQUIRED): MUST include `"EndorsementCredential"`
-- `issuer` (string, REQUIRED): DID of the endorser
-- `credentialSubject` (object, REQUIRED):
-  - `id` (string, REQUIRED): DID of the endorsed party
-  - `endorsement` (object, REQUIRED): Community/VTN-defined endorsement structure
-    - Structure and fields determined by community policy
-
-**Example:**
-
-```json
-{
-  "@context": [
-    "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
-  ],
-  "type": ["VerifiableCredential", "DTGCredential", "EndorsementCredential"],
-  "issuer": "did:key:z6MkhaXgBZD...",
-  "validFrom": "2026-01-06T10:00:00Z",
-  "credentialSubject": {
-    "id": "did:key:z6MkpTHR8VNs...",
-    "endorsement": {
-      "type": "SkillEndorsement",
-      "name": "Software Development",
-      "competencyLevel": "expert"
-    }
-  },
-  "proof": { "//": "..." }
-}
-```
-
 ### VWC (Verifiable Witness Credential)
 
 **Purpose:** Third-party attestation that an edge was established under specific conditions. The witness may be a person or a [[ref: VTA]] applying the witnessing policies of a [[ref: VTC]] — for example, verifying that both parties were present at the same event, or provided proof of biometric liveness at the time of relationship formation.
@@ -440,6 +403,43 @@ A witnessed exchange of a complete [[ref: DTG edge]] is bidirectional: two VRCs,
       "event": "EthDenver 2024",
       "sessionId": "session-abc-123",
       "method": "in-person-proximity"
+    }
+  },
+  "proof": { "//": "..." }
+}
+```
+
+### VEC (Verifiable Endorsement Credential)
+
+**Purpose:** Attaches endorsements (skills, reputation) to a party. The verifiability applies to cryptographic assurance in the issuer's signature, not to the truth of the assertions, whose vocabulary is defined by the governing [[ref: VTC]] or [[ref: VTN]].
+
+**Schema:**
+
+- `type` (array, REQUIRED): MUST include `"EndorsementCredential"`
+- `issuer` (string, REQUIRED): DID of the endorser
+- `credentialSubject` (object, REQUIRED):
+  - `id` (string, REQUIRED): DID of the endorsed party
+  - `endorsement` (object, REQUIRED): Community/VTN-defined endorsement structure
+    - Structure and fields determined by community policy
+
+**Example:**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://firstperson.network/credentials/dtg/v1",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "EndorsementCredential"],
+  "issuer": "did:key:z6MkhaXgBZD...",
+  "validFrom": "2026-01-06T10:00:00Z",
+  "credentialSubject": {
+    "id": "did:key:z6MkpTHR8VNs...",
+    "endorsement": {
+      "type": "SkillEndorsement",
+      "name": "Software Development",
+      "competencyLevel": "expert"
     }
   },
   "proof": { "//": "..." }
