@@ -1,7 +1,7 @@
 # Decentralized Trust Graph Credentials - Core Specification
 
 _Version:_ 1.0  
-_Document Status:_ Working Draft 01
+_Document Status:_ Working Draft 01  
 <!-- _DOI:_ To be assigned when this specification reaches ToIP Approved Deliverable status. See https://lf-toip.atlassian.net/wiki/spaces/HOME/pages/767787009/ToIP+Approved+Deliverable+Process#Persistent-DOI-Link -->
 
 _Editors:_
