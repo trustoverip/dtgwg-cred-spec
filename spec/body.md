@@ -289,7 +289,7 @@ A VMC is issued in each direction of a membership edge. The two directions are d
   "issuer": "did:key:z6MkpTHR8VNs...",
   "validFrom": "2026-01-06T10:05:00Z",
   "credentialSubject": {
-    "id": "did:web:chess-club.example",
+    "id": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
     "digest": "sha256:9f2c4a17be0d3e5581cc7a4b6d90f3128e7ab5c46019d2f83b7e1a05cd64927f"
   },
   "proof": { "//": "..." }
