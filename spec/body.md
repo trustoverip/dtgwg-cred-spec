@@ -91,8 +91,7 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -102,7 +101,8 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
     "id": "did:key:z6MkpTHR8VNs..."
   },
   "proof": {
-    "type": "Ed25519Signature2020",
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
     "created": "2026-01-06T10:00:00Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example#key-1",
@@ -118,7 +118,7 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://w3id.org/security/data-integrity/v2"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -128,7 +128,8 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
     "id": "did:key:z6MkpTHR8VNs..."
   },
   "proof": {
-    "type": "Ed25519Signature2020",
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
     "created": "2026-01-06T10:00:00Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example#key-1",
@@ -155,8 +156,9 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the subject
   - Additional type-specific properties
-- `taskContext` (string, OPTIONAL unless a credential type requires it): identifier (`threadId`) of the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange in which this credential was issued. See [Trust Task Context Binding](#trust-task-context-binding).
-- `proof` (object, REQUIRED): W3C VC proof object
+- `taskContext` (string, OPTIONAL unless a credential type requires it): identifier of the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange in which this credential was issued — the `id` of that exchange's initiating document. See [Trust Task Context Binding](#trust-task-context-binding).
+- `taskDigestMultibase` (string, REQUIRED wherever `taskContext` is REQUIRED, OPTIONAL otherwise): the tamper-evident binding of the exchange `taskContext` names — a digest of that exchange's initiating document. `taskContext` locates; `taskDigestMultibase` binds. See [Trust Task Context Binding](#trust-task-context-binding).
+- `proof` (object, REQUIRED): A W3C Data Integrity proof. `proof.type` MUST be `DataIntegrityProof`, with the cryptographic suite named in `proof.cryptosuite` — algorithm agility lives in data rather than in type names, so a suite migration is a value change, not a schema revision. The RECOMMENDED suite is `eddsa-jcs-2022`: its JCS (RFC 8785) canonicalization requires no `@context` resolution at verification time, so credentials remain verifiable offline (including credentials formed in person and synchronized later), and it is the same canonicalization this specification uses for `digestMultibase` — a digest and a proof over one credential cannot disagree about the credential's canonical form. Selective-disclosure derivations require a `bbs-2023` **base proof** — an `eddsa-jcs-2022` proof cannot yield one — so issuers whose credentials must support selective disclosure issue a [proof set](https://www.w3.org/TR/vc-data-integrity/#proof-sets) carrying both suites: `eddsa-jcs-2022` for the offline path, `bbs-2023` as the derivation base. Note `bbs-2023` uses RDF canonicalization, so the no-`@context`-resolution argument above does not extend to the ZKP path (see [Zero-Knowledge and Selective Disclosure](#zero-knowledge-and-selective-disclosure)).
 
 **Example:**
 
@@ -164,8 +166,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:example:vtcCommunityDid",
@@ -175,7 +176,8 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
     "id": "did:example:memberMdid"
   },
   "proof": {
-    "type": "Ed25519Signature2020",
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
     "created": "2026-01-06T10:00:00Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:example:vtcCommunityDid#key-1",
@@ -237,8 +239,7 @@ Edge credentials establish relationships between existing entities (nodes) in th
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "RelationshipCredential"],
   "issuer": "did:peer:2.Ez6LSbysKZ...",
@@ -286,8 +287,7 @@ The holder of a VRC MAY construct a zero-knowledge proof that demonstrates posse
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -340,8 +340,7 @@ This section is normative.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "InvitationCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
@@ -379,8 +378,7 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "PersonaCredential"],
   "issuer": "did:key:z6MkrKqT9pL...",
@@ -398,18 +396,19 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 
 Because the meaning of a witness attestation depends on the conditions under which the witnessing occurred, a VWC MUST be bound to the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange in which it was issued via the `taskContext` property (see [Trust Task Context Binding](#trust-task-context-binding)).
 
-A witnessed exchange of a complete [[ref: DTG edge]] is bidirectional: two VRCs, one in each direction, are formed in a single witnessing event. For such exchanges the witness SHOULD issue one VWC per direction. In each VWC, `credentialSubject.id` MUST be the DID of the issuer of the VRC that the VWC attests (the VRC referenced by `digest`), so that the two VWCs of an exchange are unambiguously bound to their respective directions.
+A witnessed exchange of a complete [[ref: DTG edge]] is bidirectional: two VRCs, one in each direction, are formed in a single witnessing event. For such exchanges the witness SHOULD issue one VWC per direction. In each VWC, `credentialSubject.id` MUST be the DID of the issuer of the VRC that the VWC attests (the VRC referenced by `digestMultibase`), so that the two VWCs of an exchange are unambiguously bound to their respective directions.
 
-A VWC's `credentialSubject.id` and `taskContext` alone identify only the observed party and the trust task exchange, not the edge being witnessed. Binding a VWC to a specific edge therefore requires `digest`: a verifier holding the referenced VRC can recover both relationship endpoints (the VRC's `issuer` and `credentialSubject.id`) and confirm the exact credential the witness attested to. This binding is only as strong as the verifier's access to that VRC — a `digest` without the referenced VRC to hand is an opaque hash, not an identified edge. Issuers and holders presenting a VWC as evidence of a specific edge SHOULD make the referenced VRC available alongside it.
+A VWC's `credentialSubject.id` and `taskContext` alone identify only the observed party and the trust task exchange, not the edge being witnessed. Binding a VWC to a specific edge therefore requires `digestMultibase`: a verifier holding the referenced VRC can recover both relationship endpoints (the VRC's `issuer` and `credentialSubject.id`) and confirm the exact credential the witness attested to. This binding is only as strong as the verifier's access to that VRC — a `digestMultibase` without the referenced VRC to hand is an opaque hash, not an identified edge. Issuers and holders presenting a VWC as evidence of a specific edge SHOULD make the referenced VRC available alongside it. This trades off against minimal disclosure: a selectively-disclosed VRC cannot satisfy `digestMultibase` verification (the digest is over the full canonical form), so edge-binding verification and selective disclosure of the same VRC are mutually exclusive in one presentation.
 
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"WitnessCredential"`
 - `issuer` (string, REQUIRED): DID of the witness — an [[ref: M-DID]], or the DID of a [[ref: VTA]] acting according to VTC policy
-- `taskContext` (string, REQUIRED): `threadId` of the trust task exchange in which the witnessing occurred
+- `taskContext` (string, REQUIRED): the `id` of the initiating document of the innermost trust task exchange that attests the witnessing (see [Trust Task Context Binding](#trust-task-context-binding))
+- `taskDigestMultibase` (string, REQUIRED): the core specification's **task digest** ([framework 0.4, §4.9.3](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/c59040d1e45700e1aa66d931f1397d661c4a7253/SPEC.md#493-the-task-digest)) of the initiating document `taskContext` names — computed over that document's JSON representation **excluding its top-level `proof` member** (§4.7 already excludes `proof` from what a proof covers, so the digest and the document's own signature commit to the same content, and the value is identical whether or not the document was proofed), canonicalized with JCS (RFC 8785), and encoded exactly as `digestMultibase` below — a SHA-256 multihash under a `z` or `u` multibase header. This is the tamper-evident half of the context binding: `taskContext` alone is an identifier an adversary can reuse on a counterfeit document (see [Trust Task Context Binding](#trust-task-context-binding))
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the observed party
-  - `digest` (string, REQUIRED): A cryptographic hash of the witnessed VRC, binding the VWC to the specific edge established. The hash MUST be computed as the SHA-256 hash of the credential's JSON representation canonicalized with the JSON Canonicalization Scheme ([JCS, RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)), and MUST be encoded as the string `sha256:` followed by the lowercase hexadecimal digest.
+  - `digestMultibase` (string, REQUIRED): A cryptographic hash of the witnessed VRC, binding the VWC to the specific edge established, reusing the property name and multibase-multihash encoding the [W3C VC Data Model 2.0](https://www.w3.org/TR/vc-data-model-2.0/) defines (there for `relatedResource`, over raw bytes); the hash input here is defined by this specification, so generic tooling recognises the term and the encoding, not the input rule. The hash MUST be computed over the credential's JSON representation canonicalized with the JSON Canonicalization Scheme ([JCS, RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)), and MUST be encoded as a multibase-encoded multihash whose hash function is SHA-256 (multihash code `0x12`). The multibase header MUST be `z` (base58btc) or `u` (base64url-no-pad) — the two headers [W3C Controlled Identifiers 1.0 §2.4](https://www.w3.org/TR/cid-1.0/#multibase-0) defines for interoperable use — and consumers MUST enforce the named alphabet rather than assume it.
   - `witnessContext` (object, OPTIONAL): Context of the witnessing event
     - `event` (string, OPTIONAL): Human-readable event name
     - `sessionId` (string, OPTIONAL): Session or nonce identifier
@@ -421,16 +420,16 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "WitnessCredential"],
   "issuer": "did:webvh:QmVzTd9hRkPqLu4WgXyN...:witness-service.example",
   "validFrom": "2026-01-06T10:00:00Z",
-  "taskContext": "thread-abc-123",
+  "taskContext": "2c7f5d19-6e0b-4c3d-8a41-9b2e6f0d4c88",
+  "taskDigestMultibase": "zQmWhCFfStzUE4HGseiQ1XWi2eEp1GTQEKnt2jyBe7uqzXD",
   "credentialSubject": {
     "id": "did:key:z6MkpTHR8VNs...",
-    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "digestMultibase": "zQmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n",
     "witnessContext": {
       "event": "EthDenver 2024",
       "sessionId": "session-abc-123",
@@ -460,8 +459,7 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "EndorsementCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
@@ -482,32 +480,57 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
 
 This section is normative.
 
-DTG credentials are frequently issued during broader multi-step exchanges — [trust tasks](https://glossary.trustoverip.org/#term:trust-tasks) carried out through ceremonies governed by a [[ref: VTC]] or [[ref: VTN]]. A credential exchanged inside such a ceremony can be cryptographically valid as an artifact while still being insufficient evidence that the ceremony reached its intended terminal state. This section defines the mechanism that prevents such credentials from escaping their task context and being misinterpreted.
+DTG credentials are frequently issued during broader multi-step exchanges — [trust tasks](https://glossary.trustoverip.org/#term:trust-tasks) carried out through ceremonies governed by a [[ref: VTC]] or [[ref: VTN]] and structured as [Trust Task documents](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#4-trust-task-documents). A credential exchanged inside such a ceremony can be cryptographically valid as an artifact while still being insufficient evidence that the ceremony reached its intended terminal state. This section defines the mechanism that prevents such credentials from escaping their task context and being misinterpreted.
+
+This section's normative dependency on the [[ref: Trust Tasks core specification]] is limited to mechanisms defined in that specification as of **0.4**, cited by name with the version pinned: document identity (§4.3), thread correlation and exchange citation (§4.9, §4.9.1), the reply-disposition classification (§8.6), the error payload's `inResponseTo` member (§8.2), and the per-variant proof-requirement and response-schema declarations (§7.3). It does not depend on any future or unpublished feature of that specification, or on the separate, still-planned DTG Core Trust Task Protocols specification. Citations name mechanisms rather than item ordinals, which its own revisions renumber.
 
 ### Credentials versus Trust Task Artifacts
 
-*This subsection is informative.*
-
-The boundary between this specification and the planned DTG Core Trust Task Protocols specification is drawn by the following test:
+The boundary between this specification and the [[ref: Trust Tasks core specification]] is drawn by the following test:
 
 - A **credential** is a durable claim about the graph that is true standing alone (e.g., VRC, VMC, VPC). It lives on after the exchange in which it was issued.
 - An **artifact** is a work-product of a trust task (intermediate or completion), only meaningful within its exchange. It is carried as a Trust Task document, correlated by a shared `threadId`, with its terminal state expressed at the trust task layer — not as a new credential type.
 
 **Test for any new thing:** true outside the exchange? → credential. Only meaningful inside? → artifact.
 
-All six credential types in this specification pass the credential side of this test. The structure of trust task completion artifacts (outcome evidence) is out of scope for this specification and will be defined in the DTG Core Trust Task Protocols specification.
+All six credential types in this specification pass the credential side of this test. The structure of any individual trust task's outcome artifact is defined by the Trust Task specification governing that ceremony (see [Qualifying Trust Task Specifications](#qualifying-trust-task-specifications)) — a matter for the governing VTC/VTN, and out of scope for this specification.
 
 ### The `taskContext` Property
 
-A credential whose meaning depends on a trust task completing MUST carry a `taskContext` property containing the `threadId` of the originating trust task exchange. This requirement is a property of the credential type, not a per-issuer choice:
+A credential whose meaning depends on a trust task completing MUST carry a `taskContext` property containing the **`id` of the initiating document** of the originating trust task exchange. Where exchanges nest, `taskContext` names the *innermost* exchange that attests the event, per the core specification's rule for [naming an exchange from outside the framework](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#491-naming-an-exchange-from-outside-the-framework) (framework 0.4, §4.9.1) — a witnessing nested inside a broader relationship exchange is attested by the witness ceremony's own exchange, not by the exchange that contains it. This requirement is a property of the credential type, not a per-issuer choice:
 
 - For credential types where this specification marks `taskContext` as REQUIRED (currently only the [[ref: VWC]]), issuers MUST include it.
 - For all other DTG credential types, `taskContext` is OPTIONAL.
 - A DTG credential without a `taskContext` property MUST be interpretable standing alone, independent of any exchange.
+- Uniqueness comes from the core specification rather than from issuer discipline: a document's [`id`](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#43-the-id-member) is "globally unique to this instance of the task" and producers "MUST NOT reuse an `id` value across documents" (framework 0.4, §4.3) — a normative obligation on a mandatory member. The exchange's `threadId` coincides with this value where the initiator relies on §4.9's fallback; where the initiator minted a `threadId`, the pairing rule in [Outcome Interpretability](#outcome-interpretability) pairs through the initiating document instead. Either way the anchor is the `id`: [`threadId`](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#49-the-threadid-member) remains optional in the core specification and carries no normative validation semantics.
+
+**The `id` locates; it does not bind.** §4.3's uniqueness obligation constrains conforming producers — it constrains nobody else. An adversary can mint a different document carrying the same `id`, and a verifier pairing the credential with that counterfeit by `id` equality alone would accept evidence of the wrong event. A credential type that marks `taskContext` REQUIRED therefore also marks **`taskDigestMultibase`** REQUIRED, carrying the core specification's *task digest* of the initiating document ([framework 0.4, §4.9.3](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/c59040d1e45700e1aa66d931f1397d661c4a7253/SPEC.md#493-the-task-digest): "a citation relied upon outside its exchange SHOULD carry a task digest over the document it names") — computed over the document's JSON representation excluding its top-level `proof` member, canonicalized with JCS (RFC 8785), in the same multihash/multibase encoding as `digestMultibase`. This specification strengthens the core specification's SHOULD to REQUIRED for the VWC, whose `taskContext` is exactly such a citation. The two properties split one job — `taskContext` is the locator (an O(1) lookup key, conformant with §4.9.1's citation rule), `taskDigestMultibase` is the binder (a counterfeit with the right `id` has the wrong bytes, so its digest cannot match). The digest excludes `proof` so the value is well-defined for unproofed documents and identical across proofed and unproofed forms of the same document.
+
+The initiating document's own `proof.proofValue` was considered as the binder and rejected on two measured grounds: qualifying task specifications may leave the *request* proof OPTIONAL (the initiating document is a request — `witness/session` 0.1 declares exactly this), so a proofValue anchor is structurally unavailable on documents the specifications themselves permit; and a proofValue equality check is spoofable by copying the genuine proof block onto a counterfeit document — it only gains integrity behind full signature verification, which costs more than the digest recomputation it would replace. Where a proof happens to exist, its `proofValue` remains a fine index key; it is not the normative binding.
+
+### Qualifying Trust Task Specifications
+
+A `taskContext` value is only useful for the [Outcome Interpretability](#outcome-interpretability) rule below if the trust task exchange it identifies produces observable, integrity-protected, in-band terminal-state evidence. A governance framework (VTC or VTN) that designates the Trust Task specification governing a `taskContext`-bearing ceremony MUST select or define one that, per the [[ref: Trust Tasks core specification]]:
+
+1. declares `proof` as REQUIRED for its success-response variant — either as a single specification-wide requirement or via the per-variant declaration (framework 0.4, [§7.3](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#73-specification-requirements)), so the resulting outcome evidence is integrity-protected. (A task specification cannot strengthen the *error* variant: an error response's `type` names the reserved [`trust-task-error`](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#8-error-responses) specification, whose declaration no other specification can override — which is one reason error responses are not completion evidence under [Outcome Interpretability](#outcome-interpretability).) And
+2. defines a `#response` success-response payload schema (framework 0.4, [§4.4.1](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#441-request-and-response-variants) and the response-schema requirement of [§7.3](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#73-specification-requirements)) — so that successful termination is observable directly from the exchange's Trust Task documents. A specification with no success response can only ever record failure, so a `taskContext` pointing at one could never carry positive outcome evidence.
+
+Any Trust Task specification meeting these two conditions qualifies, whether or not it is specific to DTG ceremonies. This specification does not define such a Trust Task specification itself; doing so is the responsibility of the governing VTC/VTN, coordinated where applicable with the Trust Tasks task force (see [Governance Considerations](#governance-considerations)).
 
 ### Outcome Interpretability
 
-A verifier MUST NOT interpret a `taskContext`-bearing credential as proof that the associated trust task or ceremony completed unless the matching trust task outcome evidence is also present and verified. That outcome evidence MUST be reachable by the verifier — either it travels with the presentation, or the `taskContext` value enables the verifier to locate it.
+A verifier MUST NOT interpret a `taskContext`-bearing credential as proof that the associated trust task or ceremony completed unless matching trust task outcome evidence is also present and verified. Which reply documents are terminal is the core specification's classification, not this document's — a success response closes an exchange, an error response closes it, and a next-step reply leaves it open (framework 0.4, [§8.6](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#86-reserved-response-type-slugs)); this specification cites that classification rather than restating it, so reply types the core specification adds are classified where they are specified.
+
+**Matching outcome evidence** is the exchange's initiating document together with a terminal Trust Task document, where:
+
+- the initiating document's `id` equals the credential's `taskContext`, **and the credential's `taskDigestMultibase` reproduces over it** — recomputed over the document's JCS (RFC 8785) canonical form excluding its top-level `proof` member, and compared as **decoded multihash bytes, never as encoded strings** (framework 0.4, §4.9.3: `z` and `u` encodings of one digest are different strings, so a string compare rejects a valid pairing). `id` equality alone MUST NOT be treated as binding: it locates a candidate document; only the digest match confirms it is *the* document;
+- the terminal document carries a `threadId` equal to the initiating document's `threadId` where the initiator minted one, and to the initiating document's `id` (the credential's `taskContext`) under §4.9's fallback — that is, `terminal.threadId == (initiating.threadId ?? initiating.id)`. Pairing runs through the initiating document precisely so that an initiator exercising §4.9's freedom to mint a fresh `threadId` does not orphan legitimate outcome evidence;
+- the terminal document carries a `type` that is the originating request's Type URI with the `#response` fragment — the qualifying specification's terminal *success* form; and
+- the terminal document carries a `proof` that verifies under that specification's declared requirement, and whose `issuer` is the party the qualifying specification names as the responder of that exchange (for a witnessed ceremony, the witness) — evidence signed by the wrong party pairs with nothing.
+
+A `trust-task-error` terminating the exchange is evidence of *failure*, never of completion: a verifier MUST NOT infer completion from one, and MUST NOT rely on one as attributable third-party evidence unless it carries the core specification's `inResponseTo` member (framework 0.4, [§8.2](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md#82-error-payload)) naming the originating document — without it, a retained error names neither the task nor the specification whose semantics its code carries, and is diagnostic for the exchange's parties only.
+
+A holder presenting a `taskContext`-bearing credential as evidence of task completion MUST include matching outcome evidence with the presentation. Discovering or retrieving outcome evidence that a verifier does not already hold is out of scope for this version of this specification: a verifier that does not receive matching outcome evidence together with the presentation MUST treat the credential as not evidencing task completion, regardless of whether such evidence exists elsewhere. This does not otherwise invalidate the credential — a `taskContext`-bearing credential remains subject to ordinary verification (issuer authorization, proof, revocation status) independent of outcome evidence; only the completion inference is withheld absent matching evidence.
 
 ## Supporting Concepts
 
@@ -555,7 +578,7 @@ No additional schema fields are required. PHC status is determined by governance
 
 ### Zero-Knowledge and Selective Disclosure
 
-- This specification is **format-agnostic** (no binding to BBS+, SD-JWT-VC, etc.)
+- The ZKP *constructions* below are format-agnostic; where a concrete Data Integrity mechanism is needed, this specification names `bbs-2023` as the selective-disclosure suite (issued as part of a proof set — see the `proof` member under [Base Structure](#base-structure))
 - Two ZKP constructions are defined for proving relationships: the [Pairwise Zero-Knowledge Proof](#pairwise-zero-knowledge-proof) (available to any two VRC holders) and the [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) (available when both parties hold VMCs from the same community)
 - Schemas are kept simple to enable common predicates:
   - "Holder has valid VMC from recognized VTC"
@@ -570,7 +593,7 @@ No additional schema fields are required. PHC status is determined by governance
 1. **Proof verification.** Verifiers must cryptographically verify the `proof` of every DTG credential, including resolution of the issuer's DID and validation of the verification method, before relying on any claim in the credential.
 2. **Validity period enforcement.** Verifiers must reject credentials outside their `validFrom`/`validUntil` window (or v1.1 equivalents) and should check applicable revocation status via the governing trust registry.
 3. **Issuer authorization.** A cryptographically valid credential is not necessarily an authorized one. Verifiers must evaluate whether the issuer is authorized for the claimed role (e.g., a VMC issuer being a recognized VTC, a VIC issuer being permitted to invite) using the applicable trust registry or governance framework.
-4. **Digest integrity (VWC).** A verifier relying on a VWC's binding to a specific edge must have the referenced VRC available, recompute the SHA-256 hash over its JCS (RFC 8785) canonical form, and confirm it matches `digest`; a mismatch invalidates the attestation. Without the referenced VRC in hand, `digest` cannot be resolved to an edge, and the VWC should not be treated as evidence of which edge was witnessed.
+4. **Digest integrity (VWC).** A verifier relying on a VWC's binding to a specific edge must have the referenced VRC available, recompute the SHA-256 multihash over its JCS (RFC 8785) canonical form, compare it under the credential's multibase header (enforcing that header's alphabet), and confirm it matches `digestMultibase`; a mismatch invalidates the attestation. Without the referenced VRC in hand, `digestMultibase` cannot be resolved to an edge, and the VWC should not be treated as evidence of which edge was witnessed. The same discipline applies to `taskDigestMultibase` against the exchange's initiating document (excluding its top-level `proof` member), with two rules from the core specification's task-digest definition (framework 0.4, §4.9.3): comparison is over decoded multihash bytes, never encoded strings; and an unimplemented hash algorithm leaves the citation *unverified* — never recomputed under a substitute algorithm, never silently downgraded to `id` comparison. A document whose `id` matches `taskContext` but whose digest does not reproduce is a counterfeit context, and the attestation MUST NOT be paired with it — `id` equality is a lookup, not a binding.
 5. **Context collapse.** A credential presented outside the trust task exchange in which it was issued may be misinterpreted as evidence of a completed ceremony. The requirements of [Trust Task Context Binding](#trust-task-context-binding) exist to prevent this class of attack and must be enforced by verifiers.
 6. **Replay of invitation credentials.** VICs should be issued with short validity periods and should be treated as single-use by the accepting [[ref: VTA]]/[[ref: PEP]], to prevent replay of an intercepted invitation.
 7. **Key compromise.** Compromise of the private key controlling any DID used in a DTG credential (issuer or subject) undermines all credentials anchored to it. Key rotation and revocation procedures are governed by the applicable DID methods and trust registries.
@@ -619,7 +642,7 @@ This specification defines normative requirements, using the keywords defined in
 ### Conformance Targets
 
 1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type, including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding).
-2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and MUST include reachable trust task outcome evidence when presenting `taskContext`-bearing credentials as evidence of task completion.
+2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and, when presenting a `taskContext`-bearing credential as evidence of task completion, MUST include matching trust task outcome evidence (as defined in [Outcome Interpretability](#outcome-interpretability)) with the presentation.
 3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support).
 
 ### Conformance Tests
@@ -635,7 +658,12 @@ Conformance test suites for this specification have not yet been defined and are
 - [W3C Decentralized Identifiers (DIDs) v1.0](https://www.w3.org/TR/did-1.0/)
 - [IETF RFC 2119: Key words for use in RFCs to Indicate Requirement Levels](https://datatracker.ietf.org/doc/html/rfc2119)
 - [IETF RFC 8785: JSON Canonicalization Scheme (JCS)](https://datatracker.ietf.org/doc/html/rfc8785)
+- [W3C Verifiable Credential Data Integrity 1.0](https://www.w3.org/TR/vc-data-integrity/) — the `DataIntegrityProof` envelope
+- [W3C Data Integrity EdDSA Cryptosuites v1.0](https://www.w3.org/TR/vc-di-eddsa/) — `eddsa-jcs-2022` (and `eddsa-rdfc-2022`)
+- [W3C Data Integrity BBS Cryptosuites v1.0](https://www.w3.org/TR/vc-di-bbs/) — `bbs-2023`, the selective-disclosure suite
+- [W3C Controlled Identifiers (CIDs) v1.0](https://www.w3.org/TR/cid-1.0/) — the `z`/`u` multibase headers
 - [ISO 8601: Date and time format](https://www.iso.org/iso-8601-date-and-time-format.html)
+- [Trust Tasks Framework, DTGWG Trust Tasks Task Force editor's draft](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md) — this specification's normative references in [Trust Task Context Binding](#trust-task-context-binding) are to mechanisms of the [[ref: Trust Tasks core specification]] as of **framework 0.4** (0.4 per that document's Appendix B changelog; its header at that commit still reads 0.3; commit [`fbe196a`](https://github.com/trustoverip/dtgwg-trust-tasks-tf/blob/fbe196a8a17ba3f99d0657a64be5ac58621023a1/SPEC.md), which the section links resolve to), cited by name: document identity (§4.3), request/response variants (§4.4.1), thread correlation and exchange citation (§4.9, §4.9.1, §4.9.2), specification requirements (§7.3, the per-variant proof and response-schema declarations), error responses and the `inResponseTo` member (§8, §8.2), and the reply-disposition classification (§8.6). The dependency is on those already-defined mechanisms only, not on future revisions.
 
 ### Informative References
 
