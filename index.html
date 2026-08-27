@@ -108,7 +108,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
       ],
       "source": "xref",
       "termId": "term:credential",
-      "lastUpdated": "2026-08-12T12:56:11.046Z"
+      "lastUpdated": "2026-08-27T15:16:39.660Z"
     }
   ]
 };</script>
@@ -334,7 +334,11 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <li><a href="#dual-version-examples">Dual-Version Examples</a></li>
 </ul>
 </li>
-<li><a href="#base-structure">Base Structure</a></li>
+<li><a href="#base-structure">Base Structure</a>
+<ul>
+<li><a href="#did-method-considerations">DID Method Considerations</a></li>
+</ul>
+</li>
 <li><a href="#edge-credentials">Edge Credentials</a>
 <ul>
 <li><a href="#vrc-verifiable-relationship-credential">VRC (Verifiable Relationship Credential)</a>
@@ -752,7 +756,7 @@ graph LR
     <span class="token string">"https://w3id.org/security/suites/ed25519-2020/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:web:chess-club.example"</span><span class="token punctuation">,</span>
+  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example"</span><span class="token punctuation">,</span>
   <span class="token property">"validFrom"</span><span class="token operator">:</span> <span class="token string">"2026-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"validUntil"</span><span class="token operator">:</span> <span class="token string">"2027-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
@@ -762,7 +766,7 @@ graph LR
     <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"Ed25519Signature2020"</span><span class="token punctuation">,</span>
     <span class="token property">"created"</span><span class="token operator">:</span> <span class="token string">"2026-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
     <span class="token property">"proofPurpose"</span><span class="token operator">:</span> <span class="token string">"assertionMethod"</span><span class="token punctuation">,</span>
-    <span class="token property">"verificationMethod"</span><span class="token operator">:</span> <span class="token string">"did:web:chess-club.example#key-1"</span><span class="token punctuation">,</span>
+    <span class="token property">"verificationMethod"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example#key-1"</span><span class="token punctuation">,</span>
     <span class="token property">"proofValue"</span><span class="token operator">:</span> <span class="token string">"z3FXQjecWJKT..."</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
@@ -775,7 +779,7 @@ graph LR
     <span class="token string">"https://w3id.org/security/suites/ed25519-2020/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:web:chess-club.example"</span><span class="token punctuation">,</span>
+  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example"</span><span class="token punctuation">,</span>
   <span class="token property">"issuanceDate"</span><span class="token operator">:</span> <span class="token string">"2026-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"expirationDate"</span><span class="token operator">:</span> <span class="token string">"2027-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
@@ -785,7 +789,7 @@ graph LR
     <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"Ed25519Signature2020"</span><span class="token punctuation">,</span>
     <span class="token property">"created"</span><span class="token operator">:</span> <span class="token string">"2026-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
     <span class="token property">"proofPurpose"</span><span class="token operator">:</span> <span class="token string">"assertionMethod"</span><span class="token punctuation">,</span>
-    <span class="token property">"verificationMethod"</span><span class="token operator">:</span> <span class="token string">"did:web:chess-club.example#key-1"</span><span class="token punctuation">,</span>
+    <span class="token property">"verificationMethod"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example#key-1"</span><span class="token punctuation">,</span>
     <span class="token property">"proofValue"</span><span class="token operator">:</span> <span class="token string">"z3FXQjecWJKT..."</span>
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
@@ -835,6 +839,28 @@ graph LR
   <span class="token punctuation">}</span>
 <span class="token punctuation">}</span>
 </code></pre>
+<h3 id="did-method-considerations"><a class="toc-anchor d-print-none" href="#did-method-considerations">§</a> DID Method Considerations</h3>
+<p><em>This subsection is informative.</em></p>
+<p>This specification does not mandate a <a href="https://glossary.trustoverip.org/#term:decentralized-identifier">decentralized identifier</a> method. The four <a class="term-reference" href="#term:vid">VID</a> types — <a class="term-reference" href="#term:r-dids">R-DIDs</a>, <a class="term-reference" href="#term:m-dids">M-DIDs</a>, <a class="term-reference" href="#term:c-dids">C-DIDs</a>, and <a class="term-reference" href="#term:p-dids">P-DIDs</a> — describe the role an identifier plays in the graph, not how it resolves, and a deployment may use different methods for different roles. Not every DID appearing in a DTG deployment is one of the four: a <a class="term-reference" href="#term:vta">VTA</a> issuing a <a class="term-reference" href="#term:vwc">VWC</a> under <a class="term-reference" href="#term:vtc">VTC</a> policy, for instance, is named by none of them. What follows therefore states the properties a method must supply in terms of what the identifier is required to do, so that implementers can determine whether a candidate method is suitable — including for identifiers the four types do not name.</p>
+<p><strong>Durable identifiers (<a class="term-reference" href="#term:c-dids">C-DIDs</a>, <a class="term-reference" href="#term:m-dids">M-DIDs</a>, and other long-lived issuers).</strong> A <a class="term-reference" href="#term:c-did">C-DID</a> identifies a <a class="term-reference" href="#term:vtc">VTC</a> that issues <a class="term-reference" href="#term:vmcs">VMCs</a> and is expected to outlive any particular key, operator, or hosting arrangement, and an <a class="term-reference" href="#term:m-did">M-DID</a> identifies a member across the lifetime of that membership. The determining property is how long the identifier must remain verifiable, not which <a class="term-reference" href="#term:vid">VID</a> type it is: a <a class="term-reference" href="#term:vta">VTA</a> issuing <a class="term-reference" href="#term:vwcs">VWCs</a> on behalf of a <a class="term-reference" href="#term:vtc">VTC</a>, which <a href="#vwc-verifiable-witness-credential">VWC (Verifiable Witness Credential)</a> permits in place of an <a class="term-reference" href="#term:m-did">M-DID</a>, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these roles should provide:</p>
+<ul>
+<li><strong>Verifiable key history</strong>, so that a verifier can establish which key was authoritative when a credential was signed rather than only which key is authoritative now. This matters because a DTG credential may be presented long after issuance, and <a href="#security-considerations">Security Considerations</a> requires verifiers to validate the verification method.</li>
+<li><strong>Key rotation without changing the identifier</strong>, so that an edge of the graph survives key compromise. An identifier that cannot rotate makes every credential issued under it unrecoverable on compromise.</li>
+<li><strong>Pre-rotation or an equivalent commitment to successor keys</strong>, limiting what an attacker holding a current key can do.</li>
+<li><strong>Independence from a single operator or hosting location</strong>, so that loss of a domain does not sever the identifier from the graph built on it.</li>
+<li><strong>Discoverable service endpoints</strong>, since the <a class="term-reference" href="#term:vta">VTA</a> endpoints, <code>credentialStatus</code> mechanism, and <a href="https://glossary.trustoverip.org/#term:trust-registry">trust registry</a> references relied on elsewhere in this specification are resolved through them.</li>
+</ul>
+<p>Methods that publish a verifiable, append-only history of DID document versions — such as <a href="https://identity.foundation/didwebvh/v1.0/">did:webvh</a>, whose log entries commit to successor keys and may be countersigned by <em>DID log witnesses</em> — satisfy the first three properties. A DID log witness countersigns versions of a DID document and is a distinct role from the witness of a <a class="term-reference" href="#term:vwc">VWC</a>, which attests to an edge; the two share only a name, and this subsection uses the qualified term wherever the DID log sense is meant.</p>
+<p>Independence from a hosting location needs to be confirmed separately, because some methods make it a decision that can only be taken when the identifier is created. A <code>did:webvh</code> identifier resolves its log at a web origin and can be relocated only where the <code>portable</code> parameter was set in the first log entry; it defaults to off, and a later entry cannot enable it. Methods that separate the identifier from the location of its verification metadata — such as <code>did:scid</code>, under development at <a href="https://lf-toip.atlassian.net/wiki/spaces/HOME/pages/88572360/DID+SCID+Method+Specification">ToIP</a>, whose identifier is a self-certifying value that carries no location — do not present this choice at all. Implementers selecting a method for an identifier expected to outlive its current hosting arrangement should confirm both that the method supports relocation and that any capability which must be enabled at inception has been.</p>
+<p>Methods that resolve to a document with no verifiable history, such as <code>did:web</code>, satisfy rotation and endpoint discovery but provide neither verifiable history nor any commitment to successor keys. Such a document is rotated by republishing it, which leaves a verifier unable to distinguish a legitimate rotation from a key substituted by an attacker, and unable to establish which key was authoritative at issuance.</p>
+<p><strong>Pairwise identifiers (<a class="term-reference" href="#term:r-dids">R-DIDs</a> and <a class="term-reference" href="#term:p-dids">P-DIDs</a>).</strong> An <a class="term-reference" href="#term:r-did">R-DID</a> identifies one peer to one other peer, and a <a class="term-reference" href="#term:p-did">P-DID</a> identifies a <a class="term-reference" href="#term:persona">persona</a> within a bounded context. Both exist to limit correlation, and both are expected to be created in quantity. A method used for these roles should provide:</p>
+<ul>
+<li><strong>Cheap creation with no registration step</strong>, since a deployment may mint one identifier per relationship or per persona.</li>
+<li><strong>No shared resolution origin</strong>, so that resolving one identifier does not reveal the existence of, or a common controller for, the others. See <a href="#privacy-considerations">Privacy Considerations</a>.</li>
+<li><strong>No dependency on infrastructure that observes identifier use</strong>, since a party that resolves, or acts as a DID log witness for, many of a person’s pairwise identifiers is positioned to correlate them regardless of the identifiers themselves.</li>
+</ul>
+<p>Peer and key-based methods such as <code>did:peer</code> and <code>did:key</code> satisfy these properties. A method requiring each identifier to be published at a web origin is a poor fit for these roles even where it is the right choice for a <a class="term-reference" href="#term:c-did">C-DID</a>, because the origin is common to every identifier published under it.</p>
+<p><strong>Mixing methods.</strong> Because the properties above pull in opposite directions — durability and recoverability against disposability and non-correlation — implementations should expect to use more than one method, rather than seeking a single method that serves every role. Nothing in this specification requires the <code>issuer</code> and <code>credentialSubject.id</code> of a credential to use the same method, and the examples throughout reflect this: durable issuers are shown with <code>did:webvh</code> and pairwise subjects with <code>did:key</code> or <code>did:peer</code>.</p>
 <h2 id="edge-credentials"><a class="toc-anchor d-print-none" href="#edge-credentials">§</a> Edge Credentials</h2>
 <p>This section is normative.</p>
 <p>Edge credentials establish relationships between existing entities (nodes) in the DTG: <a class="term-reference" href="#term:vrcs">VRCs</a> attest to relationships between two entities, and <a class="term-reference" href="#term:vmcs">VMCs</a> attest to community membership. In both cases, a bi-directional pair of credentials forms a complete <a class="term-reference" href="#term:dtg-edge">DTG edge</a>.</p>
@@ -900,7 +926,7 @@ graph LR
     <span class="token string">"https://w3id.org/security/suites/ed25519-2020/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:web:chess-club.example"</span><span class="token punctuation">,</span>
+  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example"</span><span class="token punctuation">,</span>
   <span class="token property">"validFrom"</span><span class="token operator">:</span> <span class="token string">"2026-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span>
@@ -1026,7 +1052,7 @@ graph LR
     <span class="token string">"https://w3id.org/security/suites/ed25519-2020/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"WitnessCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:web:witness-service.example"</span><span class="token punctuation">,</span>
+  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmVzTd9hRkPqLu4WgXyN...:witness-service.example"</span><span class="token punctuation">,</span>
   <span class="token property">"validFrom"</span><span class="token operator">:</span> <span class="token string">"2026-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"taskContext"</span><span class="token operator">:</span> <span class="token string">"thread-abc-123"</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
@@ -1117,7 +1143,7 @@ graph LR
     <span class="token string">"MembershipCredential"</span><span class="token punctuation">,</span>
     <span class="token string">"PersonhoodCredential"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
-  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:web:government-idv.example"</span><span class="token punctuation">,</span>
+  <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmRfN7pKwEbTs2LcMqDh...:government-idv.example"</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span>
   <span class="token punctuation">}</span>
@@ -1170,6 +1196,7 @@ graph LR
 <li><strong>Minimal disclosure.</strong> DTG credential schemas are intentionally minimal so that holders can satisfy common predicates (membership, relationship existence) using zero-knowledge or selective disclosure mechanisms without revealing underlying DIDs or credential contents.</li>
 <li><strong>Witness data.</strong> The optional <code>witnessContext</code> of a <a class="term-reference" href="#term:vwc">VWC</a> may reveal information about where and when parties met. Issuers should include only what the witnessing purpose requires, and holders should be able to withhold <code>witnessContext</code> details when proving the attestation.</li>
 <li><strong>ZKPs by default.</strong> Implementations should use ZKP presentation by default so that privacy preservation does not require any extra effort on behalf of users.</li>
+<li><strong>Correlation through the resolution layer.</strong> Correlation does not require the credentials themselves. Where several of a party’s <a class="term-reference" href="#term:r-dids">R-DIDs</a> or <a class="term-reference" href="#term:p-dids">P-DIDs</a> resolve through common infrastructure — a shared web origin, a shared registry, or a shared set of DID log witnesses countersigning their updates — that infrastructure can associate identifiers that the credential structure was designed to keep apart, and can observe when each is used. Choosing a DID method for these roles is therefore a privacy decision as much as a key management one; see <a href="#did-method-considerations">DID Method Considerations</a>.</li>
 </ol>
 <h2 id="governance-considerations"><a class="toc-anchor d-print-none" href="#governance-considerations">§</a> Governance Considerations</h2>
 <p><em>This section is informative.</em></p>
@@ -1324,15 +1351,15 @@ This work is licensed under a Creative Commons Attribution 4.0 International Lic
                 </div>
             </div>
             <hr id="external-ref-changes-divider" style="display: none;">
-            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 12 August 2026</p>
+            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 27 August 2026</p>
             <!-- Build Information Section -->
             <div class="ps-3 pe-3">
                 <p class="mb-2 fw-bold">Build Information:</p>
                 <div id="build-info" class="small text-muted">
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-calendar-event me-2"></i>
-                        <time class="timestamp" datetime="2026-08-12T12:56:09.947Z">
-                            Generated: 2026-08-12T12:56:09.947Z
+                        <time class="timestamp" datetime="2026-08-27T15:16:39.177Z">
+                            Generated: 2026-08-27T15:16:39.177Z
                         </time>
                     </div>
                     <div class="d-flex align-items-center mb-1">
