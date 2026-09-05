@@ -109,7 +109,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
       ],
       "source": "xref",
       "termId": "term:credential",
-      "lastUpdated": "2026-09-04T20:11:09.222Z"
+      "lastUpdated": "2026-09-05T20:27:55.774Z"
     }
   ]
 };</script>
@@ -1156,6 +1156,7 @@ graph LR
 <li><strong>ZKPs by default.</strong> Implementations should use ZKP presentation by default so that privacy preservation does not require any extra effort on behalf of users.</li>
 <li><strong>Correlation through the resolution layer.</strong> Correlation does not require the credentials themselves. Where several of a party’s <a class="term-reference" href="#term:r-dids">R-DIDs</a> or <a class="term-reference" href="#term:p-dids">P-DIDs</a> resolve through common infrastructure — a shared web origin, a shared registry, or a shared set of DID log witnesses countersigning their updates — that infrastructure can associate identifiers that the credential structure was designed to keep apart, and can observe when each is used. Choosing a DID method for these roles is therefore a privacy decision as much as a key management one; see <a href="#did-method-considerations">DID Method Considerations</a>.</li>
 <li><strong>The acknowledgement as a disclosure artifact.</strong> A member-issued VMC is a signed, transferable credential naming both the member and the community, and it is held by the community. It exists so that a community cannot assert a membership it is unable to prove — but the same property lets the community prove that membership to a third party without the member’s involvement, which a community-issued VMC alone did not allow. Members should treat issuing an acknowledgement as a durable and delegable disclosure of the membership, should acknowledge from an M-DID scoped to that community (see item 1) so that it does not correlate across communities, and may bound the disclosure with a short <code>validUntil</code> (see the editor’s note in <a href="#membership-edge-completion">Membership Edge Completion</a>). This specification defines no selective-disclosure or zero-knowledge form for the acknowledgement, so a community proving membership to a third party currently discloses the whole credential.</li>
+<li><strong>Effective disclosure of an edge.</strong> A choice of identifier constrains only the disclosure of the party who makes it. Each half of an edge is issued by its own party, under an identifier that party chose, and published wherever that party publishes it; neither party controls, and neither can necessarily discover, what the other does with its own half. An edge’s effective disclosure is therefore the wider of its two halves, not the narrower. A <a class="term-reference" href="#term:r-did">R-DID</a> that is correctly unique to one counterparty is still correlated to a named party if that counterparty publishes the opposing half under an <a class="term-reference" href="#term:m-did">M-DID</a> into a graph others can read — a different failure from the reuse addressed above, and one the party who followed this specification’s recommendation cannot prevent. Implementations should compute the privacy of an edge over every place either half is published, not from the half they issued, and should not represent a pairwise half as making the edge pairwise. The halves of a single edge may legitimately differ in this respect, both across communities whose disclosure policies differ and within one community passing through the migration recommended in item 1. The same reasoning applies to any joint presentation: what a set of credentials discloses together may exceed what any of them discloses alone.</li>
 </ol>
 <h2 id="governance-considerations" tabindex="-1"><a class="toc-anchor d-print-none" href="#governance-considerations">§</a> Governance Considerations</h2>
 <p><em>This section is informative.</em></p>
@@ -1320,15 +1321,15 @@ This work is licensed under a Creative Commons Attribution 4.0 International Lic
                 </div>
             </div>
             <hr id="external-ref-changes-divider" style="display: none;">
-            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 04 September 2026</p>
+            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 05 September 2026</p>
             <!-- Build Information Section -->
             <div class="ps-3 pe-3">
                 <p class="mb-2 fw-bold">Build Information:</p>
                 <div id="build-info" class="small text-muted">
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
-                        <time class="timestamp" datetime="2026-09-04T20:11:08.747Z">
-                            Generated: 2026-09-04T20:11:08.747Z
+                        <time class="timestamp" datetime="2026-09-05T20:27:55.140Z">
+                            Generated: 2026-09-05T20:27:55.140Z
                         </time>
                     </div>
                     <div class="d-flex align-items-center mb-1">
