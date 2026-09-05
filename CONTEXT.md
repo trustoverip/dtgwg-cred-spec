@@ -19,34 +19,34 @@ A credential that attaches data to existing edges or parties without creating gr
 Attests to a relationship between two entities; two VRCs (one per direction) form a complete DTG edge.
 
 **VMC (verifiable membership credential)**:
-Attests to the membership of an entity in a VTC or VTN; two VMCs (one per direction) form a complete DTG edge. One W3C type (`MembershipCredential`); the two directions are expressed via issuer/subject rules, not separate type strings. The community-issued VMC (the grant) is issued from the VTC/VTN's C-DID to the member; the member-issued VMC (the acknowledgement) reverses those roles and carries a `digest` of the grant. The acknowledgement is the member's consent artifact — a community asserting someone's membership must be able to produce it.
+Attests to the membership of an entity in a VTC or VTN; two VMCs (one per direction) form a complete DTG edge. One W3C type (`MembershipCredential`); the two directions are expressed via issuer/subject rules, not separate type strings. The community-issued VMC (the grant) is issued from the VTC/VTN's own DID to the member; the member-issued VMC (the acknowledgement) reverses those roles and carries a `digest` of the grant. The acknowledgement is the member's consent artifact — a community asserting someone's membership must be able to produce it.
 
 **VIC (verifiable invitation credential / DTG invitation credential)**:
 Authorizes onboarding of a prospective member into a VTC or VTN. One W3C type (`InvitationCredential`); the glossary's VTC/VTN invitation subtypes are prose distinctions expressed via issuer/subject rules, not separate type strings.
 
 **VPC (verifiable persona credential)**:
-Links a persona DID to an existing relationship, enabling intentional correlation under holder control.
+Links a persona to an existing relationship, enabling intentional correlation under holder control. The persona is asserted under an identifier its holder ordinarily declares `directed`.
 
 **VEC (verifiable endorsement credential)**:
 A standard container attaching community-governed reputation/skill assertions to a party.
 
 **VWC (verifiable witness credential)**:
-Third-party attestation that an edge was established under specific conditions. Remains in DTG Core Credentials (per 2026-06/07 discussions); the only type for which `taskContext` is REQUIRED. Its issuer is the witness's own DID (an M-DID or a VTA's DID per VTC policy).
-_Avoid_: W-DID (not an official DTG identifier type)
+Third-party attestation that an edge was established under specific conditions. Remains in DTG Core Credentials (per 2026-06/07 discussions); the only type for which `taskContext` is REQUIRED. Its issuer is the witness's own DID (a member's, or a VTA's per VTC policy), which is `directed` at minimum.
+_Avoid_: W-DID (not a DTG identifier type)
 
 ### Identifiers
 
 **DTG verifiable identifier (VID)**:
-A verifiable identifier for a DTG node; this spec version uses DIDs. Exactly four official DID types: R-DID (relationship), M-DID (membership), C-DID (community), P-DID (persona).
-_Avoid_: W-DID
+A verifiable identifier for a DTG node; this spec version uses DIDs. A VID is not typed by the role its holder plays — roles are conferred by credentials. What a VID carries is a declared **correlation scope**, one of three monotonic values: `pairwise` (one counterparty), `directed` (a set the holder chooses) or `public` (unbounded).
+_Avoid_: R-DID, M-DID, C-DID, P-DID (retired identifier types), W-DID
 
 ### Proofs
 
 **Pairwise ZKP**:
-A ZKP construction available to any two VRC holders, regardless of shared community membership. Selectively discloses attributes (e.g., P-DIDs) while hiding R-DIDs; confers no community-level assurance by itself.
+A ZKP construction available to any two VRC holders, regardless of shared community membership. Selectively discloses attributes (e.g., `directed` persona identifiers) while hiding the `pairwise` ones; confers no community-level assurance by itself.
 
 **Community-anchored ZKP**:
-A ZKP construction available when both VRC parties hold VMCs from the same community. Three-part proof (VRC + VMC + same C-DID); carries forward whatever assurances the community attaches to its VMCs (e.g., personhood).
+A ZKP construction available when both VRC parties hold VMCs from the same community. Three-part proof (VRC + VMC + the same community identifier); carries forward whatever assurances the community attaches to its VMCs (e.g., personhood).
 
 **ZKPs by default**:
 DTG credentials MAY be presented via standard W3C VC methods, but implementations SHOULD default to ZKP presentation so privacy requires no user opt-in. Community membership is never a precondition for issuing, holding, or presenting a VRC.

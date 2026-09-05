@@ -85,6 +85,8 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
 
 ### Dual-Version Examples
 
+For readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Under a declaration that identifier is `directed`, not `pairwise`; see [Correlation Scope](#correlation-scope).
+
 **v2.0 (Primary):**
 
 ```json
@@ -139,6 +141,171 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
 
 > **Note:** All examples in this specification use v2.0 syntax unless explicitly labeled otherwise. When implementing v1.1 support, use the property mappings above.
 
+## Correlation Scope
+
+This section is normative, except where a subsection is marked informative. Its
+requirements apply to a **[[ref: correlation scope]]** that has been declared;
+this version does not yet define where a declaration is carried (see
+[Declaring scope](#declaring-scope)), so no credential is non-conforming for the
+absence of one.
+
+A [[ref: DTG verifiable identifier]] MAY carry a declared correlation scope: the
+breadth over which its holder intends it to be correlated. Scope is declared by
+the holder, and is independent of the role the holder plays — which is
+established by the credentials the identifier appears in. A role may nonetheless
+constrain which scopes a holder can *truthfully* declare, as it does for a
+[[ref: VTC]]'s own identifier and for a [[ref: VWC]] witness's; a role never
+supplies the scope, it only rules some declarations out.
+
+| Scope | Known to | Holder's intent |
+|---|---|---|
+| `pairwise` | exactly one counterparty | correlation confined to this one relationship |
+| `directed` | a set of counterparties the holder chooses | deliberate correlation across that set and no further |
+| `public` | unbounded | correlation unbounded; ordinarily published so that it can be found |
+
+A *counterparty* here is a party to a relationship the identifier establishes
+or annotates. Disclosure to a party in a supporting role for that same
+relationship — a [[ref: VWC]] witness, an [[ref: IDVP]] performing identity
+proofing for a membership, or the resolution infrastructure the identifier
+depends on — does not by itself widen scope, though it does place the identifier
+beyond the holder's control; see
+[Privacy Considerations](#privacy-considerations).
+
+The values are **ordered**, narrowest first. Where this specification states a
+minimum scope for a purpose, a declaration narrower than that minimum does not
+satisfy it, and a verifier MUST NOT treat it as if it did; elsewhere a holder
+MAY declare any of the three. A verifier MUST NOT rely on an identifier's value,
+its DID method, or the context in which it was encountered as a substitute for a
+declaration.
+
+There are three values rather than four because each must answer the same
+question — *who may correlate this identifier?* — and answer it by the holder's
+own choice. `pairwise` confines correlation to one counterparty, `directed`
+confines it to a set the holder directs the identifier at, and `public` declines
+to confine it. There is deliberately no separate value for an identifier used
+within a community: an identifier a member uses only with the community is
+`pairwise`, and one the member also uses with other members is `directed`. A
+value bounded by the community would take its bound from a credential rather
+than from the holder — the conflation this section exists to remove — and would
+give a verifier two middle values it has no way to tell apart. What such a value
+appeared to capture is a property of the community rather than of the
+identifier; see
+[Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
+
+### Roles are conferred by credentials
+
+An identifier is not "a membership identifier"; it is an identifier that *has* a
+[[ref: VMC]]. It is not "a persona identifier"; it is one that *has* a
+[[ref: VPC]]. Membership is still established by the VMC pair and a
+[[ref: persona]] is still asserted by a VPC; a scope declaration is orthogonal to
+both.
+
+The R-DID (relationship), M-DID (membership), C-DID (community) and P-DID
+(persona) identifier types used in drafts before WD02 are retired. Each named a
+role and a correlation width in one token, and the two can disagree — an
+identifier holding a VMC and issuing a VRC answered to two of the four names at
+once.
+
+### Choosing a scope
+
+*This subsection is informative.*
+
+Because scope is the holder's choice, it is a choice a person can be asked to
+make — at the moment of joining a community, and again for each relationship.
+Three values are few enough to put in front of a human being:
+
+1. **`pairwise` — a single-counterparty pseudonym.** Known to this counterparty
+   and to no other, and not necessarily short-lived: a `pairwise` identifier
+   toward a [[ref: VTC]] lasts as long as the membership. Where the counterparty
+   is a VTC, that means known to the [[ref: VTA]] and not to fellow members.
+2. **`directed` — a private persona.** Known to this counterparty and to whoever
+   else the holder chooses, which may include other members of the same
+   community, or parties in other communities. This is the identifier under
+   which a [[ref: persona]] is ordinarily asserted.
+3. **`public` — a public persona.** Known to anyone.
+
+The three values also determine when proving *intentional* correlation costs
+anything. Where a holder deliberately uses one `directed` or `public` identifier
+across several credentials, the correlation is evident on the face of them and
+needs no proof. A zero-knowledge proof of common control is needed only in the
+opposite case: where the holder has used `pairwise` identifiers, which are
+distinct by definition, or distinct `directed` or `public` identifiers, and
+wishes to demonstrate that a single party controls them all.
+
+### Scope the holder cannot declare alone
+
+A declared scope binds its holder's own disclosure. It does not bind what a
+counterparty does with the identifier once disclosed, and for one counterparty —
+a community — that gap is wide enough to require governance.
+
+A member may declare the identifier they use with a [[ref: VTC]] `pairwise`, but
+that declaration stays truthful only if the VTC keeps it so. A VTC that
+publishes a member directory, or that presents a member-issued [[ref: VMC]] to a
+third party as [Privacy Considerations](#privacy-considerations) permits, has
+widened the identifier's exposure without the member having chosen it.
+
+A VTC that issues VMCs MUST therefore publish, in its governance framework or
+its trust registry, whether member identifiers are disclosed beyond the
+[[ref: VTA]] and to whom. A verifier MUST NOT infer from a
+member's `pairwise` declaration that the community treats the identifier as
+such, and a VTA SHOULD make the community's answer available to a prospective
+member before that member chooses a scope for joining.
+
+This is the general case of a fact that holds for any [[ref: DTG edge]] whose
+two halves are held by different parties: a declaration constrains its own
+holder, and the disclosure an identifier actually experiences is the widest of
+the places either party puts it.
+
+**Consequence for relationships inside a community.** Where a member uses one
+`pairwise` identifier with the VTC and a second `pairwise` identifier with
+another member, the two differ by construction, and a [Community-Anchored
+Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) must then
+establish common control across them rather than reading a single identifier out
+of both credentials. Members who expect to prove community-anchored
+relationships will in practice declare `directed` for intra-community use — the
+VTA together with the members they connect to — which is an accurate description
+of what that identifier is for.
+
+### Declaring scope
+
+A declaration is only meaningful if a verifier can read it. Two placements were
+considered, and only one is available:
+
+1. **In the credential, by the party whose identifier it is.** Each credential
+   declares the scope of its *issuer's* identifier — the one party in a position
+   to speak for it. Bidirectional [[ref: DTG edges]] make this complete on their
+   own: in a [[ref: VMC]] pair the community declares its own scope in the
+   grant and the member declares theirs in the acknowledgement, so both halves
+   of the edge carry a first-party declaration.
+2. **In the DID document**, resolved with the identifier. This is not available
+   where it is most needed. A `did:key` document, and a `did:peer` numalgo-0
+   document, are derived from the identifier value — there is no document to
+   add a property to — and those are the methods
+   [DID Method Considerations](#did-method-considerations) recommends for
+   `pairwise` and `directed` identifiers. Encoding scope into the identifier
+   value itself would place the declaration where this section forbids a
+   verifier from reading one, and resolving a document to learn the scope has
+   the observability cost that [Privacy Considerations](#privacy-considerations)
+   records for the resolution layer.
+
+The declaration is therefore carried in the credential. Two consequences follow:
+
+- A declaration is a property of the identifier, not of a credential. All
+  credentials issued under one identifier MUST declare the same scope; a
+  contradiction between two of them falsifies the declaration, on the same
+  footing as reuse of a `pairwise` identifier.
+- A first-party declaration covers only an issuer's own identifier. In a
+  bidirectional [[ref: DTG edge]] the reciprocal credential supplies the other
+  half, but until that half exists — a membership grant not yet acknowledged —
+  the subject's scope is undeclared, and for [[ref: VPCs]], [[ref: VWCs]],
+  [[ref: VICs]] and [[ref: VECs]] no credential declares the subject's scope
+  at all.
+
+> **Editor's note:** The property that carries the declaration, and its
+> `@context` term, are not yet named. Until they are, the requirements of this
+> section bind a declaration that has been made and do not require one; the
+> examples in this specification carry no declaration.
+
 ## Base Structure
 
 This section is normative.
@@ -149,7 +316,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 - `@context` (array, REQUIRED): MUST include `"https://www.w3.org/ns/credentials/v2"` and `"https://firstperson.network/credentials/dtg/v1"`, plus any additional contexts required by the proof type
 - `type` (array, REQUIRED): MUST include `"VerifiableCredential"`, `"DTGCredential"`, and exactly one concrete subtype
-- `issuer` (string, REQUIRED): DID of the issuing entity ([[ref: C-DID]], [[ref: M-DID]], [[ref: R-DID]], or [[ref: P-DID]] as appropriate)
+- `issuer` (string, REQUIRED): DID of the issuing entity. Its [[ref: correlation scope]] is declared by the holder rather than encoded in the identifier — see [Correlation Scope](#correlation-scope)
 - `validFrom` (string, REQUIRED): ISO 8601 datetime (`issuanceDate` in v1.1)
 - `validUntil` (string, OPTIONAL): ISO 8601 datetime (`expirationDate` in v1.1)
 - `credentialSubject` (object, REQUIRED):
@@ -188,9 +355,9 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 *This subsection is informative.*
 
-This specification does not mandate a [decentralized identifier](https://glossary.trustoverip.org/#term:decentralized-identifier) method. The four [[ref: VID]] types — [[ref: R-DIDs]], [[ref: M-DIDs]], [[ref: C-DIDs]], and [[ref: P-DIDs]] — describe the role an identifier plays in the graph, not how it resolves, and a deployment may use different methods for different roles. Not every DID appearing in a DTG deployment is one of the four: a [[ref: VTA]] issuing a [[ref: VWC]] under [[ref: VTC]] policy, for instance, is named by none of them. What follows therefore states the properties a method must supply in terms of what the identifier is required to do, so that implementers can determine whether a candidate method is suitable — including for identifiers the four types do not name.
+This specification does not mandate a [decentralized identifier](https://glossary.trustoverip.org/#term:decentralized-identifier) method. What a method must supply depends on what the identifier is required to do — chiefly how long it must remain verifiable and how widely its holder intends it to be correlated (its [[ref: correlation scope]]) — and a deployment may use different methods for different purposes. What follows states those properties in terms of the identifier's job, so implementers can judge whether a candidate method is suitable for any identifier in a deployment, including ones this specification does not otherwise name.
 
-**Durable identifiers ([[ref: C-DIDs]], [[ref: M-DIDs]], and other long-lived issuers).** A [[ref: C-DID]] identifies a [[ref: VTC]] that issues [[ref: VMCs]] and is expected to outlive any particular key, operator, or hosting arrangement, and an [[ref: M-DID]] identifies a member across the lifetime of that membership. The determining property is how long the identifier must remain verifiable, not which [[ref: VID]] type it is: a [[ref: VTA]] issuing [[ref: VWCs]] on behalf of a [[ref: VTC]], which [VWC (Verifiable Witness Credential)](#vwc-verifiable-witness-credential) permits in place of an [[ref: M-DID]], must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these roles should provide:
+**Durable identifiers.** A [[ref: VTC]]'s identifier — declared `public` — issues [[ref: VMCs]] and is expected to outlive any particular key, operator, or hosting arrangement, and a member's identifier must stay verifiable across the lifetime of that membership. The determining property is how long the identifier must remain verifiable: a [[ref: VTA]] issuing [[ref: VWCs]] on behalf of a VTC, which [VWC (Verifiable Witness Credential)](#vwc-verifiable-witness-credential) permits in place of the member's own identifier, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these purposes should provide:
 
 - **Verifiable key history**, so that a verifier can establish which key was authoritative when a credential was signed rather than only which key is authoritative now. This matters because a DTG credential may be presented long after issuance, and [Security Considerations](#security-considerations) requires verifiers to validate the verification method.
 - **Key rotation without changing the identifier**, so that an edge of the graph survives key compromise. An identifier that cannot rotate makes every credential issued under it unrecoverable on compromise.
@@ -204,15 +371,17 @@ Independence from a hosting location needs to be confirmed separately, because s
 
 Methods that resolve to a document with no verifiable history, such as `did:web`, satisfy rotation and endpoint discovery but provide neither verifiable history nor any commitment to successor keys. Such a document is rotated by republishing it, which leaves a verifier unable to distinguish a legitimate rotation from a key substituted by an attacker, and unable to establish which key was authoritative at issuance.
 
-**Pairwise identifiers ([[ref: R-DIDs]] and [[ref: P-DIDs]]).** An [[ref: R-DID]] identifies one peer to one other peer, and a [[ref: P-DID]] identifies a [[ref: persona]] within a bounded context. Both exist to limit correlation, and both are expected to be created in quantity. A method used for these roles should provide:
+**Narrow-scope identifiers (`pairwise` and `directed`).** A `pairwise` identifier is known to one counterparty; a `directed` identifier — a [[ref: persona]], for instance — is known to a set the holder chooses. Both exist to limit correlation, and both are expected to be created in quantity. A method used for these should provide:
 
 - **Cheap creation with no registration step**, since a deployment may mint one identifier per relationship or per persona.
 - **No shared resolution origin**, so that resolving one identifier does not reveal the existence of, or a common controller for, the others. See [Privacy Considerations](#privacy-considerations).
 - **No dependency on infrastructure that observes identifier use**, since a party that resolves, or acts as a DID log witness for, many of a person's pairwise identifiers is positioned to correlate them regardless of the identifiers themselves.
 
-Peer and key-based methods such as `did:peer` and `did:key` satisfy these properties. A method requiring each identifier to be published at a web origin is a poor fit for these roles even where it is the right choice for a [[ref: C-DID]], because the origin is common to every identifier published under it.
+Peer and key-based methods such as `did:peer` and `did:key` satisfy these properties. A method requiring each identifier to be published at a web origin is a poor fit for these roles even where it is the right choice for a `public` identifier, because the origin is common to every identifier published under it.
 
-**Mixing methods.** Because the properties above pull in opposite directions — durability and recoverability against disposability and non-correlation — implementations should expect to use more than one method, rather than seeking a single method that serves every role. Nothing in this specification requires the `issuer` and `credentialSubject.id` of a credential to use the same method, and the examples throughout reflect this: durable issuers are shown with `did:webvh` and pairwise subjects with `did:key` or `did:peer`.
+**Durability and scope are chosen independently.** The two groups above are not two ends of one dial, and an implementation that reads "narrow scope" as a synonym for "disposable" will get this wrong. An identifier a member uses only with their community is `pairwise`, and it must nevertheless remain verifiable for as long as the membership does — so it needs verifiable key history and rotation while still avoiding a shared resolution origin. Durability follows the lifetime of the credentials issued under an identifier; [[ref: correlation scope]] follows the holder's disclosure choice. A method has to be judged against both.
+
+**Mixing methods.** Because the properties above pull in opposite directions — durability and recoverability against disposability and non-correlation — implementations should expect to use more than one method, rather than seeking a single method that serves every role. Nothing in this specification requires the `issuer` and `credentialSubject.id` of a credential to use the same method, and the examples throughout reflect this: durable issuers are shown with `did:webvh` and member and peer subjects with `did:key` or `did:peer`.
 
 ## Edge Credentials
 
@@ -227,9 +396,9 @@ Edge credentials establish relationships between existing entities (nodes) in th
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"RelationshipCredential"`
-- `issuer` (string, REQUIRED): [[ref: R-DID]] or [[ref: M-DID]] of the source party
+- `issuer` (string, REQUIRED): DID of the source party. This specification places no constraint on its [[ref: correlation scope]], which is the source party's own declaration — see [Correlation Scope](#correlation-scope)
 - `credentialSubject` (object, REQUIRED):
-  - `id` (string, REQUIRED): R-DID or M-DID of the target party
+  - `id` (string, REQUIRED): DID of the target party as used in this relationship
 
 **Example:**
 
@@ -250,24 +419,24 @@ Edge credentials establish relationships between existing entities (nodes) in th
 }
 ```
 
-**Note:** R-DIDs are RECOMMENDED for privacy; M-DIDs are allowed for bootstrapping (see [Privacy Considerations](#privacy-considerations)).
+**Note:** a `pairwise` [[ref: correlation scope]] is RECOMMENDED for privacy. A wider declaration is permitted — `directed`, for a relationship the holder intends to be correlated with others they choose, including relationships inside a shared [[ref: VTC]] — but it is a disclosure the holder makes deliberately (see [Choosing a scope](#choosing-a-scope) and [Privacy Considerations](#privacy-considerations)).
 
 #### Unilateral Relationship Identification
 
-A [[ref: relationship DID]] (R-DID) generated by a controller for the explicit purpose of establishing a VRC serves as a globally unique identifier for that relationship edge from the perspective of the controller.
+An identifier generated by a controller for the explicit purpose of establishing a VRC, and declared `pairwise`, serves as a globally unique identifier for that relationship edge from the perspective of the controller.
 
 Therefore, a relationship within the DTG can be canonically identified by two independent identifiers:
 
-- The Source R-DID (controlled by the Issuer)
-- The Target R-DID (controlled by the Subject)
+- The source identifier (controlled by the Issuer)
+- The target identifier (controlled by the Subject)
 
-Semantic statements, metadata, or private context regarding the relationship MAY be anchored solely to the controller's own R-DID, without requiring the resolution or inclusion of the counterparty's identifier.
+Semantic statements, metadata, or private context regarding the relationship MAY be anchored solely to the controller's own identifier, without requiring the resolution or inclusion of the counterparty's identifier.
 
-> **IMPORTANT**: The valid application of this specification requires that each entity MUST generate a new, unique R-DID for every single entity they connect with, even within the same community.
+An identifier declared `pairwise` MUST NOT be used with more than one counterparty. A verifier that observes a `pairwise` identifier with a second counterparty MUST treat the declaration as false and MUST NOT rely on it. Implementations SHOULD default to minting a distinct identifier for each new relationship.
 
 #### Pairwise Zero-Knowledge Proof
 
-The holder of a VRC MAY construct a zero-knowledge proof that demonstrates possession of a valid VRC and selectively discloses chosen attributes, subject DIDs, or predicates over them. A common application is to disclose the parties' [[ref: P-DIDs]] (persona DIDs) while hiding the underlying [[ref: R-DIDs]] (relationship DIDs), enabling a public, verifiable claim that two known [[ref: personas]] have a relationship without exposing the private pairwise channel between them or enabling correlation across the holder's other presentations. This construction is available to any two parties who hold a VRC between them, regardless of whether they share membership in a [[ref: VTC]]. It supports selective disclosure and minimal correlation across contexts. It does not by itself confer any community-level assurance (e.g., personhood); whatever assurance it carries derives from the parties' own out-of-band context, the public reputation attached to any disclosed persona DIDs, and the cryptographic integrity of the VRC.
+The holder of a VRC MAY construct a zero-knowledge proof that demonstrates possession of a valid VRC and selectively discloses chosen attributes, subject DIDs, or predicates over them. A common application is to disclose the parties' `directed` persona identifiers while hiding the underlying `pairwise` ones, enabling a public, verifiable claim that two known [[ref: personas]] have a relationship without exposing the private pairwise channel between them or enabling correlation across the holder's other presentations. This construction is available to any two parties who hold a VRC between them, regardless of whether they share membership in a [[ref: VTC]]. It supports selective disclosure and minimal correlation across contexts. It does not by itself confer any community-level assurance (e.g., personhood); whatever assurance it carries derives from the parties' own out-of-band context, the public reputation attached to any disclosed persona DIDs, and the cryptographic integrity of the VRC.
 
 ### VMC (Verifiable Membership Credential)
 
@@ -275,17 +444,19 @@ The holder of a VRC MAY construct a zero-knowledge proof that demonstrates posse
 
 **Schema:**
 
-A VMC is issued in each direction of a membership edge. The two directions are distinguished by the issuer and subject rules below together with the presence of `digest`, not by separate type strings. Where both endpoints are C-DIDs, as in VTN membership, the issuer and subject rules do not distinguish the directions and `digest` is the discriminator: a VMC carrying it is a member-issued acknowledgement, and a VMC without it is a community-issued grant.
+A VMC is issued in each direction of a membership edge. The two directions are distinguished by the issuer and subject rules below together with the presence of `digest`, not by separate type strings. Where both endpoints are communities, as in VTN membership, the issuer and subject rules do not distinguish the directions and `digest` is the discriminator: a VMC carrying it is a member-issued acknowledgement, and a VMC without it is a community-issued grant.
 
 - `type` (array, REQUIRED): MUST include `"MembershipCredential"`
 - `issuer` (string, REQUIRED):
-  - For the community-issued VMC (the membership grant): [[ref: C-DID]] of the VTC or VTN
-  - For the member-issued VMC (the membership acknowledgement): [[ref: M-DID]] of the member, OR the member VTC's C-DID (for VTN membership)
+  - For the community-issued VMC (the membership grant): DID of the VTC or VTN
+  - For the member-issued VMC (the membership acknowledgement): DID of the member — the same identifier the grant names as its subject
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
-    - For the community-issued VMC: [[ref: M-DID]] of the member (person/device/agent) OR the member VTC's C-DID (for VTN-to-VTC membership)
-    - For the member-issued VMC: C-DID of the VTC or VTN
+    - For the community-issued VMC: DID of the member (a person, device, agent, service, or, for VTN-to-VTC membership, a member VTC)
+    - For the member-issued VMC: DID of the VTC or VTN
   - `digest` (string, REQUIRED on the member-issued VMC, MUST be omitted on the community-issued VMC): A cryptographic hash of the community-issued VMC being acknowledged. The hash MUST be computed as the SHA-256 hash of the credential's JSON representation excluding its top-level `proof` member, canonicalized with the JSON Canonicalization Scheme ([JCS, RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)), and MUST be encoded as the string `sha256:` followed by the lowercase hexadecimal digest.
+
+A community's own identifier can only truthfully be declared `public`: a community that cannot be found cannot be joined. The member's identifier carries whatever [[ref: correlation scope]] the member declared for it, and this specification does not constrain that choice — see [Choosing a scope](#choosing-a-scope) and [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
 
 **Example (community-issued VMC — membership grant):**
 
@@ -350,9 +521,11 @@ When both parties to a VRC hold VMCs from the same community, the holder MAY con
 
 1. Possession of the VRC
 2. Possession of the underlying community-issued VMC (proving membership in the community)
-3. The VRC issuer possesses a community-issued VMC from the *same* [[ref: C-DID]] (community DID)
+3. The VRC issuer possesses a community-issued VMC from the *same* community identifier
 
 Statement 2 is a demonstration by the holder of a credential whose subject is the holder, and is the case the presentation rule in [Membership Edge Completion](#membership-edge-completion) covers. Statement 3 is not: it rests on a community-issued VMC whose subject is the VRC issuer rather than the holder, and under that rule a community-issued VMC alone does not establish that its subject is a member. The evidence that would establish it is the VRC issuer's own member-issued VMC — the acknowledgement of the grant that statement 3 refers to — which is signed by the issuer and names the community. Whether the holder obtains that acknowledgement in the course of exchanging VRCs, and how statement 3 is then proven in zero knowledge, are deferred to the trust task and ZK protocol work respectively (see the editor's note above and [Zero-Knowledge and Selective Disclosure](#zero-knowledge-and-selective-disclosure)). Until those are specified, a verifier of a community-anchored proof SHOULD treat statement 3 as establishing that the community attested the VRC issuer's membership, and SHOULD NOT treat it as establishing that the issuer acknowledged that membership.
+
+Statements 2 and 3 concern the identifiers named in the VMCs, which need not be the identifiers the same parties used in the VRC. Where a party declared one `directed` identifier and used it both with the community and with its counterparty, a single identifier appears in both credentials and the proof reads it directly. Where a party used a `pairwise` identifier with each, the two identifiers differ by construction and the proof must additionally establish common control of them. This is the member's choice to make rather than the specification's; see [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
 
 This allows the relationship's existence to be proven within a shared community's governance context without revealing the specific DIDs or other credential details. Whatever assurances the community's trust registry attaches to its VMCs (e.g., personhood, when the VMCs qualify as [[ref: PHCs]]) carry forward into the proof.
 
@@ -371,18 +544,18 @@ An edge credential is **verifiable as a DTG edge by a given verifier** when both
 1. The credential satisfies the verification requirements of [Security Considerations](#security-considerations).
 2. The verifier can establish, per [Membership Edge Completion](#membership-edge-completion), that the credential's issuer's membership in a [[ref: VTC]] in the anchor set that verifier accepts is complete.
 
-Edge verifiability is therefore a property of a credential *with respect to a verifier*, not of the credential alone. The same credential MAY be an edge to a verifier that accepts a given anchor set and not an edge to one that does not, and neither verifier is in error. A [[ref: VTN]] is the common case of such an anchor set, but this specification does not require a verifier to be reasoning within a VTN, nor require any VTN to exist.
+Edge verifiability is therefore a property of a credential *with respect to a verifier*, not of the credential alone. The same credential MAY be an edge to a verifier that accepts a given anchor set and not an edge to one that does not, and neither verifier is in error. A [[ref: VTN]] is the common case of such an anchor set, but this specification does not require a verifier to be reasoning within a VTN, nor require any VTN to exist. In particular, an edge whose two halves trace to VTCs anchored in different VTNs, or in none, is an edge to any verifier whose accepted anchor set includes the VTC each half traces to.
 
 Condition 2 MAY be satisfied by either of two routes:
 
-- **By disclosure**, where the credential carries [[ref: M-DIDs]] and the verifier obtains the community-issued and member-issued [[ref: VMC]] pair (or the issuer's own demonstration of its community-issued VMC, per [Membership Edge Completion](#membership-edge-completion)) and checks the issuing VTC against its anchor set.
+- **By disclosure**, where the credential's issuer identifier is the one its [[ref: VMC]] names as subject, and the verifier obtains the community-issued and member-issued VMC pair (or the issuer's own demonstration of its community-issued VMC, per [Membership Edge Completion](#membership-edge-completion)) and checks the issuing VTC against its anchor set.
 - **By proof**, where the holder presents a [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof), which establishes the same predicate without revealing the DIDs or the credentials.
 
-Neither route is privileged in principle. A VRC carrying [[ref: R-DIDs]], presented with a valid community-anchored proof, is an edge on the same terms as one carrying M-DIDs presented by disclosure. Today's construction establishes the two memberships unevenly, however: for the holder's own membership (proof statement 2), the proof is equivalent to the holder disclosing their own completed VMC pair; for the counterparty's membership (proof statement 3), it currently establishes only that the community attested it, not that the counterparty acknowledged it — the same open status the note below records for the R-DID/VMC linkage, and one that the trust task and ZK protocol work will need to close in the same pass (see [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof)). Because the pairwise form is the one this specification RECOMMENDS on privacy grounds (see [Unilateral Relationship Identification](#unilateral-relationship-identification) and [Privacy Considerations](#privacy-considerations)), a definition of edge verifiability that admitted only the disclosure route would exclude the construction the specification recommends.
+Neither route is privileged in principle. A VRC whose issuer identifier is `pairwise` and distinct from the one its VMC names, presented with a valid community-anchored proof, is an edge on the same terms as one issued from the VMC's own subject identifier and presented by disclosure. Today's construction establishes the two memberships unevenly, however: for the holder's own membership (proof statement 2), the proof is equivalent to the holder disclosing their own completed VMC pair; for the counterparty's membership (proof statement 3), it currently establishes only that the community attested it, not that the counterparty acknowledged it — the same open status the note below records for the linkage between a `pairwise` identifier and its holder's VMC, and one that the trust task and ZK protocol work will need to close in the same pass (see [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof)). Because the pairwise form is the one this specification RECOMMENDS on privacy grounds (see [Unilateral Relationship Identification](#unilateral-relationship-identification) and [Privacy Considerations](#privacy-considerations)), a definition of edge verifiability that admitted only the disclosure route would exclude the construction the specification recommends.
 
 Each half of an edge is issued and signed by its own issuer, and is evaluated independently under this section. Nothing here requires a single credential to carry signatures from both peers, requires both halves of an edge to satisfy this section, or requires them to satisfy it by the same route.
 
-**Note:** The identity linkage on which the proof route depends — that the party controlling the R-DID appearing in the credential is the party holding the VMC — is not yet encoded by this credential model. Until that encoding is specified, the proof route states an intended design goal rather than an implementable construction, and implementations SHOULD expect the encoding to constrain the proof's witness data. It does not affect whether an edge established by that route counts.
+**Note:** The identity linkage on which the proof route depends — that the party controlling the identifier appearing in the credential is the party holding the VMC under a different identifier — is not yet encoded by this credential model. Until that encoding is specified, the proof route states an intended design goal rather than an implementable construction, and implementations SHOULD expect the encoding to constrain the proof's witness data. It does not affect whether an edge established by that route counts.
 
 ## Invitation Credentials
 
@@ -396,12 +569,12 @@ This section is normative.
 
 - `type` (array, REQUIRED): MUST include `"InvitationCredential"`
 - `issuer` (string, REQUIRED):
-  - For VTC invitation: VTC [[ref: C-DID]] OR authorized member's [[ref: M-DID]] (per policy)
-  - For VTN invitation: VTN C-DID OR member VTC's C-DID (per policy)
+  - For VTC invitation: DID of the VTC, or of an authorized member (per policy)
+  - For VTN invitation: DID of the VTN, or of a member VTC (per policy)
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
-    - For VTC invitation: prospective member's M-DID OR prospective VTC's C-DID
-    - For VTN invitation: prospective VTC's C-DID
+    - For VTC invitation: DID of the prospective member, or of a prospective member VTC
+    - For VTN invitation: DID of the prospective member VTC
 
 **Example (VTC member invitation):**
 
@@ -433,14 +606,14 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 
 ### VPC (Verifiable Persona Credential)
 
-**Purpose:** Links a [[ref: persona DID]] (P-DID) to an existing relationship, enabling the holder to control intentional correlation across relationships.
+**Purpose:** Links a [[ref: persona]] to an existing relationship, enabling the holder to control intentional correlation across relationships.
 
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"PersonaCredential"`
-- `issuer` (string, REQUIRED): [[ref: P-DID]] of the persona
+- `issuer` (string, REQUIRED): DID under which the persona is asserted, ordinarily declared `directed` — a persona exists to be recognized across a set of counterparties the holder chooses
 - `credentialSubject` (object, REQUIRED):
-  - `id` (string, REQUIRED): Counterparty's DID (typically [[ref: R-DID]] or [[ref: M-DID]] used in the relationship)
+  - `id` (string, REQUIRED): DID of the counterparty as used in the relationship
 
 **Example:**
 
@@ -471,10 +644,12 @@ A witnessed exchange of a complete [[ref: DTG edge]] is bidirectional: two edge 
 
 A VWC's `credentialSubject.id` and `taskContext` alone identify only the observed party and the trust task exchange, not the edge being witnessed. Binding a VWC to a specific edge therefore requires `digest`: a verifier holding the referenced edge credential can recover both endpoints of the edge (the credential's `issuer` and `credentialSubject.id`) and confirm the exact credential the witness attested to. This binding is only as strong as the verifier's access to that credential — a `digest` without the referenced credential to hand is an opaque hash, not an identified edge. Issuers and holders presenting a VWC as evidence of a specific edge SHOULD make the referenced edge credential available alongside it.
 
+A witness's identifier is `directed` at minimum. It must be recognizable to both parties to the witnessed edge, and to the community whose witnessing policy the attestation is issued under, so a `pairwise` declaration cannot describe it truthfully.
+
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"WitnessCredential"`
-- `issuer` (string, REQUIRED): DID of the witness — an [[ref: M-DID]], or the DID of a [[ref: VTA]] acting according to VTC policy
+- `issuer` (string, REQUIRED): DID of the witness — a member, or a [[ref: VTA]] acting according to VTC policy
 - `taskContext` (string, REQUIRED): `threadId` of the trust task exchange in which the witnessing occurred
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the observed party
@@ -651,15 +826,15 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 
 *This section is informative.*
 
-1. **M-DID reuse.** Reuse of an [[ref: M-DID]] across multiple relationships is allowed for bootstrapping, but implementers should carefully consider correlation risks. Migration from M-DID-based to [[ref: R-DID]]-based edges is recommended post-bootstrapping for enhanced privacy.
-2. **R-DID uniqueness.** As required in [Unilateral Relationship Identification](#unilateral-relationship-identification), each entity must generate a new, unique R-DID for every entity it connects with. Reusing an R-DID across counterparties creates unintended correlation.
-3. **Intentional correlation via personas.** Correlation across relationships should occur only through the holder's deliberate assertion of a [[ref: persona]] (via a [[ref: VPC]]) or an M-DID — never as a side effect of credential structure.
+1. **Pairwise really means pairwise.** Reusing one identifier across counterparties creates exactly the correlation a `pairwise` declaration promises to avoid. As required in [Unilateral Relationship Identification](#unilateral-relationship-identification), such reuse is prohibited, and it also falsifies a declaration the holder made — which is the more useful thing for a verifier to be able to say. A holder who wants an identifier to reach more than one counterparty should declare `directed` and say so, rather than declare `pairwise` and reuse it.
+2. **Intentional correlation via personas.** Correlation across relationships should occur only through the holder's deliberate assertion of a [[ref: persona]] (via a [[ref: VPC]]) or through an identifier the holder has deliberately declared `directed` or `public` — never as a side effect of credential structure.
+3. **What a community does with a member's identifier.** A member's declared scope constrains the member's own disclosure and nothing else. A community that publishes a member directory, or that presents a member-issued [[ref: VMC]] to a third party, widens the exposure of an identifier its holder may have declared `pairwise`. This is why a VTC's governance is required to state its disclosure practice, and why a member's scope choice at join time is only as meaningful as that statement; see [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
 4. **Minimal disclosure.** DTG credential schemas are intentionally minimal so that holders can satisfy common predicates (membership, relationship existence) using zero-knowledge or selective disclosure mechanisms without revealing underlying DIDs or credential contents.
 5. **Witness data.** The optional `witnessContext` of a [[ref: VWC]] may reveal information about where and when parties met. Issuers should include only what the witnessing purpose requires, and holders should be able to withhold `witnessContext` details when proving the attestation.
 6. **ZKPs by default.** Implementations should use ZKP presentation by default so that privacy preservation does not require any extra effort on behalf of users.
-7. **Correlation through the resolution layer.** Correlation does not require the credentials themselves. Where several of a party's [[ref: R-DIDs]] or [[ref: P-DIDs]] resolve through common infrastructure — a shared web origin, a shared registry, or a shared set of DID log witnesses countersigning their updates — that infrastructure can associate identifiers that the credential structure was designed to keep apart, and can observe when each is used. Choosing a DID method for these roles is therefore a privacy decision as much as a key management one; see [DID Method Considerations](#did-method-considerations).
-8. **The acknowledgement as a disclosure artifact.** A member-issued VMC is a signed, transferable credential naming both the member and the community, and it is held by the community. It exists so that a community cannot assert a membership it is unable to prove — but the same property lets the community prove that membership to a third party without the member's involvement, which a community-issued VMC alone did not allow. Members should treat issuing an acknowledgement as a durable and delegable disclosure of the membership, should acknowledge from an M-DID scoped to that community (see item 1) so that it does not correlate across communities, and may bound the disclosure with a short `validUntil` (see the editor's note in [Membership Edge Completion](#membership-edge-completion)). This specification defines no selective-disclosure or zero-knowledge form for the acknowledgement, so a community proving membership to a third party currently discloses the whole credential.
-9. **Effective disclosure of an edge.** A choice of identifier constrains only the disclosure of the party who makes it. Each half of an edge is issued by its own party, under an identifier that party chose, and published wherever that party publishes it; neither party controls, and neither can necessarily discover, what the other does with its own half. An edge's effective disclosure is therefore the wider of its two halves, not the narrower. A [[ref: R-DID]] that is correctly unique to one counterparty is still correlated to a named party if that counterparty publishes the opposing half under an [[ref: M-DID]] into a graph others can read — a different failure from the reuse addressed above, and one the party who followed this specification's recommendation cannot prevent. Implementations should compute the privacy of an edge over every place either half is published, not from the half they issued, and should not represent a pairwise half as making the edge pairwise. The halves of a single edge may legitimately differ in this respect, both across communities whose disclosure policies differ and within one community passing through the migration recommended in item 1. The same reasoning applies to any joint presentation: what a set of credentials discloses together may exceed what any of them discloses alone.
+7. **Correlation through the resolution layer.** Correlation does not require the credentials themselves. Where several of a party's narrow-scope identifiers resolve through common infrastructure — a shared web origin, a shared registry, or a shared set of DID log witnesses countersigning their updates — that infrastructure can associate identifiers that the credential structure was designed to keep apart, and can observe when each is used. Choosing a DID method for these is therefore a privacy decision as much as a key management one; see [DID Method Considerations](#did-method-considerations).
+8. **The acknowledgement as a disclosure artifact.** A member-issued VMC is a signed, transferable credential naming both the member and the community, and it is held by the community. It exists so that a community cannot assert a membership it is unable to prove — but the same property lets the community prove that membership to a third party without the member's involvement, which a community-issued VMC alone did not allow. Members should treat issuing an acknowledgement as a durable and delegable disclosure of the membership. The acknowledgement is issued from the same identifier the grant names as its subject, so the exposure it carries is the exposure of whatever scope the member chose for joining — a `pairwise` identifier confines it to this community, and a `directed` or `public` one carries the membership into every context that identifier reaches (see items 1 and 3). A member may also bound the disclosure with a short `validUntil` (see the editor's note in [Membership Edge Completion](#membership-edge-completion)). This specification defines no selective-disclosure or zero-knowledge form for the acknowledgement, so a community proving membership to a third party currently discloses the whole credential.
+9. **Effective disclosure of an edge.** A declared scope constrains only the disclosure of the party who declared it. Each half of an edge is issued by its own party, under an identifier whose scope that party chose; neither party controls, and neither can necessarily discover, what the other does with its own half. An edge's effective disclosure is therefore the wider of its two halves' scopes, not the narrower: a correctly `pairwise` half is still correlated to a named party if the counterparty published the opposing half under a `directed` or `public` identifier. Implementations should compute the privacy of an edge over both halves, not from the half they issued, and should not represent a `pairwise` half as making the edge pairwise. The same reasoning applies to any joint presentation: what a set of credentials discloses together may exceed what any of them discloses alone.
 
 ## Governance Considerations
 
@@ -669,8 +844,9 @@ This specification deliberately delegates most policy decisions to the governanc
 
 1. Membership criteria, invitation policies, and identity-proofing requirements (including acceptable [[ref: IDVPs]] and [[ref: IDVCs]]) are defined by each community's governance framework and published via trust registries.
 2. Whether a [[ref: VMC]] qualifies as a [[ref: PHC]] is a governance determination, not a schema property.
-3. Endorsement vocabularies for [[ref: VECs]] and witnessing policies for [[ref: VWCs]] are defined by the governing VTC or VTN.
-4. New credential types proposed by higher-layer trust task protocol specifications are expected to be coordinated between the DTGWG task forces responsible for credentials and trust tasks.
+3. *Whether* member identifiers are disclosed beyond the [[ref: VTA]] is a governance determination; that a VTC **state** its answer is a normative requirement on the VTC as issuer, not a governance option, because it decides whether a member's `pairwise` declaration remains truthful once the membership exists. See [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
+4. Endorsement vocabularies for [[ref: VECs]] and witnessing policies for [[ref: VWCs]] are defined by the governing VTC or VTN.
+5. New credential types proposed by higher-layer trust task protocol specifications are expected to be coordinated between the DTGWG task forces responsible for credentials and trust tasks.
 
 ## Internationalization Considerations
 
@@ -692,9 +868,9 @@ This specification defines normative requirements, using the keywords defined in
 
 ### Conformance Targets
 
-1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type, including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding).
+1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type, including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding). Where it declares a [[ref: correlation scope]] for its identifier, a conforming issuer MUST satisfy the declaration requirements of [Correlation Scope](#correlation-scope); a conforming issuer that is a [[ref: VTC]] issuing [[ref: VMCs]] MUST also publish its member-identifier disclosure practice as [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone) requires.
 2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and MUST include reachable trust task outcome evidence when presenting `taskContext`-bearing credentials as evidence of task completion.
-3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support).
+3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support). Where a presented identifier carries a declared [[ref: correlation scope]], a conforming verifier MUST apply the verifier requirements of [Correlation Scope](#correlation-scope).
 
 ### Conformance Tests
 
