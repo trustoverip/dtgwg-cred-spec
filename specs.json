@@ -2,7 +2,7 @@
   "specs": [
     {
       "title": "Decentralized Trust Graph Credentials - Core Specification",
-      "description": "Defines the DTG Core Credentials: six W3C Verifiable Credential types that create and annotate a Decentralized Trust Graph",
+      "description": "Defines the DTG Core Credentials: seven W3C Verifiable Credential types that create and annotate a Decentralized Trust Graph",
       "author": "Trust over IP Foundation",
       "spec_directory": "./spec",
       "spec_terms_directory": "terms-definitions",

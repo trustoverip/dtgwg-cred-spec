@@ -19,7 +19,19 @@ A credential that attaches data to existing edges or parties without creating gr
 Attests to a relationship between two entities; two VRCs (one per direction) form a complete DTG edge.
 
 **VMC (verifiable membership credential)**:
-Attests to the membership of an entity in a VTC or VTN; two VMCs (one per direction) form a complete DTG edge. One W3C type (`MembershipCredential`); the two directions are expressed via issuer/subject rules, not separate type strings. The community-issued VMC (the grant) is issued from the VTC/VTN's own DID to the member; the member-issued VMC (the acknowledgement) reverses those roles and carries a `digest` of the grant. The acknowledgement is the member's consent artifact — a community asserting someone's membership must be able to produce it.
+Attests to the membership of an entity in a VTC or VTN; two VMCs (one per direction) form a complete DTG edge. One W3C type (`MembershipCredential`); the two directions are expressed via issuer/subject rules, not separate type strings. The community-issued VMC (the grant) is issued from the VTC/VTN's own DID to the member; the member-issued VMC (the acknowledgement) reverses those roles and carries a `digestMultibase` of the grant. The acknowledgement is the member's consent artifact — a community asserting someone's membership must be able to produce it.
+
+**VDC (verifiable delegation credential)**:
+Attests that one entity (delegator) has appointed another (delegate) to act **in the delegator's name**, for a bounded set of acts, for a limited period, revocably. Acts within `scope` are attributed to the delegator. An edge credential: a grant plus a matching acceptance forms the edge, and the acceptance is required. `validUntil` is REQUIRED; `credentialStatus` is required only where validity exceeds the governing freshness window — short validity and re-issuance is the default. Single-hop by default; re-delegation only where `maxDepth` explicitly permits it. Digest-valued members (`parent`, `accepts`, and `digestMultibase` elsewhere) are Multibase/Multihash per Digest Encoding. The grant is a credential; the invocation is a Trust Task artifact.
+_Avoid_: authority, permission, capability, token, ZCAP (for what a VDC confers — see below)
+
+**Delegation vs authority**:
+Deliberately distinct, and the reason the VDC is its own type. **Authority** = may this party do this thing, *as itself*; the act is attributed to the party. **Delegation** = may this party act *in another's name*; the act is attributed to that other. Neither implies the other (access to a mailbox ≠ appointment to send mail as its owner), and a VDC never supplies missing authority. This spec defines delegation only; "authority" is reserved vocabulary for a possible future verifiable authority credential, so do not use it to describe what a VDC does.
+_Avoid_: using "authority" for anything a VDC confers
+
+**Delegation composes with authority; it does not carry it**:
+A VDC moves the question, it does not answer it. The verifier substitutes the delegator for the delegate and asks whether *the delegator* may do the act. Three independent checks: (1) may this party act in that name — the VDC; (2) may the delegator do this — out of scope here; (3) must the delegate independently qualify — governance. Reach = intersection of (1) and (2), never the union. Nothing the delegator holds is copied to the delegate, so a delegator cannot re-issue what it was itself issued; withdrawing the delegator's own permission stops the delegate immediately without revoking the VDC.
+_Avoid_: "delegating a credential", transfer, copy, hand over (for what a VDC does)
 
 **VIC (verifiable invitation credential / DTG invitation credential)**:
 Authorizes onboarding of a prospective member into a VTC or VTN. One W3C type (`InvitationCredential`); the glossary's VTC/VTN invitation subtypes are prose distinctions expressed via issuer/subject rules, not separate type strings.
