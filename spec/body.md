@@ -2,23 +2,22 @@
 
 *This section is informative.*
 
-This section provides a visual overview of the DTG Core Credential types and their formal type hierarchy. The functional categories (edge, invitation, annotation) are descriptive aids only; they do not appear in credential schemas. The [[ref: VAC]] belongs to none of them — it neither forms a graph edge nor annotates existing structure — and is shown attached directly to `DTGCredential`. See the editorial note in [VAC](#vac-verifiable-authority-credential).
+This section provides a visual overview of the DTG Core Credential types and their formal type hierarchy. The two functional categories (edge, annotation) are descriptive aids only; they do not appear in credential schemas. Two types belong to neither and are shown attached directly to `DTGCredential`: the [[ref: VIC]], which bootstraps a node into a community rather than annotating one already in the graph, and the [[ref: VAC]], which neither forms an edge nor annotates existing structure.
 
 ```mermaid
 graph LR
     DTG[DTGCredential]
 
     DTG --> EC(Edge Credentials)
-    DTG --> IC(Invitation Credentials)
     DTG --> AC(Annotation Credentials)
 
     EC --> VRC["VRC - RelationshipCredential"]
     EC --> VMC["VMC - MembershipCredential"]
     EC --> VDC["VDC - DelegationCredential"]
-    IC --> VIC["VIC - InvitationCredential"]
     AC --> VPC["VPC - PersonaCredential"]
     AC --> VWC["VWC - WitnessCredential"]
     AC --> VEC["VEC - EndorsementCredential"]
+    DTG --> VIC["VIC - InvitationCredential"]
     DTG --> VAC["VAC - AuthorityCredential"]
 
     classDef parent fill:#f5f5f5,stroke:#555,stroke-width:2px,color:#000
@@ -30,14 +29,14 @@ graph LR
     classDef auth fill:#c8e6c9,stroke:#388e3c,stroke-width:2px,color:#000
 
     class DTG parent
-    class EC,IC,AC cat
+    class EC,AC cat
     class VMC,VRC,VDC edge
     class VIC inv
     class VPC,VEC,VWC ann
     class VAC auth
 ```
 
-### Formal W3C Type Hierarchy
+**Formal W3C type hierarchy.**
 
 ```text
 VerifiableCredential
@@ -779,11 +778,9 @@ Each half of an edge is issued and signed by its own issuer, and is evaluated in
 
 **Note:** The identity linkage on which the proof route depends — that the party controlling the identifier appearing in the credential is the party holding the VMC under a different identifier — is not yet encoded by this credential model. Until that encoding is specified, the proof route states an intended design goal rather than an implementable construction, and implementations SHOULD expect the encoding to constrain the proof's witness data. It does not affect whether an edge established by that route counts.
 
-## Invitation Credentials
+## VIC (Verifiable Invitation Credential)
 
 This section is normative.
-
-### VIC (Verifiable Invitation Credential)
 
 **Purpose:** Authorizes a prospective member to join a [[ref: VTC]] or [[ref: VTN]] when presented to the [[ref: VTA]]/[[ref: PEP]]. The [[ref: DTG invitation credential]] has two functional variants distinguished by issuer and subject rules (not by separate type strings): the [[ref: VTC invitation credential]] and the [[ref: VTN invitation credential]].
 
@@ -963,17 +960,13 @@ scope, has decided. Conflating the two puts a decision that belongs to the
 governing party into a claim that reads as reputation, and leaves verifiers to
 infer permission from adjectives.
 
-> **Editorial note — placement.** This is deliberately a section rather than a
-> new "Authority Credentials" category, following the reasoning in
-> [issue #28](https://github.com/trustoverip/dtgwg-cred-spec/issues/28): a
-> category with a single member is the structural problem that issue exists to
-> remove, and adding a fourth one would repeat it. The categories are
-> informative, so the VAC standing outside them decides nothing about its
-> schema. Whether the VIC is likewise promoted to a top-level section, so that
-> no section has exactly one subsection, is the remaining question under #28
-> and decision D-B of
-> [issue #31](https://github.com/trustoverip/dtgwg-cred-spec/issues/31); it is
-> an outline change and is left to a follow-up.
+This is a section rather than a new "Authority Credentials" category,
+following the reasoning in
+[issue #28](https://github.com/trustoverip/dtgwg-cred-spec/issues/28): a
+category with a single member is the structural problem that issue exists to
+remove, and adding a fourth one would repeat it. The [[ref: VIC]] stands as its
+own section for the same reason. The categories are informative, so a credential
+standing outside them decides nothing about its schema.
 
 **Purpose:** Confers authority on a party to perform specified actions within a
 named scope governed by the issuer.

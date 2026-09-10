@@ -4,26 +4,24 @@
 
 A [[ref: decentralized trust graph]] (DTG) is a graph of trust relationships between people, organizations, devices, and AI agents in which every node and every edge can be cryptographically verified. This specification defines the **DTG Core Credentials**: eight [[ref: VC]] types that are used to create, annotate, and govern access within that graph. These credentials are W3C-compliant verifiable credentials and may be presented using standard VC presentation methods when privacy preservation is not desired. They should, however, be presented using **privacy-preserving zero-knowledge proofs (ZKPs)** — of personhood, community membership, and facts about relationships — whenever privacy preservation is desired, since ZKPs are the only inherently privacy-preserving option for proof of personhood with DTG credentials (cf. [Personhood Credentials, Adler et al. 2024](https://arxiv.org/abs/2408.07892)). Used this way, ZKPs allow holders to prove what they need to prove from the perspective of the entities involved while maintaining minimal correlation across contexts.
 
-Seven of the eight credential types fall into three functional categories, and the eighth sits outside them:
+Six of the eight credential types fall into two functional categories, and two sit outside them:
 
 1. **Edge credentials** — establish relationships between existing entities (nodes) in the DTG:
     - [[ref: VRC]] (verifiable relationship credential) — attests to a relationship between two entities; the relationship is verified through a bi-directional pair of VRCs
     - [[ref: VMC]] (verifiable membership credential) — attests to the membership of an entity in a community; membership is verified through a bi-directional pair of VMCs
     - [[ref: VDC]] (verifiable delegation credential) — attests that one entity has appointed another to act in its name, for a bounded set of acts; the delegation is verified through a grant and a matching acceptance
 
-2. **Invitation credentials** — bootstrap new members into communities:
-    - [[ref: VIC]] (verifiable invitation credential) — authorizes onboarding of a prospective member
-
-3. **Annotation credentials** — attach data to existing edges without creating new graph structure:
+2. **Annotation credentials** — attach data to existing edges without creating new graph structure:
     - [[ref: VPC]] (verifiable persona credential) — links a [[ref: persona]] to a relationship
     - [[ref: VEC]] (verifiable endorsement credential) — endorses skills or reputation
     - [[ref: VWC]] (verifiable witness credential) — third-party attestation of an edge
 
-Standing outside those categories, because it neither forms a graph edge nor annotates existing structure:
+Standing outside those categories, because neither forms a graph edge nor annotates existing structure:
 
+- [[ref: VIC]] (verifiable invitation credential) — authorizes onboarding of a prospective member, bootstrapping a node into a community rather than annotating one already in the graph
 - [[ref: VAC]] (verifiable authority credential) — states what its subject may *do* at a named scope, and may be attenuated by its holder to equip an agent or device with strictly less authority than they hold themselves
 
-> **Important:** These three categories are **descriptive only** and aid understanding. They do not appear in credential schemas. The formal type hierarchy has only one abstract parent: `DTGCredential`.
+> **Important:** These two categories are **descriptive only** and aid understanding. They do not appear in credential schemas. The formal type hierarchy has only one abstract parent: `DTGCredential`.
 
 This Working Draft supersedes the [v0.3 proposal draft](https://github.com/trustoverip/dtgwg-cred-tf/blob/main/dtg.md) published in the [DTG Credentials Task Force repository](https://github.com/trustoverip/dtgwg-cred-tf).
 
