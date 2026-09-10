@@ -1005,6 +1005,12 @@ named scope governed by the issuer.
       attenuated from, encoded as specified in
       [Digest Encoding](#digest-encoding). Absent means this VAC was issued
       directly by the governing party.
+    - `maxAttenuation` (integer, OPTIONAL): the number of further
+      attenuations permitted below this VAC. `0` prohibits attenuating it at
+      all. When absent, attenuation is permitted as far as the maximum chain
+      depth allows. This is the opposite default from the [[ref: VDC]]'s
+      `maxDepth`, which prohibits re-delegation unless it is set; the field is
+      named differently for that reason. See [Attenuation](#attenuation).
     - `audience` (string, OPTIONAL): a DID that MUST be the presenter for this
       VAC to be accepted. Absent means any holder may present it.
 - `validUntil` (string, REQUIRED): ISO 8601 datetime (`expirationDate` in
@@ -1059,6 +1065,33 @@ they hold, without involving the governing party. This is what allows a party to
 equip an agent, a device, or a short-lived session with only the authority that
 task requires, rather than lending it their own.
 
+**Attenuation is permitted by default; re-delegation is not.** A [[ref: VDC]]
+forbids re-delegation unless its `maxDepth` explicitly authorises it, and this
+section takes the opposite default deliberately. Extending the two chains does
+different things. A further delegation adds a party who may act **in the
+principal's name**, so the principal must keep the register of who can speak
+for it, and a delegate that needs help can ask the principal for a fresh root
+delegation; failing closed costs little. A further attenuation only narrows,
+and its subject acts **as itself**, so nothing new is attributed to the
+governing party or to the attenuating holder. More to the point, forbidding
+attenuation does not stop a holder equipping an agent. It makes them lend their
+own key instead — which confers everything they hold rather than a subset,
+lasts as long as their own authority does, and is indistinguishable to a
+verifier from the holder acting in person. Attenuation is the safer of the two
+things a holder will actually do, and a default that pushed holders toward the
+other would buy nothing.
+
+**A governing party can still forbid it.** `authority.maxAttenuation` bounds
+how far a chain may extend below the VAC that carries it, and `0` forbids
+attenuation outright — for an action sensitive enough that the governing party
+wants to decide personally who holds it. A VAC attenuated from a parent bearing
+`maxAttenuation` *n* MUST NOT itself bear a `maxAttenuation` greater than
+*n* − 1, and a verifier MUST reject a chain in which any VAC lies more than *n*
+steps below an ancestor bearing `maxAttenuation` *n*. Any link MAY set a limit
+lower than its parent's, or set one where its parent set none; none may raise
+one. The effective limit on a chain is therefore the strictest that any of its
+links imposes, in keeping with attenuation never widening what it derives from.
+
 An attenuated VAC:
 
 - MUST set `issuer` to the `credentialSubject.id` of the VAC being attenuated
@@ -1069,6 +1102,9 @@ An attenuated VAC:
 - MUST NOT confer any action absent from the parent's `actions`.
 - MUST NOT specify a `validUntil` later than the parent's.
 - MUST NOT widen `scope`.
+- MUST NOT bear a `maxAttenuation` greater than one less than its parent's,
+  where the parent carries one; and MUST NOT exist at all where the parent
+  bears `0`.
 - SHOULD set `audience` to the party expected to present it.
 - SHOULD carry a `validUntil` short enough that expiry alone bounds the
   exposure. An attenuating holder is often a person, a device, or an agent
@@ -1079,8 +1115,9 @@ An attenuated VAC:
 verify the entire chain to a VAC issued by the governing party, and MUST reject
 the chain if any link widens what its parent conferred, in actions, scope, or
 validity period, if any link's `issuer` is not the `credentialSubject.id`
-of its parent, or if any link that carries `credentialStatus` has been revoked
-(see [Withdrawal](#withdrawal)). The second check is what gives the first its meaning: without
+of its parent, if any link lies further below an ancestor than that ancestor's
+`maxAttenuation` permits, or if any link that carries `credentialStatus` has
+been revoked (see [Withdrawal](#withdrawal)). The second check is what gives the first its meaning: without
 it, a chain could cite a VAC its issuer never held, and "narrowing" would be
 satisfiable by anyone holding a copy of a governing party's VAC. A verifier that
 checks only the presented credential has verified nothing: attenuation is only
@@ -1112,6 +1149,25 @@ depth 2, and an agent attenuating to a sub-agent is depth 3 — so issuers SHOUL
 stay well below the ceiling, and a party finding itself near it should treat
 that as a signal the authority is being re-delegated further than intended.
 
+This ceiling and `maxAttenuation` are different controls and a chain MUST
+satisfy both. The ceiling is a resource bound that every verifier enforces
+whether or not any issuer asked for it; `maxAttenuation` is a policy an issuer
+sets for its own grant. A chain of five under a root bearing `maxAttenuation`
+`2` is within the ceiling and still invalid.
+
+**Who may hold derived authority.** A valid chain establishes that authority
+was narrowed by parties entitled to narrow it. It does not establish that the
+party now holding it is one the scope is willing to deal with: an attenuated
+VAC may name a subject the governing party has never encountered, and that
+subject acts as itself rather than in its attenuator's name. A governing party
+MAY require that the subject of an attenuated VAC independently qualify — hold
+a [[ref: VMC]] at the scope, or satisfy whatever the scope asks of any other
+actor — and a verifier enforcing such a policy MUST reject a chain whose
+subject does not, however well formed the chain is. This is the authority-side
+counterpart of the third check in
+[How a Delegation Composes with Authority](#how-a-delegation-composes-with-authority),
+and the reason a VAC and a [[ref: VMC]] stay separate credentials.
+
 **Example (a member attenuating read-only, short-lived authority to their AI agent):**
 
 ```json
@@ -1131,6 +1187,7 @@ that as a signal the authority is being re-delegated further than intended.
       "scope": "did:webvh:z6Mkw...:example.com:rooms:7f3a",
       "actions": ["read"],
       "parent": "zQmSfwf25HTvhmHve5VVWjwmQ9z7LFDWsB9hTweoieva2cd",
+      "maxAttenuation": 0,
       "audience": "did:key:z6MkfR2aQ9Xv..."
     }
   },
@@ -1363,7 +1420,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
   - "Two distinct VRCs exist"
   - "Holder has a valid, unrevoked delegation to act in the name of a member of a recognized VTC, covering act X"
   - "This delegation chain is valid: each scope nests in its parent's, depth is bounded, expiry is monotone, and the root is issued by a member of a recognized VTC" — without disclosing the chain
-  - "Holder holds a VAC conferring action X at scope S, and its chain is valid and unrevoked: each link is issued by its parent's subject, narrows its parent, no link is revoked, and the root is issued by the party governing S" — without disclosing the chain
+  - "Holder holds a VAC conferring action X at scope S, and its chain is valid and unrevoked: each link is issued by its parent's subject, narrows its parent, no link is revoked, depth is within every limit its links set, and the root is issued by the party governing S" — without disclosing the chain
   - "Two credentials presented together share a subject" — required by [Authority and membership are separate credentials](#authority-and-membership-are-separate-credentials) whenever membership and authority are both proven with the subject withheld
 - Detailed ZK protocols and registry-ZK interactions are left to future work
 
@@ -1396,7 +1453,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 
 ### Authority (VAC)
 
-15. **Authority chain verification.** A [[ref: VAC]] carrying `authority.parent` confers nothing on its own. Verifiers must verify every link to a VAC issued by the party governing the scope, and reject the chain if any link widens the actions, scope, or validity period its parent conferred, or is issued by a party other than its parent's subject. Verifying only the presented credential accepts a self-issued grant of arbitrary authority.
+15. **Authority chain verification.** A [[ref: VAC]] carrying `authority.parent` confers nothing on its own. Verifiers must verify every link to a VAC issued by the party governing the scope, and reject the chain if any link widens the actions, scope, or validity period its parent conferred, is issued by a party other than its parent's subject, or lies further below an ancestor than that ancestor's `maxAttenuation` permits. Verifying only the presented credential accepts a self-issued grant of arbitrary authority.
 16. **Chain resolution is bearer-side by design.** `authority.parent` is a digest, so it names nothing a verifier could fetch: every link comes from the presentation, and a chain that cannot be completed from it is rejected. A resolvable reference in its place would make verification depend on network availability, expose the verifier to server-side request forgery against an address the holder chooses, and signal credential use to whoever hosts the identifier.
 17. **Chain depth is a denial-of-service surface.** Verification is linear in depth and runs on every presentation, so the maximum-depth rule is a resource bound, not a stylistic one.
 18. **Credential pooling under zero-knowledge presentation.** Where membership and authority are proven together with the subject identifier withheld, a verifier must require proof that both credentials share a subject. Otherwise two parties can combine one's membership with the other's authority and present as a single party holding both.
@@ -1441,7 +1498,8 @@ This specification deliberately delegates most policy decisions to the governanc
 5. Delegation scope vocabularies for [[ref: VDCs]], the status mechanism used for their revocation, the freshness window that determines when a VDC must carry `credentialStatus`, whether re-delegation is permitted for particular acts, and whether delegated acts are recognized at all where personhood is required, are defined by the governing VTC or VTN.
 6. Whether a delegate must independently qualify — hold a [[ref: VMC]] of its own, or meet the same requirements as any other actor — before it may act in another's name is a governance determination, not a property of the VDC. A VDC establishes only that the appointment was made; see [How a Delegation Composes with Authority](#how-a-delegation-composes-with-authority).
 7. Action vocabularies for [[ref: VACs]] at a scope, the status mechanism used for their revocation, the freshness window that determines when a VAC must carry `credentialStatus` and how recently a verifier must have checked it, and whether status is required outright for a class of authority, are defined by the party governing that scope — a VTC or VTN through its governance framework, or another [[ref: DTG node]] through whatever it publishes for the scope it governs. See [Withdrawal](#withdrawal).
-8. New credential types proposed by higher-layer trust task protocol specifications are expected to be coordinated between the DTGWG task forces responsible for credentials and trust tasks.
+8. Whether the subject of an attenuated [[ref: VAC]] must independently qualify — hold a [[ref: VMC]] at the scope, or meet whatever the scope asks of any other actor — before authority derived from another party's grant is honoured, is a governance determination rather than a property of the VAC. Attenuation establishes only that the authority was narrowed by someone entitled to narrow it; whether the party now holding it is one the scope will deal with is a separate question, and the counterpart of the same determination for delegates in item 6. See [Attenuation](#attenuation).
+9. New credential types proposed by higher-layer trust task protocol specifications are expected to be coordinated between the DTGWG task forces responsible for credentials and trust tasks.
 
 ## Internationalization Considerations
 
