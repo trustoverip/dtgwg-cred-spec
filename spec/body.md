@@ -1011,8 +1011,6 @@ named scope governed by the issuer.
       depth allows. This is the opposite default from the [[ref: VDC]]'s
       `maxDepth`, which prohibits re-delegation unless it is set; the field is
       named differently for that reason. See [Attenuation](#attenuation).
-    - `audience` (string, OPTIONAL): a DID that MUST be the presenter for this
-      VAC to be accepted. Absent means any holder may present it.
 - `validUntil` (string, REQUIRED): ISO 8601 datetime (`expirationDate` in
   v1.1). Unlike the base structure, `validUntil` is REQUIRED for a VAC, as it
   is for a [[ref: VDC]] and for a reason the VAC feels more sharply: nothing
@@ -1105,7 +1103,6 @@ An attenuated VAC:
 - MUST NOT bear a `maxAttenuation` greater than one less than its parent's,
   where the parent carries one; and MUST NOT exist at all where the parent
   bears `0`.
-- SHOULD set `audience` to the party expected to present it.
 - SHOULD carry a `validUntil` short enough that expiry alone bounds the
   exposure. An attenuating holder is often a person, a device, or an agent
   rather than an operator of a status list, and may be unreachable at the
@@ -1187,8 +1184,7 @@ and the reason a VAC and a [[ref: VMC]] stay separate credentials.
       "scope": "did:webvh:z6Mkw...:example.com:rooms:7f3a",
       "actions": ["read"],
       "parent": "zQmSfwf25HTvhmHve5VVWjwmQ9z7LFDWsB9hTweoieva2cd",
-      "maxAttenuation": 0,
-      "audience": "did:key:z6MkfR2aQ9Xv..."
+      "maxAttenuation": 0
     }
   },
   "proof": { "//": "..." }
@@ -1197,6 +1193,47 @@ and the reason a VAC and a [[ref: VMC]] stay separate credentials.
 
 The `parent` value above is the digest of the preceding example, computed as
 specified in [Digest Encoding](#digest-encoding).
+
+### Invocation
+
+**A VAC is not a bearer credential.** A verifier MUST NOT accept a party as
+holding the authority a VAC confers unless that party demonstrates control of
+the verification method associated with the `credentialSubject.id` of the
+presented VAC, at the time of the request. A VAC presented without such a
+demonstration is evidence that authority was conferred on somebody; it is not
+evidence that the party presenting it is that somebody.
+
+This matters more here than for a [[ref: VDC]], because a VAC chain is
+presented in full on every use. A captured presentation is a captured chain, so
+a specification that let a holder be identified by possession alone would make
+every verifier a distribution point for the authority it was shown. It is also
+what [Relationship to Capability Models](#relationship-to-capability-models)
+already claims of this section: the mechanics the VDC borrows are
+attenuation-only derivation, chains resolving to a recognized root, **and
+binding to a demonstration of key control at invocation**. The VAC applied the
+first two and left the third unsaid.
+
+**There is no second party check, and no field naming one.** An earlier draft
+of the VAC carried an OPTIONAL `audience` naming the DID that must present the
+credential. The rule above makes it redundant: the presenter must be the
+subject, so an `audience` either names that same subject and adds nothing, or
+names someone else and no presentation can ever satisfy both. It is removed
+rather than kept as a weaker second check. A VAC is bound to the party it was
+issued to by `credentialSubject.id`, and to the resource it may be used against
+by `scope`; naming an intended verifier as well would restrict where a
+presentation may be made, which is a question for the trust task rather than
+the credential.
+
+**Only the presented VAC's subject demonstrates anything.** The parties named
+in the links above it are not present and are not asked for anything. Requiring
+otherwise would defeat attenuation, whose whole purpose is that the party who
+attenuated is not in the loop when its agent acts.
+
+This section states only what a verifier MUST have established. How the
+demonstration is requested and carried is part of the trust task in which the
+authority is exercised, and is defined by the planned DTG Core Trust Task
+Protocols specification, as it is for a VDC (see
+[Invocation Binding](#invocation-binding)).
 
 ### Withdrawal
 
@@ -1458,7 +1495,8 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 17. **Chain depth is a denial-of-service surface.** Verification is linear in depth and runs on every presentation, so the maximum-depth rule is a resource bound, not a stylistic one.
 18. **Credential pooling under zero-knowledge presentation.** Where membership and authority are proven together with the subject identifier withheld, a verifier must require proof that both credentials share a subject. Otherwise two parties can combine one's membership with the other's authority and present as a single party holding both.
 19. **Authority revocation latency (VAC).** A VAC is the answer to the permission question rather than a pointer to it, so nothing about the subject's current standing is consulted at verification and expiry or revocation are the only ways authority is taken back. The usefulness of revocation is bounded by how recently the verifier checked: a verifier holding a cached status accepts an act performed after revocation, and one that fails hard on an unreachable status endpoint turns the issuer's outage into a denial of the scope it governs. Issuers should keep `validUntil` as short as the purpose allows, so that expiry gives a bounded and stated exposure window even where status is unavailable, and governing parties should state the freshness window within which a status check must have been made.
-20. **Revocation cascades down a chain, and is invisible where status is absent (VAC).** Revoking a VAC withdraws everything attenuated from it, which is what lets a governing party withdraw derivations it never saw. The reverse is the exposure: a verifier presented with a chain whose links carry no `credentialStatus` cannot learn that an ancestor was revoked, and will accept an attenuation until the shortest `validUntil` in the chain expires. Holders attenuating authority should keep that period short, and a governing party that cannot tolerate the gap should require status on the VACs it issues.
+20. **Bearer use of a VAC.** A VAC presented without a demonstration of key control by its subject proves only that authority was conferred on someone. Because a chain is presented in full on every use, a captured presentation is a captured chain, and a verifier that accepts possession as identification lets whoever captured it exercise the whole of what the chain confers. Verifiers must enforce [Invocation](#invocation); a VAC names no second party whose presentation would be accepted instead, so a verifier that skips the key-control demonstration has no weaker check to fall back on.
+21. **Revocation cascades down a chain, and is invisible where status is absent (VAC).** Revoking a VAC withdraws everything attenuated from it, which is what lets a governing party withdraw derivations it never saw. The reverse is the exposure: a verifier presented with a chain whose links carry no `credentialStatus` cannot learn that an ancestor was revoked, and will accept an attenuation until the shortest `validUntil` in the chain expires. Holders attenuating authority should keep that period short, and a governing party that cannot tolerate the gap should require status on the VACs it issues.
 ## Privacy Considerations
 
 *This section is informative.*
@@ -1523,7 +1561,7 @@ This specification defines normative requirements, using the keywords defined in
 
 1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type, including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding). Where it declares a [[ref: correlation scope]] for its identifier, a conforming issuer MUST satisfy the declaration requirements of [Correlation Scope](#correlation-scope); a conforming issuer that is a [[ref: VTC]] issuing [[ref: VMCs]] MUST also publish its member-identifier disclosure practice as [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone) requires.
 2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and MUST include reachable trust task outcome evidence when presenting `taskContext`-bearing credentials as evidence of task completion.
-3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support). Where a presented identifier carries a declared [[ref: correlation scope]], a conforming verifier MUST apply the verifier requirements of [Correlation Scope](#correlation-scope). A verifier that accepts [[ref: VACs]] MUST additionally implement the chain verification rule of [Attenuation](#attenuation) and the status-checking rule of [Withdrawal](#withdrawal).
+3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support). Where a presented identifier carries a declared [[ref: correlation scope]], a conforming verifier MUST apply the verifier requirements of [Correlation Scope](#correlation-scope). A verifier that accepts [[ref: VACs]] MUST additionally implement the chain verification rule of [Attenuation](#attenuation), the status-checking rule of [Withdrawal](#withdrawal), and the key-control rule of [Invocation](#invocation).
 
 ### Conformance Tests
 
