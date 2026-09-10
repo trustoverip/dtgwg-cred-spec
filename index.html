@@ -109,7 +109,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
       ],
       "source": "xref",
       "termId": "term:credential",
-      "lastUpdated": "2026-09-10T12:32:32.293Z"
+      "lastUpdated": "2026-09-10T12:33:57.478Z"
     }
   ]
 };</script>
@@ -1930,8 +1930,64 @@ verifies as a single party holding both. See
 <li>“Two credentials presented together share a subject” — required by <a href="#authority-and-membership-are-separate-credentials">Authority and membership are separate credentials</a> whenever membership and authority are both proven with the subject withheld</li>
 </ul>
 </li>
-<li>Detailed ZK protocols and registry-ZK interactions are left to future work</li>
+<li>Detailed ZK protocols and registry-ZK interactions are left to the ZKP task force; what that work is blocked on, and what holds until it lands, is set out below</li>
 </ul>
+<blockquote>
+<p><strong>Editor’s note — what is waiting on the ZKP task force.</strong> The predicates
+above are requirements on the schemas rather than constructions. This
+specification fixes what must be <em>provable</em> and leaves <em>how</em> to the ZK
+protocol work, so the list should not be read as describing machinery that
+exists today.</p>
+<p>Four of those predicates rest on one primitive no DTG specification yet
+defines: a proof that two credentials, or two identifiers, are under <strong>common
+control</strong>, without disclosing either. It is tracked in
+<a href="https://github.com/trustoverip/dtgwg-cred-spec/issues/9">#9</a>, and it carries:</p>
+<ul>
+<li>the <a href="#community-anchored-zero-knowledge-proof">Community-Anchored Zero-Knowledge Proof</a>,
+wherever a party’s VMC identifier and its VRC identifier differ;</li>
+<li>the shared-subject requirement of
+<a href="#authority-and-membership-are-separate-credentials">Authority and membership are separate credentials</a>,
+which exists precisely to stop two parties pooling one’s membership with
+the other’s authority;</li>
+<li>proving a <a class="term-reference" href="#term:vdc">VDC</a> chain valid without disclosing it, per
+<a href="#delegation-chains">Delegation Chains</a>;</li>
+<li>proving a <a class="term-reference" href="#term:vac">VAC</a> chain valid without disclosing it, per
+<a href="#attenuation">Attenuation</a>.</li>
+</ul>
+<p><a href="#correlation-scope">Correlation Scope</a> makes the first of these the ordinary
+case rather than an edge case. A member who declares <code>pairwise</code> toward their
+community and <code>pairwise</code> toward a counterparty holds two identifiers that
+differ by construction, so a community-anchored proof must cross them rather
+than read one identifier out of both credentials.</p>
+<p>Separately, none of the digest-valued members fixed in
+<a href="#digest-encoding">Digest Encoding</a> is salted, so a digest over low-entropy
+content can be reversed by enumeration where the referenced credential is not
+disclosed. Blinding them is cross-cutting work with the same task force and
+is tracked in
+<a href="https://github.com/trustoverip/dtgwg-cred-spec/issues/38">#38</a>.</p>
+<p>The ZKP task force’s work on these is visible in its
+<a href="https://github.com/trustoverip/dtgwg-zkp-spec/pull/8">working draft</a> and
+the accompanying
+<a href="https://github.com/trustoverip/dtgwg-zkp-spec/discussions/9">construction catalogue</a>,
+where records 007 (common control), 010 (community-anchored composition),
+020 (delegation chains) and 008 (blinded binders) bear on the dependencies
+above. That draft is proposed rather than merged, and a record in the
+catalogue is a statement, its witness requirements, and the open questions
+around it, not a completed proof; nothing there closes #9 or #38, and the
+shared-subject and VAC-chain cases in particular still need their own mapping
+and evidence rather than inheriting one because common control appears in the
+catalogue. Glossary cross-references will follow once that specification is
+merged and its terms are published.</p>
+<p><strong>What holds until this work lands.</strong> Nothing in this specification is
+unverifiable in the meantime: every requirement here can be checked by
+presenting the credentials themselves, which is what a holder must do today
+to satisfy any predicate above. The cost is privacy rather than correctness,
+and it falls hardest where a chain is involved, because the disclosure
+boundary is the whole chain rather than the credential presented (see
+<a href="#privacy-considerations">Privacy Considerations</a> item 13). Implementations
+should not defer shipping a rule of this specification on the grounds that
+its zero-knowledge form is unspecified.</p>
+</blockquote>
 <h2 id="security-considerations" tabindex="-1"><a class="toc-anchor d-print-none" href="#security-considerations">§</a> Security Considerations</h2>
 <p><em>This section is informative.</em></p>
 <h3 id="every-credential" tabindex="-1"><a class="toc-anchor d-print-none" href="#every-credential">§</a> Every credential</h3>
@@ -2172,8 +2228,8 @@ This work is licensed under a Creative Commons Attribution 4.0 International Lic
                 <div id="build-info" class="small text-muted">
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
-                        <time class="timestamp" datetime="2026-09-10T12:32:31.294Z">
-                            Generated: 2026-09-10T12:32:31.294Z
+                        <time class="timestamp" datetime="2026-09-10T12:33:56.960Z">
+                            Generated: 2026-09-10T12:33:56.960Z
                         </time>
                     </div>
                     <div class="d-flex align-items-center mb-1">
