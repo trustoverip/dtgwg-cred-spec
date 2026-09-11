@@ -941,6 +941,92 @@ A witness's identifier is `directed` at minimum. It must be recognizable to both
 }
 ```
 
+#### Identity Vetting Endorsement Profile
+
+*This subsection is informative.*
+
+This subsection shows one community-defined `endorsement` structure in full, for a use that several communities have asked for: an existing member, the *vetter*, checks in person or on video that an *applicant* is the person they claim to be and controls the identifier they will join with, and records that check as a VEC. The community then decides admission on the statements it has collected. The profile adds no requirement to the VEC or to any other credential type, and it defines no new credential type. Everything below is community policy that the VEC schema above already permits, and a community adopting it publishes it in its governance framework or trust registry, as [Governance Considerations](#governance-considerations) item 4 describes.
+
+**Why a VEC.** The other candidates do not fit. A [[ref: VWC]]'s `digestMultibase` names an edge credential, and a vetting statement attests to a person rather than to an edge. An [[ref: IDVC]] is issued by an [[ref: IDVP]], and a vetter is a member, not a provider. A new credential type would need the coordination that [Governance Considerations](#governance-considerations) item 9 describes, and it would carry nothing a VEC cannot.
+
+**Credential members.**
+
+- `issuer`: the vetter's member identifier in the community, the one its [[ref: VMC]] names. The statement is attributable to a member, and the community checks under its own policy that the issuer was eligible to vet ([Security Considerations](#security-considerations) item 3).
+- `credentialSubject.id`: the identifier the applicant will join with. The applicant later presents the statement under that identifier.
+- `validUntil`: bounded by the community's policy on how old vetting evidence may be when admission is decided. The statement is evidence for one admission decision, not a lifelong claim. Once a community has recorded that decision, the statement expiring does not undo it.
+- `taskContext`: optionally, the `threadId` of the vetting exchange. The statement passes the credential side of the test in [Credentials versus Trust Task Artifacts](#credentials-versus-trust-task-artifacts). It remains true after the exchange ends that a named member checked an identity, by a stated method, on a stated date.
+- `credentialStatus`: may be absent where the community is the only party that relies on the statement and a vetter withdraws it by notifying the community directly. A status list holding one vetter's few statements would offer little herd privacy.
+
+**`endorsement` members.**
+
+- `type`: an IRI naming the endorsement type and its version. The value in the example below is illustrative.
+- `community`: the identifier of the one community the statement was made for.
+- `method`: how the check was made, for example `in-person`, `video` or `prior-acquaintance`.
+- `documentClasses`: the classes of identity document the vetter relied on, for example `passport`, drawn from what that vetter accepts. It is empty where the vetter relied on prior acquaintance alone. It never carries a document number, image or portrait.
+- `claimsVerified`: the claim *types* the vetter checked against the person, for example `name.legal`. Claim values do not appear.
+- `livenessConfirmed`: whether the vetter confirmed during the session that the person in front of them controlled `credentialSubject.id`, for example by both parties reading aloud a code derived from the session.
+- `identityCommitment`: a salted commitment to the identity claims the applicant presented. See *The identity commitment* below.
+- `cardDigestMultibase`: the digest of the signed card the applicant presented to the vetter. It is computed as specified in [Digest Encoding](#digest-encoding), over the card exactly as the vetter received it rather than over a re-serialisation of it. The card is a [[ref: VDS]] profile of the [[ref: r-card]], proposed for the planned DTG Verifiable Data Structures specification ([Related Specifications](#related-specifications)). This digest lets a dispute or audit identify the exact card relied on, without the community ever receiving the card.
+- `declaredRelationship`: the vetter's declared prior relationship to the applicant, for example `none`, `community-colleague`, `same-employer` or `family`. A community can then limit how many statements from related vetters it counts.
+- `attestationTextDigest`: the digest of the governance text the vetter was shown before signing, so that the version of the text they attested under can be proven.
+
+**Example:**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://firstperson.network/credentials/dtg/v1"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "EndorsementCredential"],
+  "issuer": "did:key:z6MkpTHR8VNs...",
+  "validFrom": "2026-09-20T10:14:00Z",
+  "validUntil": "2027-01-18T10:14:00Z",
+  "taskContext": "urn:uuid:5b0c7e0e-3f7a-4c52-9d0e-2a7c1f6b9e41",
+  "credentialSubject": {
+    "id": "did:key:z6MkjRagNiMu...",
+    "endorsement": {
+      "type": "https://firstperson.network/endorsements/identity-vetting/0.1",
+      "community": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
+      "method": "video",
+      "documentClasses": ["passport"],
+      "claimsVerified": ["name.legal"],
+      "livenessConfirmed": true,
+      "identityCommitment": "zQm...",
+      "cardDigestMultibase": "zQm...",
+      "declaredRelationship": "community-colleague",
+      "attestationTextDigest": "zQm..."
+    }
+  },
+  "proof": { "//": "..." }
+}
+```
+
+**Scoped to one community.** `endorsement.community` names the community whose vocabulary gives the statement its meaning. Another community that reads the same VEC has no defined meaning for it. That community would count it only under a recognition policy of its own, and one community's recognition does not carry over to a third. The same test decides eligibility: that the issuer was eligible to vet is a fact about the named community, and another community cannot assume it.
+
+**The edge the VEC presumes.** The VEC definition describes the issuer as one party to a [[ref: DTG edge]] with the subject. When vetting happens, vetter and applicant often share no edge. No [[ref: VRC]] need exist between them, and the applicant is not yet a member, so they hold no common [[ref: VMC]]. This profile treats the vetting exchange itself as that relationship. In that exchange the applicant asks to be vetted, the vetter accepts, and the two meet while the applicant presents a card bound to the session. `taskContext` can name the exchange. A community that wants the relationship in the graph as an edge can additionally require a VRC pair.
+
+> **Editor's note — open point for the task force:** It is not settled whether a
+> trust task exchange of this kind satisfies "one party to a DTG edge trust
+> relationship" in the VEC definition, or whether the definition should say
+> something different where the endorsement is what brings the relationship
+> about. This profile assumes the first reading. Nothing in it depends on
+> which reading is chosen, except whether a VRC pair must precede the statement.
+
+**The identity commitment.** The editor's note in [Digest Encoding](#digest-encoding) records that a digest over low-entropy content can be reversed by enumeration. A digest of a legal name would be that kind of digest, since anyone with a list of candidate names could test each one. This profile avoids the problem for its own member by salting, and leaves the members that section covers to [#38](https://github.com/trustoverip/dtgwg-cred-spec/issues/38).
+
+- The applicant's software generates a random 32-byte salt once per application, and puts the same salt on every card of that application.
+- `identityCommitment` is the digest, encoded as in [Digest Encoding](#digest-encoding), of the JCS canonical form of an object holding the salt and the identity claims.
+- The salt travels to vetters inside the card and never to the community. Vetters already see the claims, so the salt reveals nothing new to them.
+
+The result has three properties:
+
+- **Consistency without disclosure.** Every vetter recomputes the same commitment and signs it. The community can check that all statements concern the same claimed identity without learning that identity.
+- **No enumeration.** A party without the salt cannot test candidate claim values against the commitment.
+- **No linkage across applications.** A fresh salt makes commitments from separate applications unrelated, even for the same person.
+
+`cardDigestMultibase` benefits in the same way, because the card it covers contains the salt and a session challenge. `attestationTextDigest` covers published governance text and hides nothing by design. None of this addresses the digest-valued members of [Digest Encoding](#digest-encoding), which remain the subject of #38. It also does not stop a vetter who keeps a card from recognising the applicant's commitment later. That limit is a question of governance and retention, not of the construction.
+
 ## VAC (Verifiable Authority Credential)
 
 This section is normative.
