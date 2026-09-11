@@ -2,9 +2,9 @@
 
 *This section is informative.*
 
-A [[ref: decentralized trust graph]] (DTG) is a graph of trust relationships between people, organizations, devices, and AI agents in which every node and every edge can be cryptographically verified. This specification defines the **DTG Core Credentials**: eight [[ref: VC]] types that are used to create, annotate, and govern access within that graph. These credentials are W3C-compliant verifiable credentials and may be presented using standard VC presentation methods when privacy preservation is not desired. They should, however, be presented using **privacy-preserving zero-knowledge proofs (ZKPs)** — of personhood, community membership, and facts about relationships — whenever privacy preservation is desired, since ZKPs are the only inherently privacy-preserving option for proof of personhood with DTG credentials (cf. [Personhood Credentials, Adler et al. 2024](https://arxiv.org/abs/2408.07892)). Used this way, ZKPs allow holders to prove what they need to prove from the perspective of the entities involved while maintaining minimal correlation across contexts.
+A [[ref: decentralized trust graph]] (DTG) is a graph of trust relationships between people, organizations, devices, and AI agents in which every node and every edge can be cryptographically verified. This specification defines the **DTG Core Credentials**: seven [[ref: VC]] types that are used to create, annotate, and govern access within that graph. These credentials are W3C-compliant verifiable credentials and may be presented using standard VC presentation methods when privacy preservation is not desired. They should, however, be presented using **privacy-preserving zero-knowledge proofs (ZKPs)** — of personhood, community membership, and facts about relationships — whenever privacy preservation is desired, since ZKPs are the only inherently privacy-preserving option for proof of personhood with DTG credentials (cf. [Personhood Credentials, Adler et al. 2024](https://arxiv.org/abs/2408.07892)). Used this way, ZKPs allow holders to prove what they need to prove from the perspective of the entities involved while maintaining minimal correlation across contexts.
 
-Seven of the eight credential types fall into three functional categories, and the eighth sits outside them:
+Six of the seven credential types fall into three functional categories, and the seventh sits outside them:
 
 1. **Edge credentials** — establish relationships between existing entities (nodes) in the DTG:
     - [[ref: VRC]] (verifiable relationship credential) — attests to a relationship between two entities; the relationship is verified through a bi-directional pair of VRCs
@@ -16,8 +16,7 @@ Seven of the eight credential types fall into three functional categories, and t
 
 3. **Annotation credentials** — attach data to existing edges without creating new graph structure:
     - [[ref: VPC]] (verifiable persona credential) — links a [[ref: persona]] to a relationship
-    - [[ref: VEC]] (verifiable endorsement credential) — endorses skills or reputation
-    - [[ref: VWC]] (verifiable witness credential) — third-party attestation of an edge
+    - [[ref: VSC]] (verifiable statement credential) — a signed statement about a node under a governed predicate; the [[ref: VEC]] (endorsement) and [[ref: VWC]] (witness attestation of an edge) are its first two predicate profiles
 
 Standing outside those categories, because it neither forms a graph edge nor annotates existing structure:
 
@@ -31,13 +30,15 @@ This Working Draft supersedes the [v0.3 proposal draft](https://github.com/trust
 
 ### Related Specifications
 
-This specification is designed to work alongside the following planned companion specifications of the [[ref: DTGWG]]. Neither has been published yet; this section will be updated with references as they become available.
+This specification is designed to work alongside the following planned companion specifications of the [[ref: DTGWG]]. None has been published yet; this section will be updated with references as they become available.
 
 - **DTG Core Trust Task Protocols** *(planned)* — will define the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) protocols necessary to offer, issue, request, present, and revoke the DTG Core Credentials defined in this specification. It will also define the structure of the Trust Task completion artifact (outcome evidence) referenced by the `taskContext` binding mechanism in this specification.
 
 - **DTG Verifiable Data Structures** *(planned)* — will define [[ref: verifiable data structure]] (VDS) types that are exchanged over DTG relationships but are not DTG credentials, including:
     - [[ref: r-card]] (relationship card) — a combination of human-readable and machine-readable data describing its publisher, exchanged in conjunction with [[ref: VRC]]s; a modern, self-updating analog of a [vCard](https://en.wikipedia.org/wiki/VCard).
     - **Agent card** — a VDS describing the identity and capabilities of an AI agent (its provider, capabilities, and skills), similar in spirit to an r-card but modeled on the [Agent2Agent (A2A) protocol's AgentCard](https://agent2agent.info/docs/concepts/agentcard/) discovery document.
+
+- **DTG Predicate Vocabulary** *(planned)* — will define the [[ref: VSC]] predicate profiles beyond the core profiles in this specification, under the DTG namespace, and is the document into which the core profiles are expected to move once it exists. This specification defines the statement mechanism and how a verifier handles predicates; the vocabulary defines what may be said.
 
 ## Requirements Language
 
