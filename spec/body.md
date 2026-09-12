@@ -1079,6 +1079,87 @@ A community defines a predicate by publishing, under a namespace it controls, th
 
 A verifier that has not been configured to accept `https://vtc.example/vocab#` rejects this credential under [Predicate Handling](#predicate-handling), however well-formed it is and however good its signature. That is the intended behaviour: which vocabularies count is decided by the governance a verifier relies on, not by an issuer.
 
+#### Worked Example: An Identity Vetting Predicate
+
+*This subsection is informative.*
+
+A longer example, because it exercises every member of [Predicate Profiles](#predicate-profiles) and shows why a use case of this kind is a predicate of its own rather than a payload smuggled into an existing one.
+
+The use is peer identity vetting. An existing member of a community — the *vetter* — checks in person or on video that an *applicant* is who they claim to be and controls the identifier they will join with. The vetter records that check as a statement. The community collects several such statements and decides admission on them. The identifiers below are illustrative, and the predicate is defined in a namespace the community controls.
+
+**Why its own predicate.** A vetting statement is a record of a procedure: a named member carried out a check, by a stated method, against stated classes of document, on a stated date. `dtg:endorses` says something favourable about the subject and leaves the vocabulary to the community — it would carry the payload, but it would also say that the vetter *endorses* the applicant, which is not what the vetter did and not what the community weighs. `dtg:witnessed` is about observing a credential being issued, not about checking a person. Giving the check its own predicate keeps the three meanings apart in the graph, so a community that recognizes one need not recognize the others, and a verifier reading a statement learns which question was actually answered.
+
+It also removes a difficulty. A vetting statement is made before any edge exists: the vetter and the applicant may share no relationship, and the applicant is not yet a member. A statement annotates a node, so nothing has to be invented to explain what edge the statement presumes.
+
+**The profile.** As required by [Predicate Profiles](#predicate-profiles):
+
+- **Predicate:** `https://vtc.example/vocab/vetting/v1#vetted` — the issuer attests that it checked the subject's claimed identity in a vetting session, by the method and against the document classes the object states.
+- **Classification:** evidence, weighed by the community named in the object when it decides admission. A statement is not a decision, and a community may require several from distinct vetters.
+- **Object:** `value`, whose members are:
+  - `community`: the identifier of the one community the statement was made for.
+  - `method`: how the check was made — for example `in-person`, `video` or `prior-acquaintance`.
+  - `documentClasses`: the classes of identity document the vetter relied on, for example `passport`. Empty where the vetter relied on prior acquaintance alone. It never carries a document number, image or portrait.
+  - `claimsVerified`: the claim *types* the vetter checked against the person, for example `name.legal`. Claim values do not appear.
+  - `livenessConfirmed`: whether the vetter confirmed during the session that the person in front of them controlled `credentialSubject.id`, for example by both parties reading aloud a code derived from the session.
+  - `identityCommitment`: a salted commitment to the identity claims the applicant presented. See *The identity commitment* below.
+  - `cardDigestMultibase`: the digest of the signed card the applicant presented, computed as specified in [Digest Encoding](#digest-encoding) over the card exactly as the vetter received it. It lets a dispute or audit identify the exact card relied on, without the community ever receiving the card.
+  - `declaredRelationship`: the vetter's declared prior relationship to the applicant — for example `none`, `community-colleague`, `same-employer` or `family` — so a community can limit how many statements from related vetters it counts.
+  - `attestationTextDigest`: the digest of the governance text the vetter was shown before signing, so the version they attested under can be proven.
+- **Subject–object relationship:** none required. The subject is the identifier the applicant will join with, and the object describes the check rather than naming another credential.
+- **Additional members:** none beyond those [VSC (Verifiable Statement Credential)](#vsc-verifiable-statement-credential) defines.
+- **`taskContext`:** REQUIRED by this profile — the vetting exchange in which the check happened. The statement remains true afterwards, so it is a credential rather than a trust task artifact by the test in [Credentials versus Trust Task Artifacts](#credentials-versus-trust-task-artifacts), but the exchange is what a dispute would examine.
+- **Issuer scope:** `directed` at minimum. The issuer must be recognizable to the community weighing the statement, so a `pairwise` declaration could not describe it truthfully.
+- **Issuer:** a member the community has made eligible to vet, issuing under the member identifier its [[ref: VMC]] names. Eligibility is the community's to confer and to withdraw, and a verifier checks it under community policy rather than inferring it from this statement.
+- **Verification establishes:** that the named member states it carried out the described check on the subject's claimed identity, in the exchange `taskContext` names.
+- **Verification does not establish:** that the applicant's claimed identity is true; that the vetter was eligible to vet, which is a fact about the community and is checked separately; that the check was competent; or that the applicant has been admitted anywhere. Admission is a decision the community records, and this statement is one input to it.
+
+**Example:**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://firstperson.network/credentials/dtg/v1",
+    "https://w3id.org/security/suites/ed25519-2020/v1"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
+  "issuer": "did:key:z6MkpTHR8VNs...",
+  "validFrom": "2026-09-20T10:14:00Z",
+  "validUntil": "2027-01-18T10:14:00Z",
+  "taskContext": "urn:uuid:5b0c7e0e-3f7a-4c52-9d0e-2a7c1f6b9e41",
+  "credentialSubject": {
+    "id": "did:key:z6MkjRagNiMu...",
+    "predicate": "https://vtc.example/vocab/vetting/v1#vetted",
+    "object": {
+      "value": {
+        "community": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
+        "method": "video",
+        "documentClasses": ["passport"],
+        "claimsVerified": ["name.legal"],
+        "livenessConfirmed": true,
+        "identityCommitment": "zQm...",
+        "cardDigestMultibase": "zQm...",
+        "declaredRelationship": "community-colleague",
+        "attestationTextDigest": "zQm..."
+      }
+    }
+  },
+  "proof": { "//": "..." }
+}
+```
+
+**Validity and status.** `validUntil` is bounded by the community's policy on how old vetting evidence may be when admission is decided; the statement is evidence for one decision, not a lifelong claim, and its expiry does not undo a decision already recorded. `credentialStatus` may be absent where the community is the only party relying on the statement and a vetter withdraws by notifying the community directly — a status list holding one vetter's few statements would offer little herd privacy.
+
+**Scoped to one community.** `object.value.community` names the community whose vocabulary gives the statement its meaning. Another community reading the same statement has no defined meaning for it, and would count it only under a recognition policy of its own; one community's recognition does not carry to a third. The same applies to eligibility: that the issuer was eligible to vet is a fact about the named community.
+
+**The identity commitment.** The editor's note in [Digest Encoding](#digest-encoding) records that a digest over low-entropy content can be reversed by enumeration, and a digest of a legal name is exactly that. This profile salts its own member and leaves the members that section covers to [#38](https://github.com/trustoverip/dtgwg-cred-spec/issues/38).
+
+- The applicant's software generates a random 32-byte salt once per application, and puts the same salt on every card of that application.
+- `identityCommitment` is the digest, encoded as in [Digest Encoding](#digest-encoding), of the JCS canonical form of an object holding the salt and the identity claims.
+- The salt travels to vetters inside the card and never to the community. Vetters already see the claims, so it reveals nothing new to them.
+
+That gives three properties. Every vetter recomputes the same commitment, so the community can check that all statements concern the same claimed identity without learning it. A party without the salt cannot test candidate values against the commitment. And a fresh salt per application leaves commitments from separate applications unrelated, even for the same person. It does not stop a vetter who keeps a card from recognizing the commitment later; that is a question of governance and retention rather than of the construction.
+
 ## VAC (Verifiable Authority Credential)
 
 This section is normative.
