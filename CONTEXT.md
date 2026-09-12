@@ -13,7 +13,7 @@ The graph whose nodes are entities (persons, devices, AI agents, services, VTCs,
 A credential that establishes a relationship between existing entities (nodes) in the DTG — membership (VMC), peer-to-peer (VRC), or the appointment of one entity to act in another's name (VDC). Descriptive category only; never appears in schemas. The VIC and the VAC sit outside this category and the annotation one.
 
 **Annotation Credential**:
-A credential that attaches data to existing edges or parties without creating graph structure (VPC, VEC, VWC). Descriptive category only. The VIC and the VAC sit outside this category and the edge one.
+A credential that attaches data to existing edges or parties without creating graph structure (VPC, VSC). Descriptive category only. The VIC and the VAC sit outside this category and the edge one.
 
 **VRC (verifiable relationship credential)**:
 Attests to a relationship between two entities; two VRCs (one per direction) form a complete DTG edge.
@@ -43,11 +43,15 @@ Authorizes onboarding of a prospective member into a VTC or VTN. Stands outside 
 **VPC (verifiable persona credential)**:
 Links a persona to an existing relationship, enabling intentional correlation under holder control. The persona is asserted under an identifier its holder ordinarily declares `directed`.
 
+**VSC (verifiable statement credential)**:
+One `StatementCredential` type carrying a signed statement by one node about another: `credentialSubject.id` (subject), `predicate` (an absolute IRI from a governed vocabulary), `object` (`id` | `digestMultibase` | `value`). A VSC attests and never establishes; each predicate's constraints are a **predicate profile**, not a type. Verifiers fail closed on any predicate not in a configured vocabulary. `dtg:` is documentation notation for `https://firstperson.network/credentials/dtg/v1#`, never a wire form.
+_Avoid_: attestation credential, assertion credential (collide with VAC); predicate credential (collides with VPC); the type strings `EndorsementCredential` and `WitnessCredential` (removed in WD03)
+
 **VEC (verifiable endorsement credential)**:
-A standard container attaching community-governed reputation/skill assertions to a party.
+A VSC under the `dtg:endorses` profile, attaching community-governed reputation/skill assertions to a party. Name retained for the profile; no longer a W3C type string.
 
 **VWC (verifiable witness credential)**:
-Third-party attestation that an edge was established under specific conditions. Remains in DTG Core Credentials (per 2026-06/07 discussions); the only type for which `taskContext` is REQUIRED. Its issuer is the witness's own DID (a member's, or a VTA's per VTC policy), which is `directed` at minimum.
+A VSC under the `dtg:witnessed` profile: third-party attestation that the subject issued the credential named by `object.digestMultibase`, under the conditions of a specific trust task exchange. `taskContext` is REQUIRED by the profile. Its issuer is the witness's own DID (a member's, or a VTA's per VTC policy), which is `directed` at minimum. Name retained for the profile; no longer a W3C type string.
 _Avoid_: W-DID (not a DTG identifier type)
 
 ### Identifiers
@@ -78,7 +82,7 @@ A work-product of a Trust Task (intermediate or completion), meaningful only wit
 _Avoid_: credential (for in-exchange work products), VXC
 
 **taskContext**:
-A credential field holding the originating Trust Task `threadId`, binding the credential to its task context. OPTIONAL on all DTG credentials, REQUIRED on VWC. Defined in this spec; the completion-artifact envelope is defined in the Trust Task protocol spec.
+A credential field holding the originating Trust Task `threadId`, binding the credential to its task context. OPTIONAL on all DTG credentials, REQUIRED where a credential type or a VSC predicate profile says so (the `dtg:witnessed` profile does). Defined in this spec; the completion-artifact envelope is defined in the Trust Task protocol spec.
 
 **Outcome interpretability**:
 The verifier rule that a `taskContext`-bearing credential MUST NOT be read as proof of task completion unless the matching outcome artifact is reachable.

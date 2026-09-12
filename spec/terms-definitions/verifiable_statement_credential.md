@@ -1,0 +1,3 @@
+[[def: VSC, verifiable statement credential, VSCs, verifiable statement credentials]]
+
+~ A [[ref: DTG annotation credential]] that carries a signed statement by one [[ref: DTG node]] about another, in the form of a subject, a predicate drawn from a governed vocabulary, and an object. A VSC *attests*; it never establishes representation, authority, membership, admission or a governed status, whatever its predicate says. The constraints on each predicate are fixed by a predicate profile rather than by a credential type; the [[ref: VEC]] and the [[ref: VWC]] are the two profiles defined by the [[ref: DTG Credentials Specification]]. A verifier rejects a VSC whose predicate it has not been configured to accept.
