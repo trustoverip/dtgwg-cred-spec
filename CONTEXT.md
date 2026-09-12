@@ -10,10 +10,10 @@ The specification defining the W3C Verifiable Credential types that create and a
 The graph whose nodes are entities (persons, devices, AI agents, services, VTCs, VTNs) and whose edges are trust relationships (membership or peer-to-peer), established entirely through verifiable credentials.
 
 **Edge Credential**:
-A credential that establishes a relationship between existing entities (nodes) in the DTG — membership (VMC) or peer-to-peer (VRC). Descriptive category only; never appears in schemas.
+A credential that establishes a relationship between existing entities (nodes) in the DTG — membership (VMC), peer-to-peer (VRC), or the appointment of one entity to act in another's name (VDC). Descriptive category only; never appears in schemas. The VIC and the VAC sit outside this category and the annotation one.
 
 **Annotation Credential**:
-A credential that attaches data to existing edges or parties without creating graph structure (VPC, VEC, VWC). Descriptive category only.
+A credential that attaches data to existing edges or parties without creating graph structure (VPC, VSC). Descriptive category only. The VIC and the VAC sit outside this category and the edge one.
 
 **VRC (verifiable relationship credential)**:
 Attests to a relationship between two entities; two VRCs (one per direction) form a complete DTG edge.
@@ -34,20 +34,24 @@ A VDC moves the question, it does not answer it. The verifier substitutes the de
 _Avoid_: "delegating a credential", transfer, copy, hand over (for what a VDC does)
 
 **VAC (verifiable authority credential)**:
-Confers **authority**: states what its subject may *do*, as itself, within a named `scope` governed by the issuer, as an explicit list of `actions` (empty confers nothing; no action implies another). Stands outside the three informative categories. May be **attenuated** by its holder without the governing party: a child VAC's `issuer` MUST be its parent's `credentialSubject.id`, its `authority.parent` is a **digest** of the parent per Digest Encoding rather than an `id`, and it may only narrow actions, scope and validity. The holder presents the whole chain, which a digest `parent` makes structural — there is nothing a verifier could fetch; depth is capped at 8. Authority is not membership: proving both in zero knowledge requires a shared-subject proof. An agent equipped to act as itself gets an attenuated VAC; an agent that is to act as its principal gets a VDC.
+Confers **authority**: states what its subject may *do*, as itself, within a named `scope` governed by the issuer, as an explicit list of `actions` (empty confers nothing; no action implies another). Stands outside the two informative categories, alongside the VIC. May be **attenuated** by its holder without the governing party: a child VAC's `issuer` MUST be its parent's `credentialSubject.id`, its `authority.parent` is a **digest** of the parent per Digest Encoding rather than an `id`, and it may only narrow actions, scope and validity. The holder presents the whole chain, which a digest `parent` makes structural — there is nothing a verifier could fetch; depth is capped at 8. Attenuation is permitted **by default**, the opposite of the VDC's opt-in `maxDepth`, because forbidding it makes a holder lend its key instead, which is strictly worse; `maxAttenuation` is the opt-out and `0` forbids it outright. A valid chain does not make its subject someone the scope will deal with: requiring a derived subject to independently qualify is a governance call. **Not a bearer credential**: the presented VAC's subject MUST demonstrate key control at invocation. There is no `audience` field — it was removed as redundant once key control was required, since the presenter must be the subject. Only the leaf demonstrates anything; the links above it are not in the loop. `validUntil` is REQUIRED and `credentialStatus` CONDITIONAL on the governing party's freshness window: a VAC is withdrawn by expiry or by revocation by its issuer, and by nothing else, since no live check of the subject's standing happens at verification. Revoking a VAC cascades to everything attenuated from it, so a governing party withdraws derivations it never saw; the converse is that a chain carrying no status cannot show that an ancestor was revoked, which is what makes short validity the default. Authority is not membership: proving both in zero knowledge requires a shared-subject proof. An agent equipped to act as itself gets an attenuated VAC; an agent that is to act as its principal gets a VDC.
 _Avoid_: delegation, acting on behalf of, appointment (for what a VAC confers); endorsement or VEC (for permission)
 
 **VIC (verifiable invitation credential / DTG invitation credential)**:
-Authorizes onboarding of a prospective member into a VTC or VTN. One W3C type (`InvitationCredential`); the glossary's VTC/VTN invitation subtypes are prose distinctions expressed via issuer/subject rules, not separate type strings.
+Authorizes onboarding of a prospective member into a VTC or VTN. Stands outside the two informative categories, alongside the VAC: it bootstraps a node into a community rather than forming an edge or annotating one. One W3C type (`InvitationCredential`); the glossary's VTC/VTN invitation subtypes are prose distinctions expressed via issuer/subject rules, not separate type strings.
 
 **VPC (verifiable persona credential)**:
 Links a persona to an existing relationship, enabling intentional correlation under holder control. The persona is asserted under an identifier its holder ordinarily declares `directed`.
 
+**VSC (verifiable statement credential)**:
+One `StatementCredential` type carrying a signed statement by one node about another: `credentialSubject.id` (subject), `predicate` (an absolute IRI from a governed vocabulary), `object` (`id` | `digestMultibase` | `value`). A VSC attests and never establishes; each predicate's constraints are a **predicate profile**, not a type. Verifiers fail closed on any predicate not in a configured vocabulary. `dtg:` is documentation notation for `https://firstperson.network/credentials/dtg/v1#`, never a wire form.
+_Avoid_: attestation credential, assertion credential (collide with VAC); predicate credential (collides with VPC); the type strings `EndorsementCredential` and `WitnessCredential` (removed in WD03)
+
 **VEC (verifiable endorsement credential)**:
-A standard container attaching community-governed reputation/skill assertions to a party.
+A VSC under the `dtg:endorses` profile, attaching community-governed reputation/skill assertions to a party. Name retained for the profile; no longer a W3C type string.
 
 **VWC (verifiable witness credential)**:
-Third-party attestation that an edge was established under specific conditions. Remains in DTG Core Credentials (per 2026-06/07 discussions); the only type for which `taskContext` is REQUIRED. Its issuer is the witness's own DID (a member's, or a VTA's per VTC policy), which is `directed` at minimum.
+A VSC under the `dtg:witnessed` profile: third-party attestation that the subject issued the credential named by `object.digestMultibase`, under the conditions of a specific trust task exchange. `taskContext` is REQUIRED by the profile. Its issuer is the witness's own DID (a member's, or a VTA's per VTC policy), which is `directed` at minimum. Name retained for the profile; no longer a W3C type string.
 _Avoid_: W-DID (not a DTG identifier type)
 
 ### Identifiers
@@ -78,7 +82,7 @@ A work-product of a Trust Task (intermediate or completion), meaningful only wit
 _Avoid_: credential (for in-exchange work products), VXC
 
 **taskContext**:
-A credential field holding the originating Trust Task `threadId`, binding the credential to its task context. OPTIONAL on all DTG credentials, REQUIRED on VWC. Defined in this spec; the completion-artifact envelope is defined in the Trust Task protocol spec.
+A credential field holding the originating Trust Task `threadId`, binding the credential to its task context. OPTIONAL on all DTG credentials, REQUIRED where a credential type or a VSC predicate profile says so (the `dtg:witnessed` profile does). Defined in this spec; the completion-artifact envelope is defined in the Trust Task protocol spec.
 
 **Outcome interpretability**:
 The verifier rule that a `taskContext`-bearing credential MUST NOT be read as proof of task completion unless the matching outcome artifact is reachable.
