@@ -44,7 +44,7 @@ Authorizes onboarding of a prospective member into a VTC or VTN. Stands outside 
 Links a persona to an existing relationship, enabling intentional correlation under holder control. The persona is asserted under an identifier its holder ordinarily declares `directed`.
 
 **VSC (verifiable statement credential)**:
-One `StatementCredential` type carrying a signed statement by one node about another: `credentialSubject.id` (subject), `predicate` (an absolute IRI from a governed vocabulary), `object` (`id` | `digestMultibase` | `value`). A VSC attests and never establishes; each predicate's constraints are a **predicate profile**, not a type. Verifiers fail closed on any predicate not in a configured vocabulary. `dtg:` is documentation notation for `https://firstperson.network/credentials/dtg/v1#`, never a wire form.
+One `StatementCredential` type carrying a signed statement by one node about another: `credentialSubject.id` (subject), `predicate` (an absolute IRI from a governed vocabulary), `object` (`id` | `digestMultibase` | `value`). A VSC attests and never establishes; each predicate's constraints are a **predicate profile**, not a type. Verifiers fail closed on any predicate not in a configured vocabulary. `dtg:` is documentation notation for `https://firstperson.network/credentials/dtg/v1#` (a placeholder — namespace home in #48; the final form is unversioned), never a wire form. Predicates beyond the two core profiles live in the DTG Predicate Vocabulary, a repo-driven registry (#52).
 _Avoid_: attestation credential, assertion credential (collide with VAC); predicate credential (collides with VPC); the type strings `EndorsementCredential` and `WitnessCredential` (removed in WD03)
 
 **VEC (verifiable endorsement credential)**:

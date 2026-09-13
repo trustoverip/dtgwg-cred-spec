@@ -36,7 +36,7 @@ This specification is designed to work alongside the following planned companion
     - [[ref: r-card]] (relationship card) — a combination of human-readable and machine-readable data describing its publisher, exchanged in conjunction with [[ref: VRC]]s; a modern, self-updating analog of a [vCard](https://en.wikipedia.org/wiki/VCard).
     - **Agent card** — a VDS describing the identity and capabilities of an AI agent (its provider, capabilities, and skills), similar in spirit to an r-card but modeled on the [Agent2Agent (A2A) protocol's AgentCard](https://agent2agent.info/docs/concepts/agentcard/) discovery document.
 
-- **DTG Predicate Vocabulary** *(planned)* — will define the [[ref: VSC]] predicate profiles beyond the core profiles in this specification, under the DTG namespace, and is the document into which the core profiles are expected to move once it exists. This specification defines the statement mechanism and how a verifier handles predicates; the vocabulary defines what may be said.
+- **DTG Predicate Vocabulary** *(planned)* — a repo-driven registry rather than a specification: one definition file per [[ref: VSC]] predicate, generated into a human-readable vocabulary, the vocabulary served at the DTG namespace, and a machine-readable accept-list for verifiers, governed by pull request under stated admission criteria. It will hold the predicate profiles beyond the core profiles in this specification, and the core profiles move into it once it has a release. This specification defines the statement mechanism and how a verifier handles predicates; the registry defines what may be said.
 
 ## Requirements Language
 
