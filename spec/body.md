@@ -1520,6 +1520,8 @@ The boundary between this specification and the planned DTG Core Trust Task Prot
 
 Every credential type in this specification passes the credential side of this test, and a [[ref: VSC]] predicate profile is admitted only if its predicate does too: a statement meaningful only inside an exchange is an artifact, not a profile (see [Predicate Profiles](#predicate-profiles)). The [[ref: VDC]] is the boundary case that most clearly illustrates it: the delegation grant is durable and passes, while the invocation of a delegation does not and is left to the trust task layer (see [Grant and Invocation](#grant-and-invocation)). The structure of trust task completion artifacts (outcome evidence) is out of scope for this specification and will be defined in the DTG Core Trust Task Protocols specification.
 
+> **Minimum compatible version:** Per [Specification Versioning](#specification-versioning), this section states the minimum Document Status of the companion trust task specification required for conformance with the `taskContext` binding mechanism defined below. As of this release, that is Document Status `0.4.0` of the [Trust Tasks specification](https://github.com/trustoverip/dtgwg-trust-tasks-spec), currently a Working Draft — the version at which that specification defined how an external citation, such as this one, binds to the document it names.
+
 ### The `taskContext` Property
 
 A credential whose meaning depends on a trust task completing MUST carry a `taskContext` property containing the `threadId` of the originating trust task exchange. This requirement is a property of the credential type, not a per-issuer choice:
