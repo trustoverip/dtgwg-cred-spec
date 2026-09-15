@@ -38,6 +38,34 @@ This specification is designed to work alongside the following planned companion
 
 - **DTG Predicate Vocabulary** *(planned)* — a repo-driven registry rather than a specification: one definition file per [[ref: VSC]] predicate, generated into a human-readable vocabulary, the vocabulary served at the DTG namespace, and a machine-readable accept-list for verifiers, governed by pull request under stated admission criteria. It will hold the predicate profiles beyond the core profiles in this specification, and the core profiles move into it once it has a release. This specification defines the statement mechanism and how a verifier handles predicates; the registry defines what may be said.
 
+### Specification Versioning
+
+This specification distinguishes two version numbers that read as if they mean the same thing but do not:
+
+- **`_Version:_`** states the version of this specification that the working group is converging toward — the number a wider ratifying body confirms when this specification reaches Working Group Approved Deliverable or ToIP Approved Deliverable status. It changes only when the specification is re-targeted, not with each Working Draft revision.
+- **`_Document Status:_`** carries the semantic version of *this Working Draft* — `Working Draft MAJOR.MINOR.PATCH` — and is what editors and implementers use to coordinate day-to-day while the specification converges. It is the version referenced everywhere below and in [Compatibility Rules](#compatibility-rules).
+
+Document Status follows [Semantic Versioning 2.0.0](https://semver.org/):
+
+- **MAJOR** — a change that breaks conformance for existing implementations, such as removing or tightening a REQUIRED property, changing the semantics of an existing credential type, or removing a credential type.
+- **MINOR** — a backward-compatible addition, such as a new OPTIONAL property, a new credential type, or a new informative section.
+- **PATCH** — an editorial or clarifying change with no effect on conformance.
+
+#### Compatibility Rules
+
+A change to this Working Draft MUST be classified as either backward-compatible or breaking:
+
+- A **backward-compatible** change — for example, adding an OPTIONAL property, relaxing a constraint, or adding a permitted enumeration value to a non-discriminating field — MUST result in a MINOR increment to `Document Status`.
+- A **breaking** change — for example, adding or removing a REQUIRED property, removing a permitted enumeration value, narrowing a constraint, or changing the semantics of an existing credential type — MUST result in a MAJOR increment to `Document Status`, with MINOR reset to `0`.
+
+A holder or verifier conformant to Document Status `M.N` MUST accept a credential issued under any earlier Document Status `M.K` where `K ≤ N`, and SHOULD accept a credential carrying an OPTIONAL property it does not recognize — introduced by a later MINOR version than the one it implements — rather than rejecting the credential solely for that property's presence. This specification does not currently embed its own version number in a credential's `@context` or `type`; a MAJOR revision is expected to be accompanied by a new `@context` version so that a credential issued under incompatible semantics is also structurally distinguishable, but until that mechanism is defined, a verifier implementing one MAJOR version MUST NOT assume it can safely interpret a credential issued under a different one.
+
+> **Note on cross-specification versioning:** The DTGWG's specifications — this specification and its planned companions listed above — each follow their own semantic versioning process, and each uses the same `_Version:_` / `_Document Status:_` split. The editors have deliberately chosen **not** to synchronize Document Status numbers across specifications; a MAJOR release of one does not imply, require, or correspond to any particular release of another.
+>
+> Where this specification's conformance requirements depend on a mechanism defined by a companion specification — for example, the `taskContext` binding described in [Trust Task Context Binding](#trust-task-context-binding), which depends on the trust task exchange and outcome-evidence mechanisms of the planned **DTG Core Trust Task Protocols** specification — this specification instead states the **minimum Document Status of that companion specification** with which this Working Draft is compatible. The companion specification is expected to do the same in reverse, stating the minimum Document Status of this specification with which it is compatible. Implementers integrating both specifications MUST check both stated minimums rather than assuming that matching or adjacent version numbers imply compatibility.
+
+> **Note on version history:** This specification's earlier Working Drafts were informally numbered "01" and "02", before this semantic versioning scheme was adopted; those ordinals do not correspond to `0.1.0`/`0.2.0`. This Working Draft's Document Status is `0.4.0` — continuing from the [pre-migration `v0.3` proposal draft](https://github.com/trustoverip/dtgwg-cred-tf/blob/main/dtg.md) it supersedes (see Introduction), rather than restarting at `0.1.0`, which would collide with that predecessor's own version number. `_Version:_` is set to `1.0`, the release this Working Draft is converging toward; it is not yet ratified.
+
 ## Requirements Language
 
 The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in [IETF RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
