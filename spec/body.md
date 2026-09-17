@@ -99,8 +99,7 @@ For readability, the examples throughout this specification reuse a single membe
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -110,7 +109,8 @@ For readability, the examples throughout this specification reuse a single membe
     "id": "did:key:z6MkpTHR8VNs..."
   },
   "proof": {
-    "type": "Ed25519Signature2020",
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
     "created": "2026-01-06T10:00:00Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example#key-1",
@@ -126,7 +126,7 @@ For readability, the examples throughout this specification reuse a single membe
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
     "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://w3id.org/security/data-integrity/v2"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -136,7 +136,8 @@ For readability, the examples throughout this specification reuse a single membe
     "id": "did:key:z6MkpTHR8VNs..."
   },
   "proof": {
-    "type": "Ed25519Signature2020",
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
     "created": "2026-01-06T10:00:00Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example#key-1",
@@ -327,8 +328,9 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the subject
   - Additional type-specific properties
-- `taskContext` (string, OPTIONAL unless a credential type requires it): identifier (`threadId`) of the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange in which this credential was issued. See [Trust Task Context Binding](#trust-task-context-binding).
-- `proof` (object, REQUIRED): W3C VC proof object
+- `taskContext` (string, OPTIONAL unless a credential type or profile requires it): the `id` of the document that initiated the innermost [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange attesting what this credential states. See [Trust Task Context Binding](#trust-task-context-binding).
+- `taskDigestMultibase` (string, REQUIRED wherever `taskContext` is REQUIRED, OPTIONAL otherwise): the task digest of the document `taskContext` names. `taskContext` locates the exchange; `taskDigestMultibase` binds the credential to it. See [The `taskDigestMultibase` Property](#the-taskdigestmultibase-property).
+- `proof` (object, REQUIRED): a [W3C Data Integrity](https://www.w3.org/TR/vc-data-integrity/) proof. `proof.type` MUST be `DataIntegrityProof`, with the cryptographic suite named in `proof.cryptosuite`, so that changing suite changes a value rather than the schema. The RECOMMENDED suite is [`eddsa-jcs-2022`](https://www.w3.org/TR/vc-di-eddsa/): its JSON Canonicalization Scheme ([RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)) transformation needs no `@context` resolution at verification time, so a credential stays verifiable offline — including one formed in person and synchronized later — and it is the canonicalization this specification already uses for digests ([Digest Encoding](#digest-encoding)). A governing [[ref: VTC]] or [[ref: VTN]] MAY require another registered suite. Selective-disclosure and zero-knowledge presentation mechanisms are not carried by this property; see [Zero-Knowledge and Selective Disclosure](#zero-knowledge-and-selective-disclosure)
 
 **Example:**
 
@@ -336,8 +338,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:example:vtcCommunityDid",
@@ -347,7 +348,8 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
     "id": "did:example:memberMdid"
   },
   "proof": {
-    "type": "Ed25519Signature2020",
+    "type": "DataIntegrityProof",
+    "cryptosuite": "eddsa-jcs-2022",
     "created": "2026-01-06T10:00:00Z",
     "proofPurpose": "assertionMethod",
     "verificationMethod": "did:example:vtcCommunityDid#key-1",
@@ -435,8 +437,7 @@ Edge credentials establish relationships between existing entities (nodes) in th
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "RelationshipCredential"],
   "issuer": "did:peer:2.Ez6LSbysKZ...",
@@ -516,8 +517,7 @@ A community's own identifier can only truthfully be declared `public`: a communi
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -535,8 +535,7 @@ A community's own identifier can only truthfully be declared `public`: a communi
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
@@ -669,8 +668,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "DelegationCredential"],
   "issuer": "did:peer:2.Ez6LSbysKZ...",
@@ -700,8 +698,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "DelegationCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
@@ -800,8 +797,7 @@ This section is normative.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "InvitationCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
@@ -841,8 +837,7 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "PersonaCredential"],
   "issuer": "did:key:z6MkrKqT9pL...",
@@ -934,7 +929,7 @@ A **predicate profile** is the normative definition of one predicate. This speci
 3. which `object` kind or kinds are permitted, and for `value` the schema of the payload;
 4. any relationship required between subject, object and issuer (for example, that the subject is the issuer of the credential the object names);
 5. any additional `credentialSubject` members, whether each is REQUIRED or OPTIONAL, and its schema. A verifier MUST ignore additional members a profile does not define, so that a profile can add optional members without invalidating credentials for older verifiers; strictness lives in the predicate, not in the payload;
-6. whether `taskContext` is REQUIRED;
+6. whether `taskContext` is REQUIRED — and with it `taskDigestMultibase` (see [Trust Task Context Binding](#trust-task-context-binding));
 7. the minimum [[ref: correlation scope]] the issuer can truthfully declare, if the predicate constrains it;
 8. who may issue the statement — the subject itself, any member, or a [[ref: VTA]] acting under the community's policy;
 9. **what successful verification establishes, and what it explicitly does not.** For every predicate an implementer must be able to answer: what does a pass mean, and what does it not mean? The type-level bound in [What Verification Establishes](#what-verification-establishes) applies to every profile and need not be restated, but a profile MUST state any further limit specific to it — that a witnessed credential is not thereby current, that an endorsement is not thereby true.
@@ -942,7 +937,7 @@ A **predicate profile** is the normative definition of one predicate. This speci
 Two constraints on what may be a profile at all:
 
 - A predicate that is only meaningful inside the exchange in which it was issued is a trust task artifact, not a statement; see [Credentials versus Trust Task Artifacts](#credentials-versus-trust-task-artifacts).
-- A predicate whose truth depends on the completion of more than one trust task, where those tasks do not nest, MUST be expressed as one VSC per task, each carrying that task's `taskContext`, never as a single credential with more than one implicit referent. Which thread a nested exchange's `taskContext` names is defined by the planned DTG Core Trust Task Protocols specification.
+- A predicate whose truth depends on the completion of more than one trust task, where those tasks do not nest, MUST be expressed as one VSC per task, each carrying that task's `taskContext`, never as a single credential with more than one implicit referent. Which exchange a nested `taskContext` names is defined by the Trust Tasks specification's rule for [naming an exchange from outside the framework](https://trustoverip.github.io/dtgwg-trust-tasks-spec/#naming-an-exchange-from-outside-the-framework): the innermost exchange that attests the event.
 
 > **Editor's note — where profiles live.** This specification defines the mechanism above and, for this Working Draft, the two core profiles that replace the WD02 VEC and VWC sections — they replace normative text and need a published home now. Profiles for further predicates are defined in the **DTG Predicate Vocabulary**, a repo-driven registry on the model of the ToIP glossary rather than a specification: one definition file per predicate in the format the nine points above describe, generated into a human-readable document, the vocabulary served at the DTG namespace, and a machine-readable accept-list for verifiers; governed by pull request under stated admission criteria, on its own cadence (see [Related Specifications](#related-specifications) and [issue #52](https://github.com/trustoverip/dtgwg-cred-spec/issues/52)). The two core profiles move there once it has a release. Nothing on the wire changes when a profile's text moves: the predicate IRIs live in the DTG namespace either way. This specification defines mechanisms and does not otherwise name a predicate; [Community-Defined Predicates](#community-defined-predicates) carries one illustrative example and no more. Convergence across communities is served by admitting a community predicate to the registry once it is in use by more than one community. Admission is a convenience, not a gate: because a predicate is an absolute IRI that a verifier accepts by configuration, a community that publishes a predicate under a namespace it controls can issue under it, and verifiers can accept it, without waiting on or ever seeking admission to the registry. The registry curates a shared default set; it does not decide who may make a statement.
 
@@ -974,8 +969,7 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
@@ -1013,7 +1007,7 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
     - `event` (string, OPTIONAL): human-readable event name
     - `sessionId` (string, OPTIONAL): session or nonce identifier
     - `method` (string, OPTIONAL): verification method used
-- **`taskContext`:** REQUIRED.
+- **`taskContext` and `taskDigestMultibase`:** REQUIRED.
 - **Issuer scope:** `directed` at minimum. A witness's identifier must be recognizable to both parties to the witnessed edge, and to the community whose witnessing policy the attestation is issued under, so a `pairwise` declaration cannot describe it truthfully.
 - **Issuer:** a member, or a [[ref: VTA]] acting according to VTC policy.
 - **Verification establishes:** that the issuer attests that, in the exchange identified by `taskContext`, it observed the subject issue the credential whose claims digest to `object.digestMultibase`.
@@ -1027,13 +1021,13 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:webvh:QmVzTd9hRkPqLu4WgXyN...:witness-service.example",
   "validFrom": "2026-01-06T10:00:00Z",
-  "taskContext": "thread-abc-123",
+  "taskContext": "urn:uuid:2c7f5d19-6e0b-4c3d-8a41-9b2e6f0d4c88",
+  "taskDigestMultibase": "zQmWhCFfStzUE4HGseiQ1XWi2eEp1GTQEKnt2jyBe7uqzXD",
   "credentialSubject": {
     "id": "did:key:z6MkpTHR8VNs...",
     "predicate": "https://firstperson.network/credentials/dtg/v1#witnessed",
@@ -1060,8 +1054,7 @@ A community defines a predicate by publishing, under a namespace it controls, th
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:key:z6Mk...observer",
@@ -1162,8 +1155,7 @@ named scope governed by the issuer.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:webvh:z6Mkw...:example.com:rooms:7f3a",
@@ -1302,8 +1294,7 @@ and the reason a VAC and a [[ref: VMC]] stay separate credentials.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
-    "https://w3id.org/security/suites/ed25519-2020/v1"
+    "https://firstperson.network/credentials/dtg/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
@@ -1511,28 +1502,36 @@ DTG credentials are frequently issued during broader multi-step exchanges — [t
 
 *This subsection is informative.*
 
-The boundary between this specification and the planned DTG Core Trust Task Protocols specification is drawn by the following test:
+The boundary between this specification and the [Trust Tasks specification](https://trustoverip.github.io/dtgwg-trust-tasks-spec/) is drawn by the following test:
 
 - A **credential** is a durable claim about the graph that is true standing alone (e.g., VRC, VMC, VPC). It lives on after the exchange in which it was issued.
 - An **artifact** is a work-product of a trust task (intermediate or completion), only meaningful within its exchange. It is carried as a Trust Task document, correlated by a shared `threadId`, with its terminal state expressed at the trust task layer — not as a new credential type.
 
 **Test for any new thing:** true outside the exchange? → credential. Only meaningful inside? → artifact.
 
-Every credential type in this specification passes the credential side of this test, and a [[ref: VSC]] predicate profile is admitted only if its predicate does too: a statement meaningful only inside an exchange is an artifact, not a profile (see [Predicate Profiles](#predicate-profiles)). The [[ref: VDC]] is the boundary case that most clearly illustrates it: the delegation grant is durable and passes, while the invocation of a delegation does not and is left to the trust task layer (see [Grant and Invocation](#grant-and-invocation)). The structure of trust task completion artifacts (outcome evidence) is out of scope for this specification and will be defined in the DTG Core Trust Task Protocols specification.
+Every credential type in this specification passes the credential side of this test, and a [[ref: VSC]] predicate profile is admitted only if its predicate does too: a statement meaningful only inside an exchange is an artifact, not a profile (see [Predicate Profiles](#predicate-profiles)). The [[ref: VDC]] is the boundary case that most clearly illustrates it: the delegation grant is durable and passes, while the invocation of a delegation does not and is left to the trust task layer (see [Grant and Invocation](#grant-and-invocation)). Outcome evidence — the Trust Task documents that show a cited exchange completed — and the checks that pair it with a credential are defined by the Trust Tasks specification in [Evidence That a Cited Exchange Completed](https://trustoverip.github.io/dtgwg-trust-tasks-spec/#evidence-that-a-cited-exchange-completed), not by this specification.
 
-> **Minimum compatible version:** Per [Specification Versioning](#specification-versioning), this section states the minimum Document Status of the companion trust task specification required for conformance with the `taskContext` binding mechanism defined below. As of this release, that is Document Status `0.4.0` of the [Trust Tasks specification](https://github.com/trustoverip/dtgwg-trust-tasks-spec), currently a Working Draft — the version at which that specification defined how an external citation, such as this one, binds to the document it names.
+> **Minimum compatible version:** Per [Specification Versioning](#specification-versioning), this section states the minimum Document Status of the companion trust task specification required for conformance with the `taskContext` binding mechanism defined below. As of this release, that is Document Status `0.4.0` of the [Trust Tasks specification](https://github.com/trustoverip/dtgwg-trust-tasks-spec), currently a Working Draft — the version at which that specification defined how an external citation, such as this one, names and binds the document it cites — for [The `taskContext` Property](#the-taskcontext-property) and [The `taskDigestMultibase` Property](#the-taskdigestmultibase-property); and, for [Outcome Interpretability](#outcome-interpretability), the first Document Status of that specification that defines outcome evidence for a cited exchange.
+>
+> **Editor's note:** the second minimum is pending. The definition of outcome evidence is proposed for the Trust Tasks specification and not yet released; this note records its Document Status once it is.
 
 ### The `taskContext` Property
 
-A credential whose meaning depends on a trust task completing MUST carry a `taskContext` property containing the `threadId` of the originating trust task exchange. This requirement is a property of the credential type, not a per-issuer choice:
+A credential whose meaning depends on a trust task completing MUST carry a `taskContext` property naming the exchange that attests it. Its value is the `id` of that exchange's initiating document; where exchanges nest, it names the innermost exchange that attests the event. Both rules are the Trust Tasks specification's, stated in [Naming an Exchange from Outside the Framework](https://trustoverip.github.io/dtgwg-trust-tasks-spec/#naming-an-exchange-from-outside-the-framework). The value is not the exchange's `threadId`: that specification permits an initiator to mint a `threadId` unrelated to its `id`, and does not require a `threadId` to be unique, whereas a document's `id` is. This requirement is a property of the credential type, not a per-issuer choice:
 
 - For credential types where this specification marks `taskContext` as REQUIRED, and for [[ref: VSC]] predicate profiles that require it, issuers MUST include it.
 - For all other DTG credential types, `taskContext` is OPTIONAL.
 - A DTG credential without a `taskContext` property MUST be interpretable standing alone, independent of any exchange.
 
+### The `taskDigestMultibase` Property
+
+An `id` names a document without binding anything to it: anyone can write a different document carrying the same `id`, and a verifier pairing a credential with that document by `id` alone would accept evidence of a different event. A credential that carries `taskContext` because its credential type or profile requires it therefore MUST also carry `taskDigestMultibase`, whose value is the task digest of the document `taskContext` names, computed as the Trust Tasks specification defines in [Binding a Citation to the Document It Names](https://trustoverip.github.io/dtgwg-trust-tasks-spec/#binding-a-citation-to-the-document-it-names). Where `taskContext` is OPTIONAL and present, `taskDigestMultibase` SHOULD be present with it. The digest is taken over that document with its top-level `proof` removed, so it has one value whether or not the document was signed.
+
 ### Outcome Interpretability
 
-A verifier MUST NOT interpret a `taskContext`-bearing credential as proof that the associated trust task or ceremony completed unless the matching trust task outcome evidence is also present and verified. That outcome evidence MUST be reachable by the verifier — either it travels with the presentation, or the `taskContext` value enables the verifier to locate it.
+A verifier MUST NOT interpret a `taskContext`-bearing credential as proof that the associated trust task or ceremony completed unless it also holds matching outcome evidence and has verified it. Outcome evidence, and the checks that pair it with the exchange a credential cites, are defined by the Trust Tasks specification in [Evidence That a Cited Exchange Completed](https://trustoverip.github.io/dtgwg-trust-tasks-spec/#evidence-that-a-cited-exchange-completed); a verifier MUST apply those checks, taking `taskContext` and `taskDigestMultibase` as the citation.
+
+A holder presenting a `taskContext`-bearing credential as evidence that the task completed MUST include that outcome evidence with the presentation. A verifier that does not receive matching outcome evidence MUST treat the credential as not evidencing completion, whether or not such evidence exists elsewhere; the credential is otherwise unaffected. What a relying party may conclude from the credential and its outcome evidence together, across the rest of an interaction, is governed by the composition requirements of the [Verifiable Trust Infrastructure specification](https://trustoverip.github.io/dtgwg-vti-spec/).
 
 ## Supporting Concepts
 
@@ -1582,7 +1581,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 
 ### Zero-Knowledge and Selective Disclosure
 
-- This specification is **format-agnostic** (no binding to BBS+, SD-JWT-VC, etc.)
+- The zero-knowledge constructions below are not bound to a particular presentation mechanism (BBS+, SD-JWT-VC, etc.). A credential's `proof` secures the credential itself ([Base Structure](#base-structure)); a credential that must also support selective disclosure carries the mechanism that provides it in addition to that proof, as its governing framework determines
 - Two ZKP constructions are defined for proving relationships: the [Pairwise Zero-Knowledge Proof](#pairwise-zero-knowledge-proof) (available to any two VRC holders) and the [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) (available when both parties hold VMCs from the same community)
 - Schemas are kept simple to enable common predicates:
   - "Holder has valid community-issued VMC from recognized VTC"
@@ -1665,7 +1664,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 3. **Issuer authorization.** A cryptographically valid credential is not necessarily an authorized one. Verifiers must evaluate whether the issuer is authorized for the claimed role (e.g., a community-issued VMC's issuer being a recognized VTC, a member-issued VMC's issuer being the subject of the grant it acknowledges, a VIC issuer being permitted to invite) using the applicable trust registry or governance framework.
 4. **Key compromise.** Compromise of the private key controlling any DID used in a DTG credential (issuer or subject) undermines all credentials anchored to it. Key rotation and revocation procedures are governed by the applicable DID methods and trust registries.
 5. **Context collapse.** A credential presented outside the trust task exchange in which it was issued may be misinterpreted as evidence of a completed ceremony. The requirements of [Trust Task Context Binding](#trust-task-context-binding) exist to prevent this class of attack and must be enforced by verifiers.
-6. **Digest integrity.** A verifier relying on a [[ref: VSC]]'s `object.digestMultibase` — a VWC's binding to a specific edge, for instance — must have the referenced credential available, recompute the digest over its JCS (RFC 8785) canonical form with the top-level `proof` member removed, and confirm it matches — comparing decoded digest bytes rather than encoded strings, as set out in [Digest Encoding](#digest-encoding). A mismatch invalidates the statement. Without the referenced credential in hand, the digest cannot be resolved to a credential, and a VWC should not be treated as evidence of which edge was witnessed. The same requirement applies to the `digestMultibase` that a member-issued VMC carries of the community-issued VMC it acknowledges, to a VDC's `parent` and `accepts`, and to a VAC's `authority.parent`: a mismatch invalidates the acknowledgement, the derivation, or the attenuation.
+6. **Digest integrity.** A verifier relying on a [[ref: VSC]]'s `object.digestMultibase` — a VWC's binding to a specific edge, for instance — must have the referenced credential available, recompute the digest over its JCS (RFC 8785) canonical form with the top-level `proof` member removed, and confirm it matches — comparing decoded digest bytes rather than encoded strings, as set out in [Digest Encoding](#digest-encoding). A mismatch invalidates the statement. Without the referenced credential in hand, the digest cannot be resolved to a credential, and a VWC should not be treated as evidence of which edge was witnessed. The same requirement applies to the `digestMultibase` that a member-issued VMC carries of the community-issued VMC it acknowledges, to a VDC's `parent` and `accepts`, and to a VAC's `authority.parent`: a mismatch invalidates the acknowledgement, the derivation, or the attenuation. The same discipline applies to `taskDigestMultibase`, recomputed over the document `taskContext` names as [The `taskDigestMultibase` Property](#the-taskdigestmultibase-property) sets out.
 7. **Predicate acceptance.** A [[ref: VSC]] whose signature and status verify is not thereby meaningful. A verifier must apply [Predicate Handling](#predicate-handling): reject any predicate it has not been configured to accept, never infer meaning from a predicate's spelling or from a published equivalence, and never draw a conclusion a profile does not state ([What Verification Establishes](#what-verification-establishes)). A well-formed statement under an unrecognized predicate is the intended shape of an attack that names authority, membership, or personhood in a string.
 
 ### Membership and invitation
@@ -1754,7 +1753,7 @@ This specification defines normative requirements, using the keywords defined in
 ### Conformance Targets
 
 1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type — for a [[ref: VSC]], including the constraints of its predicate's profile — including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding). Where it declares a [[ref: correlation scope]] for its identifier, a conforming issuer MUST satisfy the declaration requirements of [Correlation Scope](#correlation-scope); a conforming issuer that is a [[ref: VTC]] issuing [[ref: VMCs]] MUST also publish its member-identifier disclosure practice as [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone) requires.
-2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and MUST include reachable trust task outcome evidence when presenting `taskContext`-bearing credentials as evidence of task completion.
+2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and, when presenting a `taskContext`-bearing credential as evidence of task completion, MUST include matching outcome evidence with the presentation, as [Outcome Interpretability](#outcome-interpretability) requires.
 3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support). Where a presented identifier carries a declared [[ref: correlation scope]], a conforming verifier MUST apply the verifier requirements of [Correlation Scope](#correlation-scope). A verifier that accepts [[ref: VACs]] MUST additionally implement the chain verification rule of [Attenuation](#attenuation), the status-checking rule of [Withdrawal](#withdrawal), and the key-control rule of [Invocation](#invocation). A verifier that accepts [[ref: VSCs]] MUST additionally implement [Predicate Handling](#predicate-handling) and the bounds of [What Verification Establishes](#what-verification-establishes).
 
 ### Conformance Tests
@@ -1771,6 +1770,8 @@ Conformance test suites for this specification have not yet been defined and are
 - [IETF RFC 2119: Key words for use in RFCs to Indicate Requirement Levels](https://datatracker.ietf.org/doc/html/rfc2119)
 - [IETF RFC 8785: JSON Canonicalization Scheme (JCS)](https://datatracker.ietf.org/doc/html/rfc8785)
 - [W3C Verifiable Credential Data Integrity v1.0](https://www.w3.org/TR/vc-data-integrity/)
+- [W3C Data Integrity EdDSA Cryptosuites v1.0](https://www.w3.org/TR/vc-di-eddsa/) — `eddsa-jcs-2022`
+- [Trust Tasks](https://github.com/trustoverip/dtgwg-trust-tasks-spec) — the DTGWG Trust Tasks specification, Working Draft; see [Trust Task Context Binding](#trust-task-context-binding) for the minimum Document Status required
 - [W3C Controlled Identifiers (CIDs) v1.0](https://www.w3.org/TR/cid-1.0/)
 - [W3C JSON-LD 1.1](https://www.w3.org/TR/json-ld11/)
 - [IETF RFC 3987: Internationalized Resource Identifiers (IRIs)](https://www.rfc-editor.org/rfc/rfc3987)
@@ -1789,4 +1790,5 @@ Conformance test suites for this specification have not yet been defined and are
 - [W3C RDF 1.2 Concepts and Abstract Syntax](https://www.w3.org/TR/rdf12-concepts/)
 - [W3C RDF Schema 1.1](https://www.w3.org/TR/rdf-schema/)
 - [W3C Bitstring Status List v1.0](https://www.w3.org/TR/vc-bitstring-status-list/)
+- [Verifiable Trust Infrastructure (VTI)](https://github.com/trustoverip/dtgwg-vti-spec) — the DTGWG system specification composing this specification with Trust Tasks, Working Draft
 - [DTG Credentials v0.3 proposal draft](https://github.com/trustoverip/dtgwg-cred-tf/blob/main/dtg.md) (superseded by this specification)
