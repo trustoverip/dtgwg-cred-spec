@@ -875,6 +875,7 @@ A statement is **evidence**. Governance turns evidence into establishment: a [[r
 - `type` (array, REQUIRED): MUST include `"StatementCredential"` and MUST NOT include any other concrete `DTGCredential` subtype. The predicate, not the type array, identifies the profile.
 - `issuer` (string, REQUIRED): DID of the party making the statement. Its [[ref: correlation scope]] is declared by the holder; a profile MAY state the minimum scope its issuer can truthfully declare — see [Correlation Scope](#correlation-scope)
 - `taskContext` (string, OPTIONAL unless the profile requires it): see [Trust Task Context Binding](#trust-task-context-binding)
+- `taskDigestMultibase` (string, REQUIRED wherever the profile requires `taskContext`, OPTIONAL otherwise): see [The `taskDigestMultibase` Property](#the-taskdigestmultibase-property)
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the [[ref: DTG node]] the statement is about
   - `predicate` (string, REQUIRED): the term that fixes the statement's meaning, expressed as an absolute IRI — see [Predicate Handling](#predicate-handling). Compact forms (CURIEs, JSON-LD terms) are not permitted on the wire, so that a predicate has exactly one representation and matching it never depends on context processing. Predicates defined by this specification live in the DTG namespace; predicates defined by a community live in a namespace the community controls
