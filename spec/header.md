@@ -7,7 +7,7 @@ _GitHub:_ <https://github.com/trustoverip/dtgwg-cred-spec>
 
 _Editors:_
 
-- Martina Kolpondinos, First Person Cooperative
+- Martina Kolpondinos, Kosma Connect
 - Alberto Leon, Applied Technology Lab at Harvard University
 - Brendan A. Miller, Applied Technology Lab at Harvard University
 - Drummond Reed, First Person Cooperative
