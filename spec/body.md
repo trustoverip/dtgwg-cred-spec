@@ -2,40 +2,7 @@
 
 *This section is informative.*
 
-This section provides a visual overview of the DTG Core Credential types and their formal type hierarchy. The two functional categories (edge, annotation) are descriptive aids only; they do not appear in credential schemas. Two types belong to neither and are shown attached directly to `DTGCredential`: the [[ref: VIC]], which bootstraps a node into a community rather than annotating one already in the graph, and the [[ref: VAC]], which neither forms an edge nor annotates existing structure. The [[ref: VSC]] is shown under annotation credentials; the endorsement and witness credentials of Working Draft 02 are now its first two [predicate profiles](#predicate-profiles).
-
-```mermaid
-graph LR
-    DTG[DTGCredential]
-
-    DTG --> EC(Edge Credentials)
-    DTG --> AC(Annotation Credentials)
-
-    EC --> VRC["VRC - RelationshipCredential"]
-    EC --> VMC["VMC - MembershipCredential"]
-    EC --> VDC["VDC - DelegationCredential"]
-    AC --> VPC["VPC - PersonaCredential"]
-    AC --> VSC["VSC - StatementCredential"]
-    DTG --> VIC["VIC - InvitationCredential"]
-    DTG --> VAC["VAC - AuthorityCredential"]
-
-    classDef parent fill:#f5f5f5,stroke:#555,stroke-width:2px,color:#000
-    classDef cat fill:#eeeeee,stroke:#999,stroke-width:1px,color:#555
-    classDef edge fill:#bbdefb,stroke:#1976d2,stroke-width:2px,color:#000
-    classDef inv fill:#ffe0b2,stroke:#f57c00,stroke-width:2px,color:#000
-    classDef ann fill:#e1bee7,stroke:#7b1fa2,stroke-width:2px,color:#000
-
-    classDef auth fill:#c8e6c9,stroke:#388e3c,stroke-width:2px,color:#000
-
-    class DTG parent
-    class EC,AC cat
-    class VMC,VRC,VDC edge
-    class VIC inv
-    class VPC,VSC ann
-    class VAC auth
-```
-
-**Formal W3C type hierarchy.**
+This section shows the formal type hierarchy of the DTG Core Credential types. Every concrete type is a direct subtype of `DTGCredential`; there is no other abstract parent. The endorsement and witness credentials of Working Draft 02 are [predicate profiles](#predicate-profiles) of the [[ref: VSC]], not types. The [[ref: VRC]], [[ref: VMC]], and [[ref: VDC]] are [[ref: DTG edge credentials]] — see [Edge Credentials](#edge-credentials) for what that class requires — and that grouping is not reflected in the type hierarchy.
 
 ```text
 VerifiableCredential
@@ -419,6 +386,8 @@ Where a governing [[ref: VTC]] or [[ref: VTN]] requires a stronger hash, it MAY 
 This section is normative.
 
 Edge credentials establish relationships between existing entities (nodes) in the DTG: [[ref: VRCs]] attest to relationships between two entities, [[ref: VMCs]] attest to community membership, and [[ref: VDCs]] attest that one entity has appointed another to act in its name. In each case, a bi-directional pair of credentials forms a complete [[ref: DTG edge]].
+
+What makes a credential an edge credential is that it is one half of such a pair: the relationship it attests to is only established when the counterparty issues the other half. Every other credential in this specification is complete on its issuer's signature alone. The requirements of this section apply to the class — a pair is required, and [Edge Verifiability](#edge-verifiability) determines when a verifier treats a pair as an edge of a particular graph — and a statement that would need the counterparty's agreement to be true is an edge credential, not a [[ref: VSC]] predicate profile (see [Statements and Establishment](#statements-and-establishment)).
 
 ### VRC (Verifiable Relationship Credential)
 
@@ -812,15 +781,9 @@ This section is normative.
 
 > **Editor's note — roles and access control:** Roles and access control policy details are primarily inferred from the issuer plus the [trust registry](https://glossary.trustoverip.org/#term:trust-registry). An earlier open question for this Working Draft was whether any of this information should be embedded in the VIC itself. It should not: what a party may *do* is conferred by a [[ref: VAC]] (see [VAC (Verifiable Authority Credential)](#vac-verifiable-authority-credential)), which can be reissued or attenuated without touching the invitation that admitted them.
 
-## Annotation Credentials
+## VPC (Verifiable Persona Credential)
 
 This section is normative.
-
-Annotation credentials **do not create graph structure**. They attach data to existing edges or parties.
-
-> **Editor's note — placement.** The [[ref: VSC]] annotates a node rather than an edge, and it is the type under which the WD02 endorsement and witness credentials now sit as profiles. The two informative categories were settled by [issue #28](https://github.com/trustoverip/dtgwg-cred-spec/issues/28); whether a statement about a node still belongs under a category named for annotating edges is an outline question for a later draft.
-
-### VPC (Verifiable Persona Credential)
 
 **Purpose:** Links a [[ref: persona]] to an existing relationship, enabling the holder to control intentional correlation across relationships.
 
@@ -849,7 +812,9 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 }
 ```
 
-### VSC (Verifiable Statement Credential)
+## VSC (Verifiable Statement Credential)
+
+This section is normative.
 
 **Purpose:** Carries a signed statement, by one [[ref: DTG node]] about another, whose meaning is fixed by a governed vocabulary. A VSC is the DTG's general-purpose claim: "I inspected this party's passport", "this party attended this event", "I witnessed this party issue this credential", "I endorse this party's skill". Each is a statement that a verifier reads and either believes or does not. Rather than give each such predicate a credential type of its own, this specification defines one type and lets a **predicate profile** fix the constraints of each predicate. The [[ref: VEC]] and the [[ref: VWC]] are the first two profiles.
 
@@ -857,7 +822,7 @@ Annotation credentials **do not create graph structure**. They attach data to ex
 
 > **Notation.** In this document `dtg:` abbreviates the DTG namespace `https://firstperson.network/credentials/dtg/v1#`, so that `dtg:witnessed` denotes `https://firstperson.network/credentials/dtg/v1#witnessed`. This is documentation notation only; on the wire a predicate is always the absolute IRI. The namespace shown is a placeholder: its home is decided in [issue #48](https://github.com/trustoverip/dtgwg-cred-spec/issues/48), and the final form carries no version segment, since predicate IRIs are compared byte-exact and must not change when a term is added (see [issue #52](https://github.com/trustoverip/dtgwg-cred-spec/issues/52)).
 
-#### Statements and Establishment
+### Statements and Establishment
 
 *This subsection is informative.*
 
@@ -887,7 +852,7 @@ A statement is **evidence**. Governance turns evidence into establishment: a [[r
 
 A VSC is **unilateral**: its issuer alone signs it, and it is complete without any counterparty's participation. A predicate that is only true when the counterparty agrees — a relationship, a membership, an appointment — is an edge, and belongs in [Edge Credentials](#edge-credentials) with an acknowledgement half, not in a profile.
 
-#### Predicate Handling
+### Predicate Handling
 
 This subsection is normative.
 
@@ -908,7 +873,7 @@ Comparison is exact, on the IRI as written. Nothing in the pipeline normalizes a
 - A predicate IRI MUST resolve to its definition (see [Predicate Profiles](#predicate-profiles)). Resolution is for the parties configuring a verifier, not for the verifier at verification time: a verifier MUST NOT need to dereference a predicate in order to verify a credential, since doing so would disclose what is being verified to whoever hosts the vocabulary and would make verification depend on that host's availability. The same principle governs digests — see [Digest Encoding](#digest-encoding).
 - A published predicate MUST NOT change meaning. A vocabulary is additive: a term, once published, is neither altered nor removed, only deprecated, and adding a term leaves every other term's IRI untouched, so the namespace carries no version segment. A JSON-LD `@context` that credentials list MUST NOT change once published; additions to it are made under a new context version IRI.
 
-#### What Verification Establishes
+### What Verification Establishes
 
 This subsection is normative.
 
@@ -919,7 +884,7 @@ Recognizing a predicate tells a verifier what a statement *means*. Verifying the
 
 A profile classifies a statement's shape. It does not narrow any obligation that applies to a DTG credential independently of its type: the `taskContext` and outcome-evidence requirements of [Trust Task Context Binding](#trust-task-context-binding), the [[ref: correlation scope]] requirements, and the status and validity checks of [Security Considerations](#security-considerations) all apply to a VSC exactly as they apply to a concrete subtype. That a VSC is verified by "signature, status, claim" describes its own content; it says nothing about the evidence its meaning may depend on.
 
-#### Predicate Profiles
+### Predicate Profiles
 
 This subsection is normative.
 
@@ -942,7 +907,7 @@ Two constraints on what may be a profile at all:
 
 > **Editor's note — where profiles live.** This specification defines the mechanism above and, for this Working Draft, the two core profiles that replace the WD02 VEC and VWC sections — they replace normative text and need a published home now. Profiles for further predicates are defined in the **DTG Predicate Vocabulary**, a repo-driven registry on the model of the ToIP glossary rather than a specification: one definition file per predicate in the format the nine points above describe, generated into a human-readable document, the vocabulary served at the DTG namespace, and a machine-readable accept-list for verifiers; governed by pull request under stated admission criteria, on its own cadence (see [Related Specifications](#related-specifications) and [issue #52](https://github.com/trustoverip/dtgwg-cred-spec/issues/52)). The two core profiles move there once it has a release. Nothing on the wire changes when a profile's text moves: the predicate IRIs live in the DTG namespace either way. This specification defines mechanisms and does not otherwise name a predicate; [Community-Defined Predicates](#community-defined-predicates) carries one illustrative example and no more. Convergence across communities is served by admitting a community predicate to the registry once it is in use by more than one community. Admission is a convenience, not a gate: because a predicate is an absolute IRI that a verifier accepts by configuration, a community that publishes a predicate under a namespace it controls can issue under it, and verifiers can accept it, without waiting on or ever seeking admission to the registry. The registry curates a shared default set; it does not decide who may make a statement.
 
-#### Statements in the Graph
+### Statements in the Graph
 
 This subsection is normative.
 
@@ -952,7 +917,7 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
 
 > **Editor's note — context terms.** The DTG `@context` is not yet published (see the editor's note in [Declaring scope](#declaring-scope)). When it is, `predicate` is expected to be defined with `"@type": "@id"`, so that JSON-LD processors treat the value as the IRI it already is; `object.value` with `"@type": "@json"`, so that a structured payload is an opaque `rdf:JSON` literal canonicalized by JCS rather than a nested graph; and `object.id` as the node identifier it is. Until the context is published, verifiers apply [Predicate Handling](#predicate-handling) to the `predicate` value as written.
 
-#### The `dtg:endorses` Profile (VEC)
+### The `dtg:endorses` Profile (VEC)
 
 **Predicate:** `dtg:endorses` (`https://firstperson.network/credentials/dtg/v1#endorses`) — the issuer asserts something favourable about the subject: a skill, a standing, a reputation. A VSC under this profile is a **verifiable endorsement credential** ([[ref: VEC]]).
 
@@ -990,7 +955,7 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
 }
 ```
 
-#### The `dtg:witnessed` Profile (VWC)
+### The `dtg:witnessed` Profile (VWC)
 
 **Predicate:** `dtg:witnessed` (`https://firstperson.network/credentials/dtg/v1#witnessed`) — the issuer attests that it observed the subject issue the credential the object names, under the conditions of a specific trust task exchange. A VSC under this profile is a **verifiable witness credential** ([[ref: VWC]]). The witness may be a person or a [[ref: VTA]] applying the witnessing policies of a [[ref: VTC]] — for example, verifying that both parties were present at the same event, or provided proof of biometric liveness at the time of relationship formation.
 
@@ -1047,7 +1012,7 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
 }
 ```
 
-#### Community-Defined Predicates
+### Community-Defined Predicates
 
 *This subsection is informative.*
 
@@ -1162,10 +1127,10 @@ This section is normative.
 
 A VAC confers permission. It differs from every other credential here in what it
 does to the graph: an edge credential establishes that two nodes are connected,
-an annotation credential attaches a claim to structure that already exists, and
-an invitation credential bootstraps a node into a community. A VAC creates none
-of those. It states what a party **may do** within a scope that some node
-governs.
+a statement or persona credential attaches a claim to a node already in the
+graph, and an invitation credential bootstraps a node into a community. A VAC
+does none of those. It states what a party **may do** within a scope that some
+node governs.
 
 The distinction that matters most is between a VAC and a [[ref: VSC]] — an
 endorsement ([[ref: VEC]]), say. An endorsement is a statement *about* a party — that they are skilled, trusted, or
@@ -1174,14 +1139,6 @@ statement. A VAC is a statement *to* a verifier: the issuer, who governs the
 scope, has decided. Conflating the two puts a decision that belongs to the
 governing party into a claim that reads as reputation, and leaves verifiers to
 infer permission from adjectives.
-
-This is a section rather than a new "Authority Credentials" category,
-following the reasoning in
-[issue #28](https://github.com/trustoverip/dtgwg-cred-spec/issues/28): a
-category with a single member is the structural problem that issue exists to
-remove, and adding a fourth one would repeat it. The [[ref: VIC]] stands as its
-own section for the same reason. The categories are informative, so a credential
-standing outside them decides nothing about its schema.
 
 **Purpose:** Confers authority on a party to perform specified actions within a
 named scope governed by the issuer.
