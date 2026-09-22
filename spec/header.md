@@ -1,22 +1,22 @@
 # Decentralized Trust Graph Credentials - Core Specification
 
 _Version:_ 1.0  
-_Document Status:_ Working Draft 0.4.0  
+_Document Status:_ Working Draft 0.5.0  
 _GitHub:_ <https://github.com/trustoverip/dtgwg-cred-spec>
 <!-- _DOI:_ To be assigned when this specification reaches ToIP Approved Deliverable status. See https://lf-toip.atlassian.net/wiki/spaces/HOME/pages/767787009/ToIP+Approved+Deliverable+Process#Persistent-DOI-Link -->
 
 _Editors:_
 
+- Martina Kolpondinos, First Person Cooperative
 - Alberto Leon, Applied Technology Lab at Harvard University
 - Brendan A. Miller, Applied Technology Lab at Harvard University
-- Geoff Turk, First Person Project
-- Martina Kolpondinos, First Person Project, Kosma Connect
-- Drummond Reed, First Person Project
+- Drummond Reed, First Person Cooperative
+- Geoff Turk, ic3 Software
 
 _Contributors:_
 
-- Sankarshan Mukhopadhyay
-- Glenn Gore
+- Glenn Gore, Affinidi Pte Ltd
+- Sankarshan Mukhopadhyay, QBF Consulting LLP
 - The participants of the Decentralized Trust Graph Working Group (DTGWG)
 
 **Abstract**
