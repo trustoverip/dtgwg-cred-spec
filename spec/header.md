@@ -1,4 +1,4 @@
-# Decentralized Trust Graph Credentials - Core Specification
+# DTG Credentials Core Specification
 
 _Version:_ 1.0  
 _Document Status:_ Working Draft 0.5.0  
