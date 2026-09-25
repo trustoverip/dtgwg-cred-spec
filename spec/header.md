@@ -7,6 +7,7 @@ _GitHub:_ <https://github.com/trustoverip/dtgwg-cred-spec>
 
 _Editors:_
 
+- Glenn Gore, Affinidi Pte Ltd
 - Martina Kolpondinos, Kosma Connect
 - Alberto Leon, Applied Technology Lab at Harvard University
 - Brendan A. Miller, Applied Technology Lab at Harvard University
@@ -15,7 +16,6 @@ _Editors:_
 
 _Contributors:_
 
-- Glenn Gore, Affinidi Pte Ltd
 - Sankarshan Mukhopadhyay, QBF Consulting LLP
 - The participants of the Decentralized Trust Graph Working Group (DTGWG)
 
