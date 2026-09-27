@@ -33,6 +33,34 @@ Informative (lowercase):
 
 > These credentials may be presented using standard VC presentation methods when privacy preservation is not desired.
 
+## Citing External Discussion
+
+Spec text states current design, not how it got there. It never cites a GitHub
+issue, pull request, or discussion number — those are process artifacts: they
+get closed, renumbered, and migrated, and mean nothing to a reader who wasn't
+in the room. A reader should be able to cite this specification on its own,
+without also chasing a link to understand what a sentence means.
+
+Say what the reader needs directly instead:
+
+- If something is settled, state it as fact.
+- If something is open or blocked, say what it depends on by name — a task
+  force, a companion specification, a primitive not yet defined — not by
+  issue number.
+- The provenance (which issue decided this, which PR implemented it) belongs
+  in that pull request's description, not in the document it changes.
+
+### Examples
+
+Avoid:
+
+> Blinding them is cross-cutting work with the ZKP task force and is tracked
+> in [#38](https://github.com/trustoverip/dtgwg-cred-spec/issues/38).
+
+Prefer:
+
+> Blinding them is cross-cutting work with the ZKP task force.
+
 ## Contributing
 
 All commits to this repository must include a `Signed-off-by` line in the commit message, indicating that the contributor has read and agrees to the [Developer Certificate of Origin (DCO)](https://developercertificate.org/):
