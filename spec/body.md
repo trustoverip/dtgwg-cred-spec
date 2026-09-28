@@ -58,7 +58,7 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
 
 ### Dual-Version Examples
 
-For readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Under a declaration that identifier is `directed`, not `pairwise`; see [Correlation Scope](#correlation-scope).
+For readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Every example declares its issuer's [[ref: correlation scope]] in `issuerScope`, and the value follows from who is issuing: a community, a witness service or another party that must be findable declares `public`; the reused member identifier declares `directed`, since it is used with the community and with other members; and the peers of a [[ref: VRC]] declare `pairwise`. A credential declares only its own issuer's scope, so the member's `directed` appears on the credentials the member issues, never on the community's grant to them — see [Correlation Scope](#correlation-scope).
 
 **v2.0 (Primary):**
 
@@ -70,6 +70,7 @@ For readability, the examples throughout this specification reuse a single membe
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
+  "issuerScope": "public",
   "validFrom": "2026-01-06T10:00:00Z",
   "validUntil": "2027-01-06T10:00:00Z",
   "credentialSubject": {
@@ -97,6 +98,7 @@ For readability, the examples throughout this specification reuse a single membe
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
+  "issuerScope": "public",
   "issuanceDate": "2026-01-06T10:00:00Z",
   "expirationDate": "2027-01-06T10:00:00Z",
   "credentialSubject": {
@@ -117,9 +119,9 @@ For readability, the examples throughout this specification reuse a single membe
 
 ## Correlation Scope
 
-This section is normative, except where a subsection is marked informative. Its requirements apply to a **[[ref: correlation scope]]** that has been declared; this version does not yet define where a declaration is carried (see [Declaring scope](#declaring-scope)), so no credential is non-conforming for the absence of one.
+This section is normative, except where a subsection is marked informative. Every DTG credential declares the **[[ref: correlation scope]]** of its issuer's identifier in the REQUIRED `issuerScope` property (see [Declaring scope](#declaring-scope) and [Base Structure](#base-structure)); the requirements of this section apply to that declaration.
 
-A [[ref: DTG verifiable identifier]] MAY carry a declared correlation scope: the breadth over which its holder intends it to be correlated. Scope is declared by the holder, and is independent of the role the holder plays — which is established by the credentials the identifier appears in. A role may nonetheless constrain which scopes a holder can *truthfully* declare, as it does for a [[ref: VTC]]'s own identifier and for a [[ref: VWC]] witness's; a role never supplies the scope, it only rules some declarations out.
+A [[ref: DTG verifiable identifier]] carries a declared correlation scope: the breadth over which its holder intends it to be correlated. Scope is declared by the holder, and is independent of the role the holder plays — which is established by the credentials the identifier appears in. A role may nonetheless constrain which scopes a holder can *truthfully* declare, as it does for a [[ref: VTC]]'s own identifier and for a [[ref: VWC]] witness's; a role never supplies the scope, it only rules some declarations out.
 
 | Scope | Known to | Holder's intent |
 |---|---|---|
@@ -170,12 +172,10 @@ A declaration is only meaningful if a verifier can read it. Two placements were 
 1. **In the credential, by the party whose identifier it is.** Each credential declares the scope of its *issuer's* identifier — the one party in a position to speak for it. Bidirectional [[ref: DTG edges]] make this complete on their own: in a [[ref: VMC]] pair the community declares its own scope in the grant and the member declares theirs in the acknowledgement, so both halves of the edge carry a first-party declaration.
 2. **In the DID document**, resolved with the identifier. This is not available where it is most needed. A `did:key` document, and a `did:peer` numalgo-0 document, are derived from the identifier value — there is no document to add a property to — and those are the methods [DID Method Considerations](#did-method-considerations) recommends for `pairwise` and `directed` identifiers. Encoding scope into the identifier value itself would place the declaration where this section forbids a verifier from reading one, and resolving a document to learn the scope has the observability cost that [Privacy Considerations](#privacy-considerations) records for the resolution layer.
 
-The declaration is therefore carried in the credential. Two consequences follow:
+The declaration is therefore carried in the credential, as the top-level `issuerScope` property that [Base Structure](#base-structure) defines: exactly one of `pairwise`, `directed` or `public`, declaring the scope of the identifier in `issuer`. Two consequences follow:
 
 - A declaration is a property of the identifier, not of a credential. All credentials issued under one identifier MUST declare the same scope; a contradiction between two of them falsifies the declaration, on the same footing as reuse of a `pairwise` identifier.
-- A first-party declaration covers only an issuer's own identifier. In a bidirectional [[ref: DTG edge]] the reciprocal credential supplies the other half, but until that half exists — a membership grant not yet acknowledged — the subject's scope is undeclared, and for [[ref: VPCs]], [[ref: VICs]] and [[ref: VSCs]] no credential declares the subject's scope at all.
-
-> **Editor's note:** The property that carries the declaration, and its `@context` term, are not yet named. Until they are, the requirements of this section bind a declaration that has been made and do not require one; the examples in this specification carry no declaration.
+- A first-party declaration covers only an issuer's own identifier. A credential MUST NOT restate the scope of any other identifier it names, including its subject's or, in a bidirectional edge, its counterparty's; a verifier that needs the counterparty's scope reads it from a credential the counterparty issued, or does without. In a bidirectional [[ref: DTG edge]] the reciprocal credential supplies the other half, but until that half exists — a membership grant not yet acknowledged — the subject's scope is undeclared, and for [[ref: VPCs]], [[ref: VICs]] and [[ref: VSCs]] no credential declares the subject's scope at all.
 
 ## Base Structure
 
@@ -185,9 +185,10 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 **Schema:**
 
-- `@context` (array, REQUIRED): MUST include `"https://www.w3.org/ns/credentials/v2"` and `"https://registry.trustoverip.org/dtg/context/v1"`, plus any additional contexts required by the proof type
+- `@context` (array, REQUIRED): MUST list `"https://www.w3.org/ns/credentials/v2"` first and `"https://registry.trustoverip.org/dtg/context/v1"` second, followed by any contexts a proof type, a predicate profile or a community vocabulary requires. The DTG context IRI is compared as an exact string, in exactly those bytes: scheme `https`, host `registry.trustoverip.org` with no `www.`, no trailing slash. See [Context Versions](#context-versions) below
 - `type` (array, REQUIRED): MUST include `"VerifiableCredential"`, `"DTGCredential"`, and exactly one concrete subtype
-- `issuer` (string, REQUIRED): DID of the issuing entity. Its [[ref: correlation scope]] is declared by the holder rather than encoded in the identifier — see [Correlation Scope](#correlation-scope)
+- `issuer` (string, REQUIRED): DID of the issuing entity. Its [[ref: correlation scope]] is declared in `issuerScope` rather than encoded in the identifier — see [Correlation Scope](#correlation-scope)
+- `issuerScope` (string, REQUIRED): the [[ref: correlation scope]] its holder declares for the identifier in `issuer`, exactly one of `pairwise`, `directed` or `public`, compared case-sensitively. A credential declares only its own issuer's scope, never that of its subject or counterparty ([Declaring scope](#declaring-scope)). A verifier MUST reject a credential whose `issuerScope` is absent or is not one of the three values. The context defines `issuerScope` as a plain string; the constraint on its value is this specification's, and the schema of every concrete type carries it
 - `validFrom` (string, REQUIRED): ISO 8601 datetime (`issuanceDate` in v1.1)
 - `validUntil` (string, OPTIONAL): ISO 8601 datetime (`expirationDate` in v1.1)
 - `credentialSubject` (object, REQUIRED):
@@ -207,6 +208,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:example:vtcCommunityDid",
+  "issuerScope": "public",
   "validFrom": "2026-01-06T10:00:00Z",
   "validUntil": "2027-01-06T10:00:00Z",
   "credentialSubject": {
@@ -222,6 +224,16 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
   }
 }
 ```
+
+### Context Versions
+
+The credential context is published by the [DTG VSC Predicate Registry](#related-specifications) as one frozen document per version. `https://registry.trustoverip.org/dtg/context/v1` is the version this Working Draft requires. Once published, a context version is never edited, not even editorially, and every version ever published stays served at its IRI; a change to what credentials carry — a term added, renamed or retyped, including an additional member of a predicate profile such as `witnessContext` — is a new version, listed in a new revision of this section. Every term the context defines is `@protected`, and every type and property IRI it defines is minted under the unversioned `https://registry.trustoverip.org/dtg/credentials#`, so a term keeps its IRI across context versions.
+
+The `v1` document is byte-frozen. Its SHA-256 digest, as a Multihash encoded in Multibase base-58-btc as [Digest Encoding](#digest-encoding) specifies, is `zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh` (hexadecimal `3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448`). Verifiers SHOULD use a local copy of the context matching this digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
+
+The order of `@context` matters. Every term the DTG context defines is protected, including generic names — `predicate` and `object` at the top level, and `scope`, `parent`, `event` and `method` inside the objects that define them — and JSON-LD rejects a document in which a later context redefines a protected term at the level where it is protected. A proof suite, predicate profile or community context listed after the DTG context therefore MUST NOT redefine a term the DTG context defines at the same level; a profile or community that needs a term of its own chooses a name the DTG context does not define, or scopes it under a property the DTG context does not define.
+
+Credentials issued before the Implementers Draft of this specification are not conformant to it, whatever context IRI they list. Contexts published before `v1` under other IRIs are not recognized, and a verifier is not required to process a credential that lists one.
 
 ### DID Method Considerations
 
@@ -294,7 +306,8 @@ What makes a credential an edge credential is that it is one half of such a pair
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"RelationshipCredential"`
-- `issuer` (string, REQUIRED): DID of the source party. This specification places no constraint on its [[ref: correlation scope]], which is the source party's own declaration — see [Correlation Scope](#correlation-scope)
+- `issuer` (string, REQUIRED): DID of the source party
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure). This specification places no constraint on the value, which is the source party's own declaration; `pairwise` is RECOMMENDED (see the note below)
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the target party as used in this relationship
 
@@ -308,6 +321,7 @@ What makes a credential an edge credential is that it is one half of such a pair
   ],
   "type": ["VerifiableCredential", "DTGCredential", "RelationshipCredential"],
   "issuer": "did:peer:2.Ez6LSbysKZ...",
+  "issuerScope": "pairwise",
   "validFrom": "2026-01-06T10:00:00Z",
   "credentialSubject": {
     "id": "did:peer:2.Ez6LSpSrLxn..."
@@ -353,6 +367,9 @@ A VMC is issued in each direction of a membership edge. The two directions are d
 - `issuer` (string, REQUIRED):
   - For the community-issued VMC (the membership grant): DID of the VTC or VTN
   - For the member-issued VMC (the membership acknowledgement): DID of the member — the same identifier the grant names as its subject
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure):
+  - For the community-issued VMC: `public` — the only scope a community can truthfully declare (see below)
+  - For the member-issued VMC: whatever the member declared for the identifier the grant names
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
     - For the community-issued VMC: DID of the member (a person, device, agent, service, or, for VTN-to-VTC membership, a member VTC)
@@ -371,6 +388,7 @@ A community's own identifier can only truthfully be declared `public`: a communi
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
+  "issuerScope": "public",
   "validFrom": "2026-01-06T10:00:00Z",
   "credentialSubject": {
     "id": "did:key:z6MkpTHR8VNs..."
@@ -389,6 +407,7 @@ A community's own identifier can only truthfully be declared `public`: a communi
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
+  "issuerScope": "directed",
   "validFrom": "2026-01-06T10:05:00Z",
   "credentialSubject": {
     "id": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -502,6 +521,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
 
 - `type` (array, REQUIRED): MUST include `"DelegationCredential"`
 - `issuer` (string, REQUIRED): DID of the delegator — a person, device, or agent; a [[ref: VTC]] where a community delegates to a [[ref: VTA]] or other service; or an identifier under which a [[ref: persona]] is asserted, where the delegation is made under that persona. The delegator chooses the identifier and the [[ref: correlation scope]] it declares for it; see [Privacy Considerations](#privacy-considerations) item 10
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure). A VDC is presented to every verifier the delegate acts toward, each of whom sees the delegator's identifier, so a grant's issuer can seldom truthfully declare `pairwise`; `directed` is the ordinary declaration (see [Privacy Considerations](#privacy-considerations) item 10)
 - `validUntil` (string, REQUIRED): ISO 8601 datetime (`expirationDate` in v1.1). Unlike the base structure, `validUntil` is REQUIRED for a VDC: an appointment with no expiry cannot be reasoned about by a verifier that cannot reach the delegator.
 - `credentialStatus` (object, CONDITIONAL): a W3C VC status mechanism through which a verifier can determine whether the delegation has been revoked. A verifier MUST be able to establish that an appointment is currently in force without contacting the delegator. Two things satisfy that: a `validUntil` short enough that expiry alone bounds the exposure, with the delegator withdrawing the appointment by declining to re-issue; or a `credentialStatus` the verifier can check. A VDC MUST carry `credentialStatus` where its validity period exceeds the freshness window the governing [[ref: VTC]] or [[ref: VTN]] defines for delegations, and MAY omit it otherwise. Issuers SHOULD prefer short validity and re-issuance wherever the delegator is reachable, because a status check is a live lookup that reveals the verification event to whoever hosts the status list (see [Privacy Considerations](#privacy-considerations) item 12); a long-lived appointment made in advance of a delegator's unavailability is the case `credentialStatus` exists for. The status mechanism used is determined by the governing VTC or VTN.
 - `credentialSubject` (object, REQUIRED):
@@ -522,6 +542,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
   ],
   "type": ["VerifiableCredential", "DTGCredential", "DelegationCredential"],
   "issuer": "did:peer:2.Ez6LSbysKZ...",
+  "issuerScope": "directed",
   "validFrom": "2026-01-06T10:00:00Z",
   "validUntil": "2026-04-06T10:00:00Z",
   "credentialStatus": {
@@ -552,6 +573,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
   ],
   "type": ["VerifiableCredential", "DTGCredential", "DelegationCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
+  "issuerScope": "directed",
   "validFrom": "2026-01-06T10:05:00Z",
   "validUntil": "2026-04-06T10:00:00Z",
   "credentialSubject": {
@@ -636,6 +658,7 @@ This section is normative.
 - `issuer` (string, REQUIRED):
   - For VTC invitation: DID of the VTC, or of an authorized member (per policy)
   - For VTN invitation: DID of the VTN, or of a member VTC (per policy)
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); `public` where the issuer is the VTC or VTN itself
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
     - For VTC invitation: DID of the prospective member, or of a prospective member VTC
@@ -651,6 +674,7 @@ This section is normative.
   ],
   "type": ["VerifiableCredential", "DTGCredential", "InvitationCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
+  "issuerScope": "directed",
   "validFrom": "2026-01-06T10:00:00Z",
   "validUntil": "2026-02-06T10:00:00Z",
   "credentialSubject": {
@@ -671,7 +695,8 @@ This section is normative.
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"PersonaCredential"`
-- `issuer` (string, REQUIRED): DID under which the persona is asserted, ordinarily declared `directed` — a persona exists to be recognized across a set of counterparties the holder chooses
+- `issuer` (string, REQUIRED): DID under which the persona is asserted
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); ordinarily `directed` — a persona exists to be recognized across a set of counterparties the holder chooses
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the counterparty as used in the relationship
 
@@ -685,6 +710,7 @@ This section is normative.
   ],
   "type": ["VerifiableCredential", "DTGCredential", "PersonaCredential"],
   "issuer": "did:key:z6MkrKqT9pL...",
+  "issuerScope": "directed",
   "validFrom": "2026-01-06T10:00:00Z",
   "credentialSubject": {
     "id": "did:peer:2.Ez6LSpSrLxn..."
@@ -719,7 +745,8 @@ A statement is **evidence**. Governance turns evidence into establishment: a [[r
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"StatementCredential"` and MUST NOT include any other concrete `DTGCredential` subtype. The predicate, not the type array, identifies the profile.
-- `issuer` (string, REQUIRED): DID of the party making the statement. Its [[ref: correlation scope]] is declared by the holder; a profile MAY state the minimum scope its issuer can truthfully declare — see [Correlation Scope](#correlation-scope)
+- `issuer` (string, REQUIRED): DID of the party making the statement
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure). A profile MAY state the minimum scope its issuer can truthfully declare, and a verifier MUST NOT accept a statement under such a profile whose `issuerScope` is narrower than that minimum — see [Correlation Scope](#correlation-scope)
 - `taskContext` (string, OPTIONAL unless the profile requires it): see [Trust Task Context Binding](#trust-task-context-binding)
 - `taskDigestMultibase` (string, REQUIRED wherever the profile requires `taskContext`, OPTIONAL otherwise): see [The `taskDigestMultibase` Property](#the-taskdigestmultibase-property)
 - `credentialSubject` (object, REQUIRED):
@@ -786,7 +813,7 @@ Two constraints on what may be a profile at all:
 - A predicate that is only meaningful inside the exchange in which it was issued is a trust task artifact, not a statement; see [Credentials versus Trust Task Artifacts](#credentials-versus-trust-task-artifacts).
 - A predicate whose truth depends on the completion of more than one trust task, where those tasks do not nest, MUST be expressed as one VSC per task, each carrying that task's `taskContext`, never as a single credential with more than one implicit referent. Which exchange a nested `taskContext` names is defined by the Trust Tasks specification's rule for [naming an exchange from outside the framework](https://trustoverip.github.io/dtgwg-trust-tasks-spec/#naming-an-exchange-from-outside-the-framework): the innermost exchange that attests the event.
 
-> **Editor's note — where profiles live.** This specification defines the mechanism above and, for this Working Draft, the two core profiles that replace the WD02 VEC and VWC sections — they replace normative text and need a published home now. Profiles for further predicates are defined in the **DTG Predicate Vocabulary**, a repo-driven registry on the model of the ToIP glossary rather than a specification: one definition file per predicate in the format the nine points above describe, generated into a human-readable document, the vocabulary served at the DTG namespace, and a machine-readable accept-list for verifiers; governed by pull request under stated admission criteria, on its own cadence (see [Related Specifications](#related-specifications)). The two core profiles move there once it has a release. Nothing on the wire changes when a profile's text moves: the predicate IRIs live in the DTG namespace either way. This specification defines mechanisms and does not otherwise name a predicate; [Community-Defined Predicates](#community-defined-predicates) carries one illustrative example and no more. Convergence across communities is served by admitting a community predicate to the registry once it is in use by more than one community. Admission is a convenience, not a gate: because a predicate is an absolute IRI that a verifier accepts by configuration, a community that publishes a predicate under a namespace it controls can issue under it, and verifiers can accept it, without waiting on or ever seeking admission to the registry. The registry curates a shared default set; it does not decide who may make a statement.
+> **Editor's note — where profiles live.** This specification defines the mechanism above and, for this Working Draft, the two core profiles that replace the WD02 VEC and VWC sections — they replace normative text and need a published home now. Profiles for further predicates are defined in the **DTG VSC Predicate Registry**, a repo-driven registry on the model of the ToIP glossary rather than a specification: one definition file per predicate in the format the nine points above describe, generated into a human-readable document served at the predicate namespace, and a machine-readable accept-list for verifiers; governed by pull request under stated admission criteria, on its own cadence (see [Related Specifications](#related-specifications)). The two core profiles move there once it has a release. Nothing on the wire changes when a profile's text moves: the predicate IRIs live in the DTG namespace either way. This specification defines mechanisms and does not otherwise name a predicate; [Community-Defined Predicates](#community-defined-predicates) carries one illustrative example and no more. Convergence across communities is served by admitting a community predicate to the registry once it is in use by more than one community. Admission is a convenience, not a gate: because a predicate is an absolute IRI that a verifier accepts by configuration, a community that publishes a predicate under a namespace it controls can issue under it, and verifiers can accept it, without waiting on or ever seeking admission to the registry. The registry curates a shared default set; it does not decide who may make a statement.
 
 ### Statements in the Graph
 
@@ -796,7 +823,7 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
 
 > **Note — relationship to RDF.** *Informative.* A VSC has the shape of a reified RDF statement: `credentialSubject.id`, `predicate` and `object` play the roles of `rdf:subject`, `rdf:predicate` and `rdf:object`, and the credential's `issuer`, validity and `proof` are the annotations RDF reification never had a standard way to carry. In RDF 1.2 terms the credential is the *reifier* of the triple it quotes. The correspondence is informative: under the JSON-LD contexts this specification requires, a VSC does not expand to an `rdf:Statement`, because `id` names the `credentialSubject` node rather than a statement node. This is why the graph rule above is stated on credentials rather than on triples. Making the correspondence exact is possible later by moving the subject out of `id` into a dedicated member, and is deferred until there is a consumer for the expansion.
 
-> **Editor's note — context terms.** The DTG `@context` is not yet published (see the editor's note in [Declaring scope](#declaring-scope)). When it is, `predicate` is expected to be defined with `"@type": "@id"`, so that JSON-LD processors treat the value as the IRI it already is; `object.value` with `"@type": "@json"`, so that a structured payload is an opaque `rdf:JSON` literal canonicalized by JCS rather than a nested graph; and `object.id` as the node identifier it is. Until the context is published, verifiers apply [Predicate Handling](#predicate-handling) to the `predicate` value as written.
+> **Note — context terms.** *Informative.* The DTG context ([Context Versions](#context-versions)) defines `predicate` with `"@type": "@id"`, so that JSON-LD processors treat the value as the IRI it already is; `object.value` with `"@type": "@json"`, so that a structured payload is an opaque `rdf:JSON` literal canonicalized by JCS rather than a nested graph; and `object.id` as the node identifier it is. The additional members of a core profile — a [[ref: VWC]]'s `witnessContext` and its `event`, `sessionId` and `method` — are defined in the same context, so adding a member to a profile is a new context version. None of this changes what a verifier does: [Predicate Handling](#predicate-handling) applies to the `predicate` value as written, without context processing.
 
 ### The `dtg:endorses` Profile (VEC)
 
@@ -820,6 +847,7 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
+  "issuerScope": "directed",
   "validFrom": "2026-01-06T10:00:00Z",
   "credentialSubject": {
     "id": "did:key:z6MkpTHR8VNs...",
@@ -874,6 +902,7 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:webvh:QmVzTd9hRkPqLu4WgXyN...:witness-service.example",
+  "issuerScope": "public",
   "validFrom": "2026-01-06T10:00:00Z",
   "taskContext": "urn:uuid:2c7f5d19-6e0b-4c3d-8a41-9b2e6f0d4c88",
   "taskDigestMultibase": "zQmWhCFfStzUE4HGseiQ1XWi2eEp1GTQEKnt2jyBe7uqzXD",
@@ -907,6 +936,7 @@ A community defines a predicate by publishing, under a namespace it controls, th
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:key:z6Mk...observer",
+  "issuerScope": "directed",
   "validFrom": "2026-09-08T10:00:00Z",
   "credentialSubject": {
     "id": "did:key:z6Mk...subject",
@@ -966,6 +996,7 @@ It also removes a difficulty. A vetting statement is made before any edge exists
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
+  "issuerScope": "directed",
   "validFrom": "2026-09-20T10:14:00Z",
   "validUntil": "2027-01-18T10:14:00Z",
   "taskContext": "urn:uuid:5b0c7e0e-3f7a-4c52-9d0e-2a7c1f6b9e41",
@@ -1016,6 +1047,7 @@ The distinction that matters most is between a VAC and a [[ref: VSC]] — an end
 
 - `type` (array, REQUIRED): MUST include `"AuthorityCredential"`
 - `issuer` (string, REQUIRED): DID of the party that governs the scope — a [[ref: VTC]] or [[ref: VTN]], another [[ref: DTG node]] such as a shared resource or service, or a holder attenuating authority they themselves hold (see *Attenuation* below). As for every DTG credential, the issuer's [[ref: correlation scope]] is declared rather than encoded in the identifier; see [Correlation Scope](#correlation-scope)
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); `public` where the issuer is the governing party, and the holder's own declaration on an attenuated VAC
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the party receiving the authority
   - `authority` (object, REQUIRED):
@@ -1036,6 +1068,7 @@ The distinction that matters most is between a VAC and a [[ref: VSC]] — an end
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:webvh:z6Mkw...:example.com:rooms:7f3a",
+  "issuerScope": "public",
   "validFrom": "2026-01-06T10:00:00Z",
   "validUntil": "2026-07-06T10:00:00Z",
   "credentialStatus": {
@@ -1096,6 +1129,7 @@ This ceiling and `maxAttenuation` are different controls and a chain MUST satisf
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
+  "issuerScope": "directed",
   "validFrom": "2026-01-06T10:00:00Z",
   "validUntil": "2026-01-06T14:00:00Z",
   "credentialSubject": {
@@ -1293,6 +1327,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 5. **Context collapse.** A credential presented outside the trust task exchange in which it was issued may be misinterpreted as evidence of a completed ceremony. The requirements of [Trust Task Context Binding](#trust-task-context-binding) exist to prevent this class of attack and must be enforced by verifiers.
 6. **Digest integrity.** A verifier relying on a [[ref: VSC]]'s `object.digestMultibase` — a VWC's binding to a specific edge, for instance — must have the referenced credential available, recompute the digest over its JCS (RFC 8785) canonical form with the top-level `proof` member removed, and confirm it matches — comparing decoded digest bytes rather than encoded strings, as set out in [Digest Encoding](#digest-encoding). A mismatch invalidates the statement. Without the referenced credential in hand, the digest cannot be resolved to a credential, and a VWC should not be treated as evidence of which edge was witnessed. The same requirement applies to the `digestMultibase` that a member-issued VMC carries of the community-issued VMC it acknowledges, to a VDC's `parent` and `accepts`, and to a VAC's `authority.parent`: a mismatch invalidates the acknowledgement, the derivation, or the attenuation. The same discipline applies to `taskDigestMultibase`, recomputed over the document `taskContext` names as [The `taskDigestMultibase` Property](#the-taskdigestmultibase-property) sets out.
 7. **Predicate acceptance.** A [[ref: VSC]] whose signature and status verify is not thereby meaningful. A verifier must apply [Predicate Handling](#predicate-handling): reject any predicate it has not been configured to accept, never infer meaning from a predicate's spelling or from a published equivalence, and never draw a conclusion a profile does not state ([What Verification Establishes](#what-verification-establishes)). A well-formed statement under an unrecognized predicate is the intended shape of an attack that names authority, membership, or personhood in a string.
+8. **Context integrity.** The DTG context feeds canonicalization under any proof suite that expands JSON-LD, so a verifier holding different context bytes from the issuer computes a different signature input. Verifiers should bundle the context and check it against the digest in [Context Versions](#context-versions) rather than fetching it, and should treat a credential listing an unrecognized DTG context version as one they cannot verify.
 
 ### Membership and invitation
 
@@ -1379,9 +1414,9 @@ This specification defines normative requirements, using the keywords defined in
 
 ### Conformance Targets
 
-1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type — for a [[ref: VSC]], including the constraints of its predicate's profile — including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding). Where it declares a [[ref: correlation scope]] for its identifier, a conforming issuer MUST satisfy the declaration requirements of [Correlation Scope](#correlation-scope); a conforming issuer that is a [[ref: VTC]] issuing [[ref: VMCs]] MUST also publish its member-identifier disclosure practice as [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone) requires.
+1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type — for a [[ref: VSC]], including the constraints of its predicate's profile — including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding). A conforming issuer MUST declare the [[ref: correlation scope]] of its identifier in `issuerScope` on every credential it issues and MUST satisfy the declaration requirements of [Correlation Scope](#correlation-scope); a conforming issuer that is a [[ref: VTC]] issuing [[ref: VMCs]] MUST also publish its member-identifier disclosure practice as [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone) requires.
 2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and, when presenting a `taskContext`-bearing credential as evidence of task completion, MUST include matching outcome evidence with the presentation, as [Outcome Interpretability](#outcome-interpretability) requires.
-3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support). Where a presented identifier carries a declared [[ref: correlation scope]], a conforming verifier MUST apply the verifier requirements of [Correlation Scope](#correlation-scope). A verifier that accepts [[ref: VACs]] MUST additionally implement the chain verification rule of [Attenuation](#attenuation), the status-checking rule of [Withdrawal](#withdrawal), and the key-control rule of [Invocation](#invocation). A verifier that accepts [[ref: VSCs]] MUST additionally implement [Predicate Handling](#predicate-handling) and the bounds of [What Verification Establishes](#what-verification-establishes).
+3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support). A conforming verifier MUST reject a credential whose `issuerScope` is absent or invalid, as [Base Structure](#base-structure) requires, and MUST apply the verifier requirements of [Correlation Scope](#correlation-scope) to the declared scope. A verifier that accepts [[ref: VACs]] MUST additionally implement the chain verification rule of [Attenuation](#attenuation), the status-checking rule of [Withdrawal](#withdrawal), and the key-control rule of [Invocation](#invocation). A verifier that accepts [[ref: VSCs]] MUST additionally implement [Predicate Handling](#predicate-handling) and the bounds of [What Verification Establishes](#what-verification-establishes).
 
 ### Conformance Tests
 
