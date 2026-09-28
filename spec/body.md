@@ -66,7 +66,7 @@ For readability, the examples throughout this specification reuse a single membe
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -92,7 +92,7 @@ For readability, the examples throughout this specification reuse a single membe
 {
   "@context": [
     "https://www.w3.org/2018/credentials/v1",
-    "https://firstperson.network/credentials/dtg/v1",
+    "https://registry.trustoverip.org/dtg/context/v1",
     "https://w3id.org/security/data-integrity/v2"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
@@ -287,7 +287,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 **Schema:**
 
-- `@context` (array, REQUIRED): MUST include `"https://www.w3.org/ns/credentials/v2"` and `"https://firstperson.network/credentials/dtg/v1"`, plus any additional contexts required by the proof type
+- `@context` (array, REQUIRED): MUST include `"https://www.w3.org/ns/credentials/v2"` and `"https://registry.trustoverip.org/dtg/context/v1"`, plus any additional contexts required by the proof type
 - `type` (array, REQUIRED): MUST include `"VerifiableCredential"`, `"DTGCredential"`, and exactly one concrete subtype
 - `issuer` (string, REQUIRED): DID of the issuing entity. Its [[ref: correlation scope]] is declared by the holder rather than encoded in the identifier — see [Correlation Scope](#correlation-scope)
 - `validFrom` (string, REQUIRED): ISO 8601 datetime (`issuanceDate` in v1.1)
@@ -305,7 +305,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:example:vtcCommunityDid",
@@ -406,7 +406,7 @@ What makes a credential an edge credential is that it is one half of such a pair
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "RelationshipCredential"],
   "issuer": "did:peer:2.Ez6LSbysKZ...",
@@ -486,7 +486,7 @@ A community's own identifier can only truthfully be declared `public`: a communi
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
@@ -504,7 +504,7 @@ A community's own identifier can only truthfully be declared `public`: a communi
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
@@ -637,7 +637,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "DelegationCredential"],
   "issuer": "did:peer:2.Ez6LSbysKZ...",
@@ -667,7 +667,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "DelegationCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
@@ -766,7 +766,7 @@ This section is normative.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "InvitationCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
@@ -800,7 +800,7 @@ This section is normative.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "PersonaCredential"],
   "issuer": "did:key:z6MkrKqT9pL...",
@@ -820,7 +820,7 @@ This section is normative.
 
 > **Editor's note — this Working Draft.** The VSC replaces the concrete `EndorsementCredential` and `WitnessCredential` subtypes of Working Draft 02, which are now the [`dtg:endorses`](#the-dtgendorses-profile-vec) and [`dtg:witnessed`](#the-dtgwitnessed-profile-vwc) profiles below. The names VEC and VWC are retained for those profiles. The type strings `EndorsementCredential` and `WitnessCredential` are not retained: a VSC carries exactly one channel of meaning, its `predicate`, so that a type string and a predicate can never disagree. See [issue #45](https://github.com/trustoverip/dtgwg-cred-spec/issues/45).
 
-> **Notation.** In this document `dtg:` abbreviates the DTG namespace `https://firstperson.network/credentials/dtg/v1#`, so that `dtg:witnessed` denotes `https://firstperson.network/credentials/dtg/v1#witnessed`. This is documentation notation only; on the wire a predicate is always the absolute IRI. The namespace shown is a placeholder: its home is decided in [issue #48](https://github.com/trustoverip/dtgwg-cred-spec/issues/48), and the final form carries no version segment, since predicate IRIs are compared byte-exact and must not change when a term is added (see [issue #52](https://github.com/trustoverip/dtgwg-cred-spec/issues/52)).
+> **Notation.** In this document `dtg:` abbreviates a predicate's current name in the DTG VSC Predicate Registry: `dtg:witnessed` denotes `https://registry.trustoverip.org/dtg/vsc/witnessed/1`. This is documentation notation only; on the wire a predicate is always the absolute IRI. The three DTG namespaces version differently: a **predicate** carries its own integer path segment (`.../witnessed/1`, `.../witnessed/2`, …), each `<name>/<n>` immutable and distinct; **vocabulary** — types and properties such as `DTGCredential` and `taskContext`, at the unversioned `https://registry.trustoverip.org/dtg/credentials#` — has no numbered-sibling convention, so a changed meaning would be a new term, not a new version; the **context**, `https://registry.trustoverip.org/dtg/context/v1`, versions as one frozen document per `vN`, with every prior version served forever.
 
 ### Statements and Establishment
 
@@ -919,7 +919,7 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
 
 ### The `dtg:endorses` Profile (VEC)
 
-**Predicate:** `dtg:endorses` (`https://firstperson.network/credentials/dtg/v1#endorses`) — the issuer asserts something favourable about the subject: a skill, a standing, a reputation. A VSC under this profile is a **verifiable endorsement credential** ([[ref: VEC]]).
+**Predicate:** `dtg:endorses` (`https://registry.trustoverip.org/dtg/vsc/endorses/1`) — the issuer asserts something favourable about the subject: a skill, a standing, a reputation. A VSC under this profile is a **verifiable endorsement credential** ([[ref: VEC]]).
 
 - **Classification:** evidence. The vocabulary of what may be endorsed, and what weight an endorsement carries, is defined by the governing [[ref: VTC]] or [[ref: VTN]]; the "verifiability" of an endorsement applies to the issuer's signature, not to the truth of the assertion.
 - **Object:** `value`, whose structure is defined by the governing community's endorsement vocabulary.
@@ -935,14 +935,14 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:key:z6MkhaXgBZD...",
   "validFrom": "2026-01-06T10:00:00Z",
   "credentialSubject": {
     "id": "did:key:z6MkpTHR8VNs...",
-    "predicate": "https://firstperson.network/credentials/dtg/v1#endorses",
+    "predicate": "https://registry.trustoverip.org/dtg/vsc/endorses/1",
     "object": {
       "value": {
         "type": "SkillEndorsement",
@@ -957,7 +957,7 @@ A VSC's issuer is part of the statement. An implementation that assembles VSCs i
 
 ### The `dtg:witnessed` Profile (VWC)
 
-**Predicate:** `dtg:witnessed` (`https://firstperson.network/credentials/dtg/v1#witnessed`) — the issuer attests that it observed the subject issue the credential the object names, under the conditions of a specific trust task exchange. A VSC under this profile is a **verifiable witness credential** ([[ref: VWC]]). The witness may be a person or a [[ref: VTA]] applying the witnessing policies of a [[ref: VTC]] — for example, verifying that both parties were present at the same event, or provided proof of biometric liveness at the time of relationship formation.
+**Predicate:** `dtg:witnessed` (`https://registry.trustoverip.org/dtg/vsc/witnessed/1`) — the issuer attests that it observed the subject issue the credential the object names, under the conditions of a specific trust task exchange. A VSC under this profile is a **verifiable witness credential** ([[ref: VWC]]). The witness may be a person or a [[ref: VTA]] applying the witnessing policies of a [[ref: VTC]] — for example, verifying that both parties were present at the same event, or provided proof of biometric liveness at the time of relationship formation.
 
 Because the meaning of a witness attestation depends on the conditions under which the witnessing occurred, a VWC MUST be bound to the [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange in which it was issued via `taskContext` (see [Trust Task Context Binding](#trust-task-context-binding)).
 
@@ -989,7 +989,7 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:webvh:QmVzTd9hRkPqLu4WgXyN...:witness-service.example",
@@ -998,7 +998,7 @@ A VWC's `credentialSubject.id` and `taskContext` alone identify only the observe
   "taskDigestMultibase": "zQmWhCFfStzUE4HGseiQ1XWi2eEp1GTQEKnt2jyBe7uqzXD",
   "credentialSubject": {
     "id": "did:key:z6MkpTHR8VNs...",
-    "predicate": "https://firstperson.network/credentials/dtg/v1#witnessed",
+    "predicate": "https://registry.trustoverip.org/dtg/vsc/witnessed/1",
     "object": {
       "digestMultibase": "zQmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n"
     },
@@ -1022,7 +1022,7 @@ A community defines a predicate by publishing, under a namespace it controls, th
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
   "issuer": "did:key:z6Mk...observer",
@@ -1080,7 +1080,7 @@ It also removes a difficulty. A vetting statement is made before any edge exists
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1",
+    "https://registry.trustoverip.org/dtg/context/v1",
     "https://w3id.org/security/suites/ed25519-2020/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "StatementCredential"],
@@ -1196,7 +1196,7 @@ named scope governed by the issuer.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:webvh:z6Mkw...:example.com:rooms:7f3a",
@@ -1335,7 +1335,7 @@ and the reason a VAC and a [[ref: VMC]] stay separate credentials.
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://firstperson.network/credentials/dtg/v1"
+    "https://registry.trustoverip.org/dtg/context/v1"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
