@@ -117,19 +117,9 @@ For readability, the examples throughout this specification reuse a single membe
 
 ## Correlation Scope
 
-This section is normative, except where a subsection is marked informative. Its
-requirements apply to a **[[ref: correlation scope]]** that has been declared;
-this version does not yet define where a declaration is carried (see
-[Declaring scope](#declaring-scope)), so no credential is non-conforming for the
-absence of one.
+This section is normative, except where a subsection is marked informative. Its requirements apply to a **[[ref: correlation scope]]** that has been declared; this version does not yet define where a declaration is carried (see [Declaring scope](#declaring-scope)), so no credential is non-conforming for the absence of one.
 
-A [[ref: DTG verifiable identifier]] MAY carry a declared correlation scope: the
-breadth over which its holder intends it to be correlated. Scope is declared by
-the holder, and is independent of the role the holder plays — which is
-established by the credentials the identifier appears in. A role may nonetheless
-constrain which scopes a holder can *truthfully* declare, as it does for a
-[[ref: VTC]]'s own identifier and for a [[ref: VWC]] witness's; a role never
-supplies the scope, it only rules some declarations out.
+A [[ref: DTG verifiable identifier]] MAY carry a declared correlation scope: the breadth over which its holder intends it to be correlated. Scope is declared by the holder, and is independent of the role the holder plays — which is established by the credentials the identifier appears in. A role may nonetheless constrain which scopes a holder can *truthfully* declare, as it does for a [[ref: VTC]]'s own identifier and for a [[ref: VWC]] witness's; a role never supplies the scope, it only rules some declarations out.
 
 | Scope | Known to | Holder's intent |
 |---|---|---|
@@ -137,147 +127,55 @@ supplies the scope, it only rules some declarations out.
 | `directed` | a set of counterparties the holder chooses | deliberate correlation across that set and no further |
 | `public` | unbounded | correlation unbounded; ordinarily published so that it can be found |
 
-A *counterparty* here is a party to a relationship the identifier establishes
-or annotates. Disclosure to a party in a supporting role for that same
-relationship — a [[ref: VWC]] witness, an [[ref: IDVP]] performing identity
-proofing for a membership, or the resolution infrastructure the identifier
-depends on — does not by itself widen scope, though it does place the identifier
-beyond the holder's control; see
-[Privacy Considerations](#privacy-considerations).
+A *counterparty* here is a party to a relationship the identifier establishes or annotates. Disclosure to a party in a supporting role for that same relationship — a [[ref: VWC]] witness, an [[ref: IDVP]] performing identity proofing for a membership, or the resolution infrastructure the identifier depends on — does not by itself widen scope, though it does place the identifier beyond the holder's control; see [Privacy Considerations](#privacy-considerations).
 
-The values are **ordered**, narrowest first. Where this specification states a
-minimum scope for a purpose, a declaration narrower than that minimum does not
-satisfy it, and a verifier MUST NOT treat it as if it did; elsewhere a holder
-MAY declare any of the three. A verifier MUST NOT rely on an identifier's value,
-its DID method, or the context in which it was encountered as a substitute for a
-declaration.
+The values are **ordered**, narrowest first. Where this specification states a minimum scope for a purpose, a declaration narrower than that minimum does not satisfy it, and a verifier MUST NOT treat it as if it did; elsewhere a holder MAY declare any of the three. A verifier MUST NOT rely on an identifier's value, its DID method, or the context in which it was encountered as a substitute for a declaration.
 
-There are three values rather than four because each must answer the same
-question — *who may correlate this identifier?* — and answer it by the holder's
-own choice. `pairwise` confines correlation to one counterparty, `directed`
-confines it to a set the holder directs the identifier at, and `public` declines
-to confine it. There is deliberately no separate value for an identifier used
-within a community: an identifier a member uses only with the community is
-`pairwise`, and one the member also uses with other members is `directed`. A
-value bounded by the community would take its bound from a credential rather
-than from the holder — the conflation this section exists to remove — and would
-give a verifier two middle values it has no way to tell apart. What such a value
-appeared to capture is a property of the community rather than of the
-identifier; see
-[Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
+There are three values rather than four because each must answer the same question — *who may correlate this identifier?* — and answer it by the holder's own choice. `pairwise` confines correlation to one counterparty, `directed` confines it to a set the holder directs the identifier at, and `public` declines to confine it. There is deliberately no separate value for an identifier used within a community: an identifier a member uses only with the community is `pairwise`, and one the member also uses with other members is `directed`. A value bounded by the community would take its bound from a credential rather than from the holder — the conflation this section exists to remove — and would give a verifier two middle values it has no way to tell apart. What such a value appeared to capture is a property of the community rather than of the identifier; see [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
 
 ### Roles are conferred by credentials
 
-An identifier is not "a membership identifier"; it is an identifier that *has* a
-[[ref: VMC]]. It is not "a persona identifier"; it is one that *has* a
-[[ref: VPC]]. Membership is still established by the VMC pair and a
-[[ref: persona]] is still asserted by a VPC; a scope declaration is orthogonal to
-both.
+An identifier is not "a membership identifier"; it is an identifier that *has* a [[ref: VMC]]. It is not "a persona identifier"; it is one that *has* a [[ref: VPC]]. Membership is still established by the VMC pair and a [[ref: persona]] is still asserted by a VPC; a scope declaration is orthogonal to both.
 
-The R-DID (relationship), M-DID (membership), C-DID (community) and P-DID
-(persona) identifier types used in drafts before WD02 are retired. Each named a
-role and a correlation width in one token, and the two can disagree — an
-identifier holding a VMC and issuing a VRC answered to two of the four names at
-once.
+The R-DID (relationship), M-DID (membership), C-DID (community) and P-DID (persona) identifier types used in drafts before WD02 are retired. Each named a role and a correlation width in one token, and the two can disagree — an identifier holding a VMC and issuing a VRC answered to two of the four names at once.
 
 ### Choosing a scope
 
 *This subsection is informative.*
 
-Because scope is the holder's choice, it is a choice a person can be asked to
-make — at the moment of joining a community, and again for each relationship.
-Three values are few enough to put in front of a human being:
+Because scope is the holder's choice, it is a choice a person can be asked to make — at the moment of joining a community, and again for each relationship. Three values are few enough to put in front of a human being:
 
-1. **`pairwise` — a single-counterparty pseudonym.** Known to this counterparty
-   and to no other, and not necessarily short-lived: a `pairwise` identifier
-   toward a [[ref: VTC]] lasts as long as the membership. Where the counterparty
-   is a VTC, that means known to the [[ref: VTA]] and not to fellow members.
-2. **`directed` — a private persona.** Known to this counterparty and to whoever
-   else the holder chooses, which may include other members of the same
-   community, or parties in other communities. This is the identifier under
-   which a [[ref: persona]] is ordinarily asserted.
+1. **`pairwise` — a single-counterparty pseudonym.** Known to this counterparty and to no other, and not necessarily short-lived: a `pairwise` identifier toward a [[ref: VTC]] lasts as long as the membership. Where the counterparty is a VTC, that means known to the [[ref: VTA]] and not to fellow members.
+2. **`directed` — a private persona.** Known to this counterparty and to whoever else the holder chooses, which may include other members of the same community, or parties in other communities. This is the identifier under which a [[ref: persona]] is ordinarily asserted.
 3. **`public` — a public persona.** Known to anyone.
 
-The three values also determine when proving *intentional* correlation costs
-anything. Where a holder deliberately uses one `directed` or `public` identifier
-across several credentials, the correlation is evident on the face of them and
-needs no proof. A zero-knowledge proof of common control is needed only in the
-opposite case: where the holder has used `pairwise` identifiers, which are
-distinct by definition, or distinct `directed` or `public` identifiers, and
-wishes to demonstrate that a single party controls them all.
+The three values also determine when proving *intentional* correlation costs anything. Where a holder deliberately uses one `directed` or `public` identifier across several credentials, the correlation is evident on the face of them and needs no proof. A zero-knowledge proof of common control is needed only in the opposite case: where the holder has used `pairwise` identifiers, which are distinct by definition, or distinct `directed` or `public` identifiers, and wishes to demonstrate that a single party controls them all.
 
 ### Scope the holder cannot declare alone
 
-A declared scope binds its holder's own disclosure. It does not bind what a
-counterparty does with the identifier once disclosed, and for one counterparty —
-a community — that gap is wide enough to require governance.
+A declared scope binds its holder's own disclosure. It does not bind what a counterparty does with the identifier once disclosed, and for one counterparty — a community — that gap is wide enough to require governance.
 
-A member may declare the identifier they use with a [[ref: VTC]] `pairwise`, but
-that declaration stays truthful only if the VTC keeps it so. A VTC that
-publishes a member directory, or that presents a member-issued [[ref: VMC]] to a
-third party as [Privacy Considerations](#privacy-considerations) permits, has
-widened the identifier's exposure without the member having chosen it.
+A member may declare the identifier they use with a [[ref: VTC]] `pairwise`, but that declaration stays truthful only if the VTC keeps it so. A VTC that publishes a member directory, or that presents a member-issued [[ref: VMC]] to a third party as [Privacy Considerations](#privacy-considerations) permits, has widened the identifier's exposure without the member having chosen it.
 
-A VTC that issues VMCs MUST therefore publish, in its governance framework or
-its trust registry, whether member identifiers are disclosed beyond the
-[[ref: VTA]] and to whom. A verifier MUST NOT infer from a
-member's `pairwise` declaration that the community treats the identifier as
-such, and a VTA SHOULD make the community's answer available to a prospective
-member before that member chooses a scope for joining.
+A VTC that issues VMCs MUST therefore publish, in its governance framework or its trust registry, whether member identifiers are disclosed beyond the [[ref: VTA]] and to whom. A verifier MUST NOT infer from a member's `pairwise` declaration that the community treats the identifier as such, and a VTA SHOULD make the community's answer available to a prospective member before that member chooses a scope for joining.
 
-This is the general case of a fact that holds for any [[ref: DTG edge]] whose
-two halves are held by different parties: a declaration constrains its own
-holder, and the disclosure an identifier actually experiences is the widest of
-the places either party puts it.
+This is the general case of a fact that holds for any [[ref: DTG edge]] whose two halves are held by different parties: a declaration constrains its own holder, and the disclosure an identifier actually experiences is the widest of the places either party puts it.
 
-**Consequence for relationships inside a community.** Where a member uses one
-`pairwise` identifier with the VTC and a second `pairwise` identifier with
-another member, the two differ by construction, and a [Community-Anchored
-Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) must then
-establish common control across them rather than reading a single identifier out
-of both credentials. Members who expect to prove community-anchored
-relationships will in practice declare `directed` for intra-community use — the
-VTA together with the members they connect to — which is an accurate description
-of what that identifier is for.
+**Consequence for relationships inside a community.** Where a member uses one `pairwise` identifier with the VTC and a second `pairwise` identifier with another member, the two differ by construction, and a [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) must then establish common control across them rather than reading a single identifier out of both credentials. Members who expect to prove community-anchored relationships will in practice declare `directed` for intra-community use — the VTA together with the members they connect to — which is an accurate description of what that identifier is for.
 
 ### Declaring scope
 
-A declaration is only meaningful if a verifier can read it. Two placements were
-considered, and only one is available:
+A declaration is only meaningful if a verifier can read it. Two placements were considered, and only one is available:
 
-1. **In the credential, by the party whose identifier it is.** Each credential
-   declares the scope of its *issuer's* identifier — the one party in a position
-   to speak for it. Bidirectional [[ref: DTG edges]] make this complete on their
-   own: in a [[ref: VMC]] pair the community declares its own scope in the
-   grant and the member declares theirs in the acknowledgement, so both halves
-   of the edge carry a first-party declaration.
-2. **In the DID document**, resolved with the identifier. This is not available
-   where it is most needed. A `did:key` document, and a `did:peer` numalgo-0
-   document, are derived from the identifier value — there is no document to
-   add a property to — and those are the methods
-   [DID Method Considerations](#did-method-considerations) recommends for
-   `pairwise` and `directed` identifiers. Encoding scope into the identifier
-   value itself would place the declaration where this section forbids a
-   verifier from reading one, and resolving a document to learn the scope has
-   the observability cost that [Privacy Considerations](#privacy-considerations)
-   records for the resolution layer.
+1. **In the credential, by the party whose identifier it is.** Each credential declares the scope of its *issuer's* identifier — the one party in a position to speak for it. Bidirectional [[ref: DTG edges]] make this complete on their own: in a [[ref: VMC]] pair the community declares its own scope in the grant and the member declares theirs in the acknowledgement, so both halves of the edge carry a first-party declaration.
+2. **In the DID document**, resolved with the identifier. This is not available where it is most needed. A `did:key` document, and a `did:peer` numalgo-0 document, are derived from the identifier value — there is no document to add a property to — and those are the methods [DID Method Considerations](#did-method-considerations) recommends for `pairwise` and `directed` identifiers. Encoding scope into the identifier value itself would place the declaration where this section forbids a verifier from reading one, and resolving a document to learn the scope has the observability cost that [Privacy Considerations](#privacy-considerations) records for the resolution layer.
 
 The declaration is therefore carried in the credential. Two consequences follow:
 
-- A declaration is a property of the identifier, not of a credential. All
-  credentials issued under one identifier MUST declare the same scope; a
-  contradiction between two of them falsifies the declaration, on the same
-  footing as reuse of a `pairwise` identifier.
-- A first-party declaration covers only an issuer's own identifier. In a
-  bidirectional [[ref: DTG edge]] the reciprocal credential supplies the other
-  half, but until that half exists — a membership grant not yet acknowledged —
-  the subject's scope is undeclared, and for [[ref: VPCs]], [[ref: VICs]] and
-  [[ref: VSCs]] no credential declares the subject's scope at all.
+- A declaration is a property of the identifier, not of a credential. All credentials issued under one identifier MUST declare the same scope; a contradiction between two of them falsifies the declaration, on the same footing as reuse of a `pairwise` identifier.
+- A first-party declaration covers only an issuer's own identifier. In a bidirectional [[ref: DTG edge]] the reciprocal credential supplies the other half, but until that half exists — a membership grant not yet acknowledged — the subject's scope is undeclared, and for [[ref: VPCs]], [[ref: VICs]] and [[ref: VSCs]] no credential declares the subject's scope at all.
 
-> **Editor's note:** The property that carries the declaration, and its
-> `@context` term, are not yet named. Until they are, the requirements of this
-> section bind a declaration that has been made and do not require one; the
-> examples in this specification carry no declaration.
+> **Editor's note:** The property that carries the declaration, and its `@context` term, are not yet named. Until they are, the requirements of this section bind a declaration that has been made and do not require one; the examples in this specification carry no declaration.
 
 ## Base Structure
 
@@ -441,28 +339,11 @@ The holder of a VRC MAY construct a zero-knowledge proof that demonstrates posse
 
 **Purpose:** Attests to the membership of an entity in a [[ref: VTC]] or [[ref: VTN]]; two VMCs (one each direction) form a complete [[ref: DTG edge]].
 
-> **Editor's note — membership requires something that has members.** This
-> specification now records that the [[ref: DTG node]] types are illustrative
-> rather than closed, which invites the question of whether a VMC may bind to
-> any of them. It may not, and the constraint is worth stating before the
-> question is asked in a form that assumes otherwise: **a VMC binds a member to
-> a node that *has members*.** A [[ref: VTC]] has members. A [[ref: VTN]] has
-> members. A service has registered clients, and a device has authorized
-> identities — both are collectives, whatever else they are.
+> **Editor's note — membership requires something that has members.** This specification now records that the [[ref: DTG node]] types are illustrative rather than closed, which invites the question of whether a VMC may bind to any of them. It may not, and the constraint is worth stating before the question is asked in a form that assumes otherwise: **a VMC binds a member to a node that *has members*.** A [[ref: VTC]] has members. A [[ref: VTN]] has members. A service has registered clients, and a device has authorized identities — both are collectives, whatever else they are.
 >
-> A **person is not a collective**, and a VMC MUST NOT be read as attesting
-> membership *in* one. That relationship already has two credentials that fit
-> it: a [[ref: VRC]] where the parties are peers, and a [[ref: VDC]] where one
-> acts in the other's name. Reading membership onto a person would
-> re-collapse a distinction the catalog spends effort keeping — the same
-> collapse the [Authority](#vac-verifiable-authority-credential) section
-> describes between asserting something about a party and conferring something
-> on them.
+> A **person is not a collective**, and a VMC MUST NOT be read as attesting membership *in* one. That relationship already has two credentials that fit it: a [[ref: VRC]] where the parties are peers, and a [[ref: VDC]] where one acts in the other's name. Reading membership onto a person would re-collapse a distinction the catalog spends effort keeping — the same collapse the [Authority](#vac-verifiable-authority-credential) section describes between asserting something about a party and conferring something on them.
 >
-> This note states a **constraint**, not a broadening: it does not extend what a
-> VMC may bind to beyond the VTC and VTN the schema below names. It records the
-> boundary that any future broadening should respect, so that the question the
-> node-type change raises has a bounded answer rather than an open one.
+> This note states a **constraint**, not a broadening: it does not extend what a VMC may bind to beyond the VTC and VTN the schema below names. It records the boundary that any future broadening should respect, so that the question the node-type change raises has a bounded answer rather than an open one.
 
 **Schema:**
 
@@ -1125,70 +1006,25 @@ That gives three properties. Every vetter recomputes the same commitment, so the
 
 This section is normative.
 
-A VAC confers permission. It differs from every other credential here in what it
-does to the graph: an edge credential establishes that two nodes are connected,
-a statement or persona credential attaches a claim to a node already in the
-graph, and an invitation credential bootstraps a node into a community. A VAC
-does none of those. It states what a party **may do** within a scope that some
-node governs.
+A VAC confers permission. It differs from every other credential here in what it does to the graph: an edge credential establishes that two nodes are connected, a statement or persona credential attaches a claim to a node already in the graph, and an invitation credential bootstraps a node into a community. A VAC does none of those. It states what a party **may do** within a scope that some node governs.
 
-The distinction that matters most is between a VAC and a [[ref: VSC]] — an
-endorsement ([[ref: VEC]]), say. An endorsement is a statement *about* a party — that they are skilled, trusted, or
-of good standing — and a verifier decides for itself what to do with that
-statement. A VAC is a statement *to* a verifier: the issuer, who governs the
-scope, has decided. Conflating the two puts a decision that belongs to the
-governing party into a claim that reads as reputation, and leaves verifiers to
-infer permission from adjectives.
+The distinction that matters most is between a VAC and a [[ref: VSC]] — an endorsement ([[ref: VEC]]), say. An endorsement is a statement *about* a party — that they are skilled, trusted, or of good standing — and a verifier decides for itself what to do with that statement. A VAC is a statement *to* a verifier: the issuer, who governs the scope, has decided. Conflating the two puts a decision that belongs to the governing party into a claim that reads as reputation, and leaves verifiers to infer permission from adjectives.
 
-**Purpose:** Confers authority on a party to perform specified actions within a
-named scope governed by the issuer.
+**Purpose:** Confers authority on a party to perform specified actions within a named scope governed by the issuer.
 
 **Schema:**
 
 - `type` (array, REQUIRED): MUST include `"AuthorityCredential"`
-- `issuer` (string, REQUIRED): DID of the party that governs the scope — a
-  [[ref: VTC]] or [[ref: VTN]], another [[ref: DTG node]] such as a shared
-  resource or service, or a holder attenuating authority they themselves hold
-  (see *Attenuation* below). As for every DTG credential, the issuer's
-  [[ref: correlation scope]] is declared rather than encoded in the
-  identifier; see [Correlation Scope](#correlation-scope)
+- `issuer` (string, REQUIRED): DID of the party that governs the scope — a [[ref: VTC]] or [[ref: VTN]], another [[ref: DTG node]] such as a shared resource or service, or a holder attenuating authority they themselves hold (see *Attenuation* below). As for every DTG credential, the issuer's [[ref: correlation scope]] is declared rather than encoded in the identifier; see [Correlation Scope](#correlation-scope)
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the party receiving the authority
   - `authority` (object, REQUIRED):
-    - `scope` (string, REQUIRED): the DID or URI the authority applies to. A
-      verifier MUST reject a VAC whose `scope` does not match the resource
-      being accessed; scope matching is exact unless the governing party
-      publishes a containment rule.
-    - `actions` (array of strings, REQUIRED): the permitted actions, drawn
-      from a vocabulary the governing party defines. MUST NOT be empty — an
-      empty array is not a wildcard, and a verifier MUST treat it as
-      conferring nothing. Action strings are compared as exact,
-      case-sensitive strings; a verifier MUST NOT infer that one action
-      implies another (`"admin"` does not grant `"write"` unless the
-      governing party's VAC says both).
-    - `parent` (string, OPTIONAL): the digest of the VAC this one was
-      attenuated from, encoded as specified in
-      [Digest Encoding](#digest-encoding). Absent means this VAC was issued
-      directly by the governing party.
-    - `maxAttenuation` (integer, OPTIONAL): the number of further
-      attenuations permitted below this VAC. `0` prohibits attenuating it at
-      all. When absent, attenuation is permitted as far as the maximum chain
-      depth allows. This is the opposite default from the [[ref: VDC]]'s
-      `maxDepth`, which prohibits re-delegation unless it is set; the field is
-      named differently for that reason. See [Attenuation](#attenuation).
-- `validUntil` (string, REQUIRED): ISO 8601 datetime (`expirationDate` in
-  v1.1). Unlike the base structure, `validUntil` is REQUIRED for a VAC, as it
-  is for a [[ref: VDC]] and for a reason the VAC feels more sharply: nothing
-  about the subject's current standing is consulted when a VAC is verified, so
-  authority that does not expire is authority nobody can withdraw by waiting.
-  Expiry is also the one withdrawal mechanism that costs a verifier no network
-  access; see [Withdrawal](#withdrawal).
-- `credentialStatus` (object, CONDITIONAL): a W3C VC status mechanism through
-  which a verifier can determine whether this VAC has been revoked. A VAC MUST
-  carry `credentialStatus` where its validity period exceeds the freshness
-  window the party governing the scope defines for authority at that scope, and
-  MAY omit it otherwise. The status mechanism is determined by that governing
-  party. See [Withdrawal](#withdrawal).
+    - `scope` (string, REQUIRED): the DID or URI the authority applies to. A verifier MUST reject a VAC whose `scope` does not match the resource being accessed; scope matching is exact unless the governing party publishes a containment rule.
+    - `actions` (array of strings, REQUIRED): the permitted actions, drawn from a vocabulary the governing party defines. MUST NOT be empty — an empty array is not a wildcard, and a verifier MUST treat it as conferring nothing. Action strings are compared as exact, case-sensitive strings; a verifier MUST NOT infer that one action implies another (`"admin"` does not grant `"write"` unless the governing party's VAC says both).
+    - `parent` (string, OPTIONAL): the digest of the VAC this one was attenuated from, encoded as specified in [Digest Encoding](#digest-encoding). Absent means this VAC was issued directly by the governing party.
+    - `maxAttenuation` (integer, OPTIONAL): the number of further attenuations permitted below this VAC. `0` prohibits attenuating it at all. When absent, attenuation is permitted as far as the maximum chain depth allows. This is the opposite default from the [[ref: VDC]]'s `maxDepth`, which prohibits re-delegation unless it is set; the field is named differently for that reason. See [Attenuation](#attenuation).
+- `validUntil` (string, REQUIRED): ISO 8601 datetime (`expirationDate` in v1.1). Unlike the base structure, `validUntil` is REQUIRED for a VAC, as it is for a [[ref: VDC]] and for a reason the VAC feels more sharply: nothing about the subject's current standing is consulted when a VAC is verified, so authority that does not expire is authority nobody can withdraw by waiting. Expiry is also the one withdrawal mechanism that costs a verifier no network access; see [Withdrawal](#withdrawal).
+- `credentialStatus` (object, CONDITIONAL): a W3C VC status mechanism through which a verifier can determine whether this VAC has been revoked. A VAC MUST carry `credentialStatus` where its validity period exceeds the freshness window the party governing the scope defines for authority at that scope, and MAY omit it otherwise. The status mechanism is determined by that governing party. See [Withdrawal](#withdrawal).
 
 **Example (a member granted write access to a shared resource):**
 
@@ -1222,112 +1058,33 @@ named scope governed by the issuer.
 
 ### Attenuation
 
-A VAC holder MAY issue a further VAC conferring a **subset** of the authority
-they hold, without involving the governing party. This is what allows a party to
-equip an agent, a device, or a short-lived session with only the authority that
-task requires, rather than lending it their own.
+A VAC holder MAY issue a further VAC conferring a **subset** of the authority they hold, without involving the governing party. This is what allows a party to equip an agent, a device, or a short-lived session with only the authority that task requires, rather than lending it their own.
 
-**Attenuation is permitted by default; re-delegation is not.** A [[ref: VDC]]
-forbids re-delegation unless its `maxDepth` explicitly authorises it, and this
-section takes the opposite default deliberately. Extending the two chains does
-different things. A further delegation adds a party who may act **in the
-principal's name**, so the principal must keep the register of who can speak
-for it, and a delegate that needs help can ask the principal for a fresh root
-delegation; failing closed costs little. A further attenuation only narrows,
-and its subject acts **as itself**, so nothing new is attributed to the
-governing party or to the attenuating holder. More to the point, forbidding
-attenuation does not stop a holder equipping an agent. It makes them lend their
-own key instead — which confers everything they hold rather than a subset,
-lasts as long as their own authority does, and is indistinguishable to a
-verifier from the holder acting in person. Attenuation is the safer of the two
-things a holder will actually do, and a default that pushed holders toward the
-other would buy nothing.
+**Attenuation is permitted by default; re-delegation is not.** A [[ref: VDC]] forbids re-delegation unless its `maxDepth` explicitly authorises it, and this section takes the opposite default deliberately. Extending the two chains does different things. A further delegation adds a party who may act **in the principal's name**, so the principal must keep the register of who can speak for it, and a delegate that needs help can ask the principal for a fresh root delegation; failing closed costs little. A further attenuation only narrows, and its subject acts **as itself**, so nothing new is attributed to the governing party or to the attenuating holder. More to the point, forbidding attenuation does not stop a holder equipping an agent. It makes them lend their own key instead — which confers everything they hold rather than a subset, lasts as long as their own authority does, and is indistinguishable to a verifier from the holder acting in person. Attenuation is the safer of the two things a holder will actually do, and a default that pushed holders toward the other would buy nothing.
 
-**A governing party can still forbid it.** `authority.maxAttenuation` bounds
-how far a chain may extend below the VAC that carries it, and `0` forbids
-attenuation outright — for an action sensitive enough that the governing party
-wants to decide personally who holds it. A VAC attenuated from a parent bearing
-`maxAttenuation` *n* MUST NOT itself bear a `maxAttenuation` greater than
-*n* − 1, and a verifier MUST reject a chain in which any VAC lies more than *n*
-steps below an ancestor bearing `maxAttenuation` *n*. Any link MAY set a limit
-lower than its parent's, or set one where its parent set none; none may raise
-one. The effective limit on a chain is therefore the strictest that any of its
-links imposes, in keeping with attenuation never widening what it derives from.
+**A governing party can still forbid it.** `authority.maxAttenuation` bounds how far a chain may extend below the VAC that carries it, and `0` forbids attenuation outright — for an action sensitive enough that the governing party wants to decide personally who holds it. A VAC attenuated from a parent bearing `maxAttenuation` *n* MUST NOT itself bear a `maxAttenuation` greater than *n* − 1, and a verifier MUST reject a chain in which any VAC lies more than *n* steps below an ancestor bearing `maxAttenuation` *n*. Any link MAY set a limit lower than its parent's, or set one where its parent set none; none may raise one. The effective limit on a chain is therefore the strictest that any of its links imposes, in keeping with attenuation never widening what it derives from.
 
 An attenuated VAC:
 
-- MUST set `issuer` to the `credentialSubject.id` of the VAC being attenuated
-  — the attenuating holder's own DID. Only the party a VAC was issued to may
-  attenuate it.
-- MUST set `authority.parent` to the digest of the VAC being attenuated,
-  encoded as specified in [Digest Encoding](#digest-encoding).
+- MUST set `issuer` to the `credentialSubject.id` of the VAC being attenuated — the attenuating holder's own DID. Only the party a VAC was issued to may attenuate it.
+- MUST set `authority.parent` to the digest of the VAC being attenuated, encoded as specified in [Digest Encoding](#digest-encoding).
 - MUST NOT confer any action absent from the parent's `actions`.
 - MUST NOT specify a `validUntil` later than the parent's.
 - MUST NOT widen `scope`.
-- MUST NOT bear a `maxAttenuation` greater than one less than its parent's,
-  where the parent carries one; and MUST NOT exist at all where the parent
-  bears `0`.
-- SHOULD carry a `validUntil` short enough that expiry alone bounds the
-  exposure. An attenuating holder is often a person, a device, or an agent
-  rather than an operator of a status list, and may be unreachable at the
-  moment its grant needs taking back; see [Withdrawal](#withdrawal).
+- MUST NOT bear a `maxAttenuation` greater than one less than its parent's, where the parent carries one; and MUST NOT exist at all where the parent bears `0`.
+- SHOULD carry a `validUntil` short enough that expiry alone bounds the exposure. An attenuating holder is often a person, a device, or an agent rather than an operator of a status list, and may be unreachable at the moment its grant needs taking back; see [Withdrawal](#withdrawal).
 
-**Verification.** A verifier presented with a VAC that carries `parent` MUST
-verify the entire chain to a VAC issued by the governing party, and MUST reject
-the chain if any link widens what its parent conferred, in actions, scope, or
-validity period, if any link's `issuer` is not the `credentialSubject.id`
-of its parent, if any link lies further below an ancestor than that ancestor's
-`maxAttenuation` permits, or if any link that carries `credentialStatus` has
-been revoked (see [Withdrawal](#withdrawal)). The second check is what gives the first its meaning: without
-it, a chain could cite a VAC its issuer never held, and "narrowing" would be
-satisfiable by anyone holding a copy of a governing party's VAC. A verifier that
-checks only the presented credential has verified nothing: attenuation is only
-a narrowing if somebody walks the chain.
+**Verification.** A verifier presented with a VAC that carries `parent` MUST verify the entire chain to a VAC issued by the governing party, and MUST reject the chain if any link widens what its parent conferred, in actions, scope, or validity period, if any link's `issuer` is not the `credentialSubject.id` of its parent, if any link lies further below an ancestor than that ancestor's `maxAttenuation` permits, or if any link that carries `credentialStatus` has been revoked (see [Withdrawal](#withdrawal)). The second check is what gives the first its meaning: without it, a chain could cite a VAC its issuer never held, and "narrowing" would be satisfiable by anyone holding a copy of a governing party's VAC. A verifier that checks only the presented credential has verified nothing: attenuation is only a narrowing if somebody walks the chain.
 
-**The holder presents the chain; the verifier does not fetch it.** A
-presentation carrying an attenuated VAC MUST include every VAC from the
-presented one up to and including the one issued by the governing party, and a
-verifier MUST reject a chain it cannot complete from the presentation alone.
+**The holder presents the chain; the verifier does not fetch it.** A presentation carrying an attenuated VAC MUST include every VAC from the presented one up to and including the one issued by the governing party, and a verifier MUST reject a chain it cannot complete from the presentation alone.
 
-`parent` is a digest rather than an identifier so that this is structural
-rather than merely required. A digest names nothing that can be fetched:
-verification cannot come to depend on network availability, a verifier cannot
-be induced to make a request against an address of the holder's choosing, and
-nobody who hosts an identifier learns when or how often a credential is used.
-Bearer-side presentation keeps verification offline, constant in its network
-behaviour, and free of that correlation channel. A digest also binds an
-attenuated VAC to the exact claims its issuer narrowed from: re-issuing a
-parent with different claims does not re-parent the VACs attenuated from the
-old one, while re-proofing it with identical claims leaves them undisturbed,
-because the digest excludes `proof` (see [Digest Encoding](#digest-encoding)).
+`parent` is a digest rather than an identifier so that this is structural rather than merely required. A digest names nothing that can be fetched: verification cannot come to depend on network availability, a verifier cannot be induced to make a request against an address of the holder's choosing, and nobody who hosts an identifier learns when or how often a credential is used. Bearer-side presentation keeps verification offline, constant in its network behaviour, and free of that correlation channel. A digest also binds an attenuated VAC to the exact claims its issuer narrowed from: re-issuing a parent with different claims does not re-parent the VACs attenuated from the old one, while re-proofing it with identical claims leaves them undisturbed, because the digest excludes `proof` (see [Digest Encoding](#digest-encoding)).
 
-**Chain depth is bounded.** A verifier MUST enforce a maximum chain depth and
-MUST NOT accept a chain of more than **8** VACs including the one issued by the
-governing party. Chain verification is linear in depth and runs on every
-presentation, so an unbounded chain is a denial-of-service vector against the
-verifier. The known uses need far less — a person attenuating to an agent is
-depth 2, and an agent attenuating to a sub-agent is depth 3 — so issuers SHOULD
-stay well below the ceiling, and a party finding itself near it should treat
-that as a signal the authority is being re-delegated further than intended.
+**Chain depth is bounded.** A verifier MUST enforce a maximum chain depth and MUST NOT accept a chain of more than **8** VACs including the one issued by the governing party. Chain verification is linear in depth and runs on every presentation, so an unbounded chain is a denial-of-service vector against the verifier. The known uses need far less — a person attenuating to an agent is depth 2, and an agent attenuating to a sub-agent is depth 3 — so issuers SHOULD stay well below the ceiling, and a party finding itself near it should treat that as a signal the authority is being re-delegated further than intended.
 
-This ceiling and `maxAttenuation` are different controls and a chain MUST
-satisfy both. The ceiling is a resource bound that every verifier enforces
-whether or not any issuer asked for it; `maxAttenuation` is a policy an issuer
-sets for its own grant. A chain of five under a root bearing `maxAttenuation`
-`2` is within the ceiling and still invalid.
+This ceiling and `maxAttenuation` are different controls and a chain MUST satisfy both. The ceiling is a resource bound that every verifier enforces whether or not any issuer asked for it; `maxAttenuation` is a policy an issuer sets for its own grant. A chain of five under a root bearing `maxAttenuation` `2` is within the ceiling and still invalid.
 
-**Who may hold derived authority.** A valid chain establishes that authority
-was narrowed by parties entitled to narrow it. It does not establish that the
-party now holding it is one the scope is willing to deal with: an attenuated
-VAC may name a subject the governing party has never encountered, and that
-subject acts as itself rather than in its attenuator's name. A governing party
-MAY require that the subject of an attenuated VAC independently qualify — hold
-a [[ref: VMC]] at the scope, or satisfy whatever the scope asks of any other
-actor — and a verifier enforcing such a policy MUST reject a chain whose
-subject does not, however well formed the chain is. This is the authority-side
-counterpart of the third check in
-[How a Delegation Composes with Authority](#how-a-delegation-composes-with-authority),
-and the reason a VAC and a [[ref: VMC]] stay separate credentials.
+**Who may hold derived authority.** A valid chain establishes that authority was narrowed by parties entitled to narrow it. It does not establish that the party now holding it is one the scope is willing to deal with: an attenuated VAC may name a subject the governing party has never encountered, and that subject acts as itself rather than in its attenuator's name. A governing party MAY require that the subject of an attenuated VAC independently qualify — hold a [[ref: VMC]] at the scope, or satisfy whatever the scope asks of any other actor — and a verifier enforcing such a policy MUST reject a chain whose subject does not, however well formed the chain is. This is the authority-side counterpart of the third check in [How a Delegation Composes with Authority](#how-a-delegation-composes-with-authority), and the reason a VAC and a [[ref: VMC]] stay separate credentials.
 
 **Example (a member attenuating read-only, short-lived authority to their AI agent):**
 
@@ -1354,184 +1111,53 @@ and the reason a VAC and a [[ref: VMC]] stay separate credentials.
 }
 ```
 
-The `parent` value above is the digest of the preceding example, computed as
-specified in [Digest Encoding](#digest-encoding).
+The `parent` value above is the digest of the preceding example, computed as specified in [Digest Encoding](#digest-encoding).
 
 ### Invocation
 
-**A VAC is not a bearer credential.** A verifier MUST NOT accept a party as
-holding the authority a VAC confers unless that party demonstrates control of
-the verification method associated with the `credentialSubject.id` of the
-presented VAC, at the time of the request. A VAC presented without such a
-demonstration is evidence that authority was conferred on somebody; it is not
-evidence that the party presenting it is that somebody.
+**A VAC is not a bearer credential.** A verifier MUST NOT accept a party as holding the authority a VAC confers unless that party demonstrates control of the verification method associated with the `credentialSubject.id` of the presented VAC, at the time of the request. A VAC presented without such a demonstration is evidence that authority was conferred on somebody; it is not evidence that the party presenting it is that somebody.
 
-This matters more here than for a [[ref: VDC]], because a VAC chain is
-presented in full on every use. A captured presentation is a captured chain, so
-a specification that let a holder be identified by possession alone would make
-every verifier a distribution point for the authority it was shown. It is also
-what [Relationship to Capability Models](#relationship-to-capability-models)
-already claims of this section: the mechanics the VDC borrows are
-attenuation-only derivation, chains resolving to a recognized root, **and
-binding to a demonstration of key control at invocation**. The VAC applied the
-first two and left the third unsaid.
+This matters more here than for a [[ref: VDC]], because a VAC chain is presented in full on every use. A captured presentation is a captured chain, so a specification that let a holder be identified by possession alone would make every verifier a distribution point for the authority it was shown. It is also what [Relationship to Capability Models](#relationship-to-capability-models) already claims of this section: the mechanics the VDC borrows are attenuation-only derivation, chains resolving to a recognized root, **and binding to a demonstration of key control at invocation**. The VAC applied the first two and left the third unsaid.
 
-**There is no second party check, and no field naming one.** An earlier draft
-of the VAC carried an OPTIONAL `audience` naming the DID that must present the
-credential. The rule above makes it redundant: the presenter must be the
-subject, so an `audience` either names that same subject and adds nothing, or
-names someone else and no presentation can ever satisfy both. It is removed
-rather than kept as a weaker second check. A VAC is bound to the party it was
-issued to by `credentialSubject.id`, and to the resource it may be used against
-by `scope`; naming an intended verifier as well would restrict where a
-presentation may be made, which is a question for the trust task rather than
-the credential.
+**There is no second party check, and no field naming one.** An earlier draft of the VAC carried an OPTIONAL `audience` naming the DID that must present the credential. The rule above makes it redundant: the presenter must be the subject, so an `audience` either names that same subject and adds nothing, or names someone else and no presentation can ever satisfy both. It is removed rather than kept as a weaker second check. A VAC is bound to the party it was issued to by `credentialSubject.id`, and to the resource it may be used against by `scope`; naming an intended verifier as well would restrict where a presentation may be made, which is a question for the trust task rather than the credential.
 
-**Only the presented VAC's subject demonstrates anything.** The parties named
-in the links above it are not present and are not asked for anything. Requiring
-otherwise would defeat attenuation, whose whole purpose is that the party who
-attenuated is not in the loop when its agent acts.
+**Only the presented VAC's subject demonstrates anything.** The parties named in the links above it are not present and are not asked for anything. Requiring otherwise would defeat attenuation, whose whole purpose is that the party who attenuated is not in the loop when its agent acts.
 
-This section states only what a verifier MUST have established. How the
-demonstration is requested and carried is part of the trust task in which the
-authority is exercised, and is defined by the planned DTG Core Trust Task
-Protocols specification, as it is for a VDC (see
-[Invocation Binding](#invocation-binding)).
+This section states only what a verifier MUST have established. How the demonstration is requested and carried is part of the trust task in which the authority is exercised, and is defined by the planned DTG Core Trust Task Protocols specification, as it is for a VDC (see [Invocation Binding](#invocation-binding)).
 
 ### Withdrawal
 
-A VAC is withdrawn in one of two ways: it expires, or its issuer revokes it.
-There is no third. A [[ref: VDC]] has a remedy a VAC does not — its verifier
-re-asks the permission question of the delegator at the time of the act, so
-withdrawing the delegator's own authority stops every delegate at once without
-touching a single credential. A VAC *is* that answer rather than a pointer to
-it: nothing about the subject's current standing is consulted at verification,
-and an authority that can neither expire nor be revoked cannot be taken back at
-all.
+A VAC is withdrawn in one of two ways: it expires, or its issuer revokes it. There is no third. A [[ref: VDC]] has a remedy a VAC does not — its verifier re-asks the permission question of the delegator at the time of the act, so withdrawing the delegator's own authority stops every delegate at once without touching a single credential. A VAC *is* that answer rather than a pointer to it: nothing about the subject's current standing is consulted at verification, and an authority that can neither expire nor be revoked cannot be taken back at all.
 
-**Expiry is the primary mechanism.** `validUntil` is REQUIRED on every VAC, and
-issuers SHOULD set it no later than the purpose requires. Expiry costs a
-verifier no network access, discloses nothing to anyone, and cannot fail open
-or closed, so it is the only withdrawal mechanism that survives the offline
-verification this section is built around. A governing party that wants
-authority it can take back quickly issues it for a short period and re-issues
-it, rather than issuing it for a year and relying on a status list to undo it.
+**Expiry is the primary mechanism.** `validUntil` is REQUIRED on every VAC, and issuers SHOULD set it no later than the purpose requires. Expiry costs a verifier no network access, discloses nothing to anyone, and cannot fail open or closed, so it is the only withdrawal mechanism that survives the offline verification this section is built around. A governing party that wants authority it can take back quickly issues it for a short period and re-issues it, rather than issuing it for a year and relying on a status list to undo it.
 
-**Revocation covers what expiry cannot.** Where authority must be withdrawn
-before it expires — a member leaves, a device is lost, an agent misbehaves —
-the issuer revokes the VAC through the `credentialStatus` it carries. Only the
-issuer of a VAC can revoke it: an attenuating holder revokes what it issued,
-the party governing the scope revokes what it issued, and neither can revoke
-the other's directly.
+**Revocation covers what expiry cannot.** Where authority must be withdrawn before it expires — a member leaves, a device is lost, an agent misbehaves — the issuer revokes the VAC through the `credentialStatus` it carries. Only the issuer of a VAC can revoke it: an attenuating holder revokes what it issued, the party governing the scope revokes what it issued, and neither can revoke the other's directly.
 
-**Verification.** A verifier MUST check the status of every VAC in a chain that
-carries `credentialStatus`, and MUST reject the chain if any of them has been
-revoked. A VAC that carries none is evaluated on its validity period alone, and
-its absence is not a defect; a governing party MAY require `credentialStatus`
-for a class of authority at its scope, in which case a verifier enforcing that
-policy MUST reject a VAC that omits it. This keeps the network cost of
-verification proportional to what a chain actually claims: short-lived
-attenuations under a long-lived root cost one status check between them, and a
-chain whose every link is short-lived costs none.
+**Verification.** A verifier MUST check the status of every VAC in a chain that carries `credentialStatus`, and MUST reject the chain if any of them has been revoked. A VAC that carries none is evaluated on its validity period alone, and its absence is not a defect; a governing party MAY require `credentialStatus` for a class of authority at its scope, in which case a verifier enforcing that policy MUST reject a VAC that omits it. This keeps the network cost of verification proportional to what a chain actually claims: short-lived attenuations under a long-lived root cost one status check between them, and a chain whose every link is short-lived costs none.
 
-**Revocation cascades.** A VAC confers no more than the VAC it was attenuated
-from, so revoking a VAC withdraws every VAC attenuated from it, transitively,
-whether or not the revoking issuer knows those derivations exist. This is what
-makes attenuation safe to permit without the governing party's involvement: a
-governing party that revokes its own grant withdraws the whole tree beneath it
-in a single act, and needs no register of what its holder went on to issue. It
-also means an attenuator's grants die with its own — a holder whose authority
-is revoked cannot leave a working agent behind it.
+**Revocation cascades.** A VAC confers no more than the VAC it was attenuated from, so revoking a VAC withdraws every VAC attenuated from it, transitively, whether or not the revoking issuer knows those derivations exist. This is what makes attenuation safe to permit without the governing party's involvement: a governing party that revokes its own grant withdraws the whole tree beneath it in a single act, and needs no register of what its holder went on to issue. It also means an attenuator's grants die with its own — a holder whose authority is revoked cannot leave a working agent behind it.
 
-**A revoked parent is not always visible, and that is the trade.** A verifier
-presented with a chain whose root carries `credentialStatus` learns that the
-root was revoked and rejects the chain. A verifier presented with a chain whose
-links carry none learns nothing beyond their validity periods, and will accept
-an attenuation whose parent was revoked an hour ago. Offline verification bounds
-that exposure rather than removing it, and what bounds it is the shortest
-`validUntil` in the chain. Holders attenuating authority SHOULD keep that value
-as short as the task allows for this reason, and a governing party that cannot
-tolerate the gap SHOULD require `credentialStatus` on the VACs it issues,
-together with a freshness window short enough to close it.
+**A revoked parent is not always visible, and that is the trade.** A verifier presented with a chain whose root carries `credentialStatus` learns that the root was revoked and rejects the chain. A verifier presented with a chain whose links carry none learns nothing beyond their validity periods, and will accept an attenuation whose parent was revoked an hour ago. Offline verification bounds that exposure rather than removing it, and what bounds it is the shortest `validUntil` in the chain. Holders attenuating authority SHOULD keep that value as short as the task allows for this reason, and a governing party that cannot tolerate the gap SHOULD require `credentialStatus` on the VACs it issues, together with a freshness window short enough to close it.
 
 ### Authority is not delegation
 
-A VAC authorizes its subject to act **in their own name**, within a scope. It
-does not authorize acting *on behalf of* another party, and a verifier MUST NOT
-read it as doing so. The two are separate questions — *may this party do this
-here?* and *may this party stand in for that one?* — and answering both with one
-credential means a verifier cannot tell which it has been shown.
+A VAC authorizes its subject to act **in their own name**, within a scope. It does not authorize acting *on behalf of* another party, and a verifier MUST NOT read it as doing so. The two are separate questions — *may this party do this here?* and *may this party stand in for that one?* — and answering both with one credential means a verifier cannot tell which it has been shown.
 
-> **Editor's note — the `actions` vocabulary is deliberately open, and that
-> has a cost.** Each governing party defines its own action strings, which is
-> what lets a room, a community and a service each grant what makes sense for
-> it without a registry negotiating between them. The cost is that `"write"`
-> issued by one governing party carries no defined relationship to `"write"`
-> issued by another: the strings are only meaningful within the scope that
-> issued them, and a verifier that generalises across scopes is reading
-> something the specification does not say. That is tolerable while authority
-> is checked by the party governing the scope, which is the case this
-> specification describes. It would need revisiting if VACs are ever expected
-> to be interpreted across governance boundaries — a shared core vocabulary
-> with room for extension is the obvious answer, and is deliberately not
-> attempted here.
+> **Editor's note — the `actions` vocabulary is deliberately open, and that has a cost.** Each governing party defines its own action strings, which is what lets a room, a community and a service each grant what makes sense for it without a registry negotiating between them. The cost is that `"write"` issued by one governing party carries no defined relationship to `"write"` issued by another: the strings are only meaningful within the scope that issued them, and a verifier that generalises across scopes is reading something the specification does not say. That is tolerable while authority is checked by the party governing the scope, which is the case this specification describes. It would need revisiting if VACs are ever expected to be interpreted across governance boundaries — a shared core vocabulary with room for extension is the obvious answer, and is deliberately not attempted here.
 
 ### Relationship to the VDC
 
-The [[ref: VDC]] and the VAC draw the same line from opposite sides. A VDC
-establishes that one party may act *in another's name*; it never supplies
-authority, and the verifier re-asks the permission question of the delegator,
-live, at the time of the act (see
-[How a Delegation Composes with Authority](#how-a-delegation-composes-with-authority)).
-A VAC answers that question: it is the credential a delegator can hold that
-check 2 of that section looks for. The two compose — the reach of a delegated
-act is the intersection of what the VDC appoints the delegate for and what the
-delegator's own authority covers — and neither substitutes for the other. A
-verifier MUST NOT read an attenuated VAC as an appointment to act in the
-attenuator's name, nor a VDC as conferring any of the delegator's authority on
-the delegate.
+The [[ref: VDC]] and the VAC draw the same line from opposite sides. A VDC establishes that one party may act *in another's name*; it never supplies authority, and the verifier re-asks the permission question of the delegator, live, at the time of the act (see [How a Delegation Composes with Authority](#how-a-delegation-composes-with-authority)). A VAC answers that question: it is the credential a delegator can hold that check 2 of that section looks for. The two compose — the reach of a delegated act is the intersection of what the VDC appoints the delegate for and what the delegator's own authority covers — and neither substitutes for the other. A verifier MUST NOT read an attenuated VAC as an appointment to act in the attenuator's name, nor a VDC as conferring any of the delegator's authority on the delegate.
 
-They also differ in what they ask of a verifier. A VAC chain is precommitted:
-every link only narrows what its parent fixed, the holder presents the whole
-chain, and a verifier reaches the network only for those links that carry
-`credentialStatus` (see [Withdrawal](#withdrawal)). A VDC is live by design: the permission question is
-answered at invocation against the delegator's current standing, so withdrawing
-the delegator's own authority stops every delegate at once without touching a
-single VDC. Folding one into the other would give up whichever of those
-properties the merged credential lacked.
+They also differ in what they ask of a verifier. A VAC chain is precommitted: every link only narrows what its parent fixed, the holder presents the whole chain, and a verifier reaches the network only for those links that carry `credentialStatus` (see [Withdrawal](#withdrawal)). A VDC is live by design: the permission question is answered at invocation against the delegator's current standing, so withdrawing the delegator's own authority stops every delegate at once without touching a single VDC. Folding one into the other would give up whichever of those properties the merged credential lacked.
 
-**Which one an agent's grant is.** A person equipping an AI agent could, on
-the face of it, do either, and the test in
-[Delegation and Authority](#delegation-and-authority) — whose name is the act
-in? — decides it. The agent example above is a VAC because the agent is to act
-**as itself**: the room records the agent as the actor, the agent answers for
-its acts, and the chain records only who equipped it — that is provenance of
-its authority, not attribution of its acts. The person's own VAC is the ceiling
-the chain narrows from, and nothing else of the person's travels with it:
-authority is not membership, and an agent acting under a VAC is credited with
-nothing a [[ref: PHC]] or a [[ref: VMC]] attests about its principal. If
-instead the room needs the act attributed to the person — the person is
-answerable for it, and the record should say the person acted, through an
-agent — the person issues a VDC, the agent presents it, and the agent's reach
-is whatever the person may itself do. Which of the two a governing party admits
-for agents is a governance determination; that a verifier can always tell which
-it has been shown is what keeping them as separate credentials buys.
+**Which one an agent's grant is.** A person equipping an AI agent could, on the face of it, do either, and the test in [Delegation and Authority](#delegation-and-authority) — whose name is the act in? — decides it. The agent example above is a VAC because the agent is to act **as itself**: the room records the agent as the actor, the agent answers for its acts, and the chain records only who equipped it — that is provenance of its authority, not attribution of its acts. The person's own VAC is the ceiling the chain narrows from, and nothing else of the person's travels with it: authority is not membership, and an agent acting under a VAC is credited with nothing a [[ref: PHC]] or a [[ref: VMC]] attests about its principal. If instead the room needs the act attributed to the person — the person is answerable for it, and the record should say the person acted, through an agent — the person issues a VDC, the agent presents it, and the agent's reach is whatever the person may itself do. Which of the two a governing party admits for agents is a governance determination; that a verifier can always tell which it has been shown is what keeping them as separate credentials buys.
 
 ### Authority and membership are separate credentials
 
-A VAC does not attest membership and MUST NOT be accepted as evidence of it; a
-[[ref: VMC]] does not confer authority and MUST NOT be accepted as evidence of
-that. Keeping them separate lets a governing party change what a member may do
-without touching the membership edge, and lets a holder prove authority without
-proving which member they are.
+A VAC does not attest membership and MUST NOT be accepted as evidence of it; a [[ref: VMC]] does not confer authority and MUST NOT be accepted as evidence of that. Keeping them separate lets a governing party change what a member may do without touching the membership edge, and lets a holder prove authority without proving which member they are.
 
-Where a verifier requires **both** — that the presenter is a member *and* holds
-authority — and the presentation is a zero-knowledge proof that withholds the
-subject identifier, the presentation MUST include a proof that both credentials
-share the same subject. Without it, two parties may pool credentials: one
-contributes membership, the other contributes authority, and the combination
-verifies as a single party holding both. See
-[Zero-Knowledge and Selective Disclosure](#zero-knowledge-and-selective-disclosure).
+Where a verifier requires **both** — that the presenter is a member *and* holds authority — and the presentation is a zero-knowledge proof that withholds the subject identifier, the presentation MUST include a proof that both credentials share the same subject. Without it, two parties may pool credentials: one contributes membership, the other contributes authority, and the combination verifies as a single party holding both. See [Zero-Knowledge and Selective Disclosure](#zero-knowledge-and-selective-disclosure).
 
 ## Trust Task Context Binding
 
@@ -1637,58 +1263,22 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
   - "Holder holds a statement credential from an issuer in set S, under predicate P, about the holder" — one construction covers every [[ref: VSC]] predicate profile, since all share one shape
 - Detailed ZK protocols and registry-ZK interactions are left to the ZKP task force; what that work is blocked on, and what holds until it lands, is set out below
 
-> **Editor's note — what is waiting on the ZKP task force.** The predicates
-> above are requirements on the schemas rather than constructions. This
-> specification fixes what must be *provable* and leaves *how* to the ZK
-> protocol work, so the list should not be read as describing machinery that
-> exists today.
+> **Editor's note — what is waiting on the ZKP task force.** The predicates above are requirements on the schemas rather than constructions. This specification fixes what must be *provable* and leaves *how* to the ZK protocol work, so the list should not be read as describing machinery that exists today.
 >
-> Four of those predicates rest on one primitive no DTG specification yet
-> defines: a proof that two credentials, or two identifiers, are under **common
-> control**, without disclosing either. It carries:
+> Four of those predicates rest on one primitive no DTG specification yet defines: a proof that two credentials, or two identifiers, are under **common control**, without disclosing either. It carries:
 >
-> - the [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof),
->   wherever a party's VMC identifier and its VRC identifier differ;
-> - the shared-subject requirement of
->   [Authority and membership are separate credentials](#authority-and-membership-are-separate-credentials),
->   which exists precisely to stop two parties pooling one's membership with
->   the other's authority;
-> - proving a [[ref: VDC]] chain valid without disclosing it, per
->   [Delegation Chains](#delegation-chains);
-> - proving a [[ref: VAC]] chain valid without disclosing it, per
->   [Attenuation](#attenuation).
+> - the [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof), wherever a party's VMC identifier and its VRC identifier differ;
+> - the shared-subject requirement of [Authority and membership are separate credentials](#authority-and-membership-are-separate-credentials), which exists precisely to stop two parties pooling one's membership with the other's authority;
+> - proving a [[ref: VDC]] chain valid without disclosing it, per [Delegation Chains](#delegation-chains);
+> - proving a [[ref: VAC]] chain valid without disclosing it, per [Attenuation](#attenuation).
 >
-> [Correlation Scope](#correlation-scope) makes the first of these the ordinary
-> case rather than an edge case. A member who declares `pairwise` toward their
-> community and `pairwise` toward a counterparty holds two identifiers that
-> differ by construction, so a community-anchored proof must cross them rather
-> than read one identifier out of both credentials.
+> [Correlation Scope](#correlation-scope) makes the first of these the ordinary case rather than an edge case. A member who declares `pairwise` toward their community and `pairwise` toward a counterparty holds two identifiers that differ by construction, so a community-anchored proof must cross them rather than read one identifier out of both credentials.
 >
-> Separately, none of the digest-valued members fixed in
-> [Digest Encoding](#digest-encoding) is salted, so a digest over low-entropy
-> content can be reversed by enumeration where the referenced credential is not
-> disclosed. Blinding them is cross-cutting work with the same task force.
+> Separately, none of the digest-valued members fixed in [Digest Encoding](#digest-encoding) is salted, so a digest over low-entropy content can be reversed by enumeration where the referenced credential is not disclosed. Blinding them is cross-cutting work with the same task force.
 >
-> The [ZKP task force](https://github.com/trustoverip/dtgwg-zkp-spec)'s work on
-> these is visible in its working draft and construction catalogue, where
-> records for common control, community-anchored composition, delegation
-> chains and blinded binders bear on the dependencies above. That work is
-> proposed rather than merged, and a catalogue record is a statement, its
-> witness requirements, and the open questions around it, not a completed
-> proof; the shared-subject and VAC-chain cases in particular still need their
-> own mapping and evidence rather than inheriting one because common control
-> appears in the catalogue. Glossary cross-references will follow once that
-> specification is merged and its terms are published.
+> The [ZKP task force](https://github.com/trustoverip/dtgwg-zkp-spec)'s work on these is visible in its working draft and construction catalogue, where records for common control, community-anchored composition, delegation chains and blinded binders bear on the dependencies above. That work is proposed rather than merged, and a catalogue record is a statement, its witness requirements, and the open questions around it, not a completed proof; the shared-subject and VAC-chain cases in particular still need their own mapping and evidence rather than inheriting one because common control appears in the catalogue. Glossary cross-references will follow once that specification is merged and its terms are published.
 >
-> **What holds until this work lands.** Nothing in this specification is
-> unverifiable in the meantime: every requirement here can be checked by
-> presenting the credentials themselves, which is what a holder must do today
-> to satisfy any predicate above. The cost is privacy rather than correctness,
-> and it falls hardest where a chain is involved, because the disclosure
-> boundary is the whole chain rather than the credential presented (see
-> [Privacy Considerations](#privacy-considerations) item 13). Implementations
-> should not defer shipping a rule of this specification on the grounds that
-> its zero-knowledge form is unspecified.
+> **What holds until this work lands.** Nothing in this specification is unverifiable in the meantime: every requirement here can be checked by presenting the credentials themselves, which is what a holder must do today to satisfy any predicate above. The cost is privacy rather than correctness, and it falls hardest where a chain is involved, because the disclosure boundary is the whole chain rather than the credential presented (see [Privacy Considerations](#privacy-considerations) item 13). Implementations should not defer shipping a rule of this specification on the grounds that its zero-knowledge form is unspecified.
 
 ## Security Considerations
 
