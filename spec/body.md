@@ -379,7 +379,7 @@ Issuers MUST use base-58-btc so that a single canonical form exists for any give
 
 Where a governing [[ref: VTC]] or [[ref: VTN]] requires a stronger hash, it MAY permit additional Multihash algorithm identifiers registered in [CID v1.0 §2.5](https://www.w3.org/TR/cid-1.0/#multihash). Because the algorithm is carried in the value itself, such a change does not alter the format of the property. Verifiers MUST reject a digest whose Multihash identifies an algorithm they do not accept, rather than treating it as a mismatch.
 
-> **Editor's note:** A digest over low-entropy content can be reversed by enumeration where the referenced credential is not disclosed, because an observer who knows the schema and the governing vocabulary can try the plausible values. None of the digest-valued members above is salted in this version. The `predicate` of a [[ref: VSC]] is a blinding target for the same reason: a term drawn from a small vocabulary is enumerable. Blinding them is cross-cutting work with the ZKP task force and is tracked in [#38](https://github.com/trustoverip/dtgwg-cred-spec/issues/38); this section fixes the encoding so that a blinding scheme can later change what is hashed without a second encoding migration.
+> **Editor's note:** A digest over low-entropy content can be reversed by enumeration where the referenced credential is not disclosed, because an observer who knows the schema and the governing vocabulary can try the plausible values. None of the digest-valued members above is salted in this version. The `predicate` of a [[ref: VSC]] is a blinding target for the same reason: a term drawn from a small vocabulary is enumerable. Blinding them is cross-cutting work with the ZKP task force; this section fixes the encoding so that a blinding scheme can later change what is hashed without a second encoding migration.
 
 ## Edge Credentials
 
@@ -818,7 +818,7 @@ This section is normative.
 
 **Purpose:** Carries a signed statement, by one [[ref: DTG node]] about another, whose meaning is fixed by a governed vocabulary. A VSC is the DTG's general-purpose claim: "I inspected this party's passport", "this party attended this event", "I witnessed this party issue this credential", "I endorse this party's skill". Each is a statement that a verifier reads and either believes or does not. Rather than give each such predicate a credential type of its own, this specification defines one type and lets a **predicate profile** fix the constraints of each predicate. The [[ref: VEC]] and the [[ref: VWC]] are the first two profiles.
 
-> **Editor's note — this Working Draft.** The VSC replaces the concrete `EndorsementCredential` and `WitnessCredential` subtypes of Working Draft 02, which are now the [`dtg:endorses`](#the-dtgendorses-profile-vec) and [`dtg:witnessed`](#the-dtgwitnessed-profile-vwc) profiles below. The names VEC and VWC are retained for those profiles. The type strings `EndorsementCredential` and `WitnessCredential` are not retained: a VSC carries exactly one channel of meaning, its `predicate`, so that a type string and a predicate can never disagree. See [issue #45](https://github.com/trustoverip/dtgwg-cred-spec/issues/45).
+> **Editor's note — this Working Draft.** The VSC replaces the concrete `EndorsementCredential` and `WitnessCredential` subtypes of Working Draft 02, which are now the [`dtg:endorses`](#the-dtgendorses-profile-vec) and [`dtg:witnessed`](#the-dtgwitnessed-profile-vwc) profiles below. The names VEC and VWC are retained for those profiles. The type strings `EndorsementCredential` and `WitnessCredential` are not retained: a VSC carries exactly one channel of meaning, its `predicate`, so that a type string and a predicate can never disagree.
 
 > **Notation.** In this document `dtg:` abbreviates a predicate's current name in the DTG VSC Predicate Registry: `dtg:witnessed` denotes `https://registry.trustoverip.org/dtg/vsc/witnessed/1`. This is documentation notation only; on the wire a predicate is always the absolute IRI. The three DTG namespaces version differently: a **predicate** carries its own integer path segment (`.../witnessed/1`, `.../witnessed/2`, …), each `<name>/<n>` immutable and distinct; **vocabulary** — types and properties such as `DTGCredential` and `taskContext`, at the unversioned `https://registry.trustoverip.org/dtg/credentials#` — has no numbered-sibling convention, so a changed meaning would be a new term, not a new version; the **context**, `https://registry.trustoverip.org/dtg/context/v1`, versions as one frozen document per `vN`, with every prior version served forever.
 
@@ -905,7 +905,7 @@ Two constraints on what may be a profile at all:
 - A predicate that is only meaningful inside the exchange in which it was issued is a trust task artifact, not a statement; see [Credentials versus Trust Task Artifacts](#credentials-versus-trust-task-artifacts).
 - A predicate whose truth depends on the completion of more than one trust task, where those tasks do not nest, MUST be expressed as one VSC per task, each carrying that task's `taskContext`, never as a single credential with more than one implicit referent. Which exchange a nested `taskContext` names is defined by the Trust Tasks specification's rule for [naming an exchange from outside the framework](https://trustoverip.github.io/dtgwg-trust-tasks-spec/#naming-an-exchange-from-outside-the-framework): the innermost exchange that attests the event.
 
-> **Editor's note — where profiles live.** This specification defines the mechanism above and, for this Working Draft, the two core profiles that replace the WD02 VEC and VWC sections — they replace normative text and need a published home now. Profiles for further predicates are defined in the **DTG Predicate Vocabulary**, a repo-driven registry on the model of the ToIP glossary rather than a specification: one definition file per predicate in the format the nine points above describe, generated into a human-readable document, the vocabulary served at the DTG namespace, and a machine-readable accept-list for verifiers; governed by pull request under stated admission criteria, on its own cadence (see [Related Specifications](#related-specifications) and [issue #52](https://github.com/trustoverip/dtgwg-cred-spec/issues/52)). The two core profiles move there once it has a release. Nothing on the wire changes when a profile's text moves: the predicate IRIs live in the DTG namespace either way. This specification defines mechanisms and does not otherwise name a predicate; [Community-Defined Predicates](#community-defined-predicates) carries one illustrative example and no more. Convergence across communities is served by admitting a community predicate to the registry once it is in use by more than one community. Admission is a convenience, not a gate: because a predicate is an absolute IRI that a verifier accepts by configuration, a community that publishes a predicate under a namespace it controls can issue under it, and verifiers can accept it, without waiting on or ever seeking admission to the registry. The registry curates a shared default set; it does not decide who may make a statement.
+> **Editor's note — where profiles live.** This specification defines the mechanism above and, for this Working Draft, the two core profiles that replace the WD02 VEC and VWC sections — they replace normative text and need a published home now. Profiles for further predicates are defined in the **DTG Predicate Vocabulary**, a repo-driven registry on the model of the ToIP glossary rather than a specification: one definition file per predicate in the format the nine points above describe, generated into a human-readable document, the vocabulary served at the DTG namespace, and a machine-readable accept-list for verifiers; governed by pull request under stated admission criteria, on its own cadence (see [Related Specifications](#related-specifications)). The two core profiles move there once it has a release. Nothing on the wire changes when a profile's text moves: the predicate IRIs live in the DTG namespace either way. This specification defines mechanisms and does not otherwise name a predicate; [Community-Defined Predicates](#community-defined-predicates) carries one illustrative example and no more. Convergence across communities is served by admitting a community predicate to the registry once it is in use by more than one community. Admission is a convenience, not a gate: because a predicate is an absolute IRI that a verifier accepts by configuration, a community that publishes a predicate under a namespace it controls can issue under it, and verifiers can accept it, without waiting on or ever seeking admission to the registry. The registry curates a shared default set; it does not decide who may make a statement.
 
 ### Statements in the Graph
 
@@ -1113,7 +1113,7 @@ It also removes a difficulty. A vetting statement is made before any edge exists
 
 **Scoped to one community.** `object.value.community` names the community whose vocabulary gives the statement its meaning. Another community reading the same statement has no defined meaning for it, and would count it only under a recognition policy of its own; one community's recognition does not carry to a third. The same applies to eligibility: that the issuer was eligible to vet is a fact about the named community.
 
-**The identity commitment.** The editor's note in [Digest Encoding](#digest-encoding) records that a digest over low-entropy content can be reversed by enumeration, and a digest of a legal name is exactly that. This profile salts its own member and leaves the members that section covers to [#38](https://github.com/trustoverip/dtgwg-cred-spec/issues/38).
+**The identity commitment.** The editor's note in [Digest Encoding](#digest-encoding) records that a digest over low-entropy content can be reversed by enumeration, and a digest of a legal name is exactly that. This profile salts its own member and leaves the members that section covers to the ZKP task force's blinding work.
 
 - The applicant's software generates a random 32-byte salt once per application, and puts the same salt on every card of that application.
 - `identityCommitment` is the digest, encoded as in [Digest Encoding](#digest-encoding), of the JCS canonical form of an object holding the salt and the identity claims.
@@ -1564,7 +1564,7 @@ A credential whose meaning depends on a trust task completing MUST carry a `task
 - For all other DTG credential types, `taskContext` is OPTIONAL.
 - A DTG credential without a `taskContext` property MUST be interpretable standing alone, independent of any exchange.
 
-> **Editor's note:** `taskContext` and `taskDigestMultibase` have the same values on every presentation of a credential, so they link those presentations even where everything else about the credential is proven in zero knowledge. A committed form of the citation, which the holder opens in proof against the exchange a verifier already holds, is tracked in [#58](https://github.com/trustoverip/dtgwg-cred-spec/issues/58). It would be carried beside these two properties, or by a profile replacing them; nothing here depends on it.
+> **Editor's note:** `taskContext` and `taskDigestMultibase` have the same values on every presentation of a credential, so they link those presentations even where everything else about the credential is proven in zero knowledge. A committed form of the citation, which the holder opens in proof against the exchange a verifier already holds, is under consideration. It would be carried beside these two properties, or by a profile replacing them; nothing here depends on it.
 
 ### The `taskDigestMultibase` Property
 
@@ -1645,8 +1645,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 >
 > Four of those predicates rest on one primitive no DTG specification yet
 > defines: a proof that two credentials, or two identifiers, are under **common
-> control**, without disclosing either. It is tracked in
-> [#9](https://github.com/trustoverip/dtgwg-cred-spec/issues/9), and it carries:
+> control**, without disclosing either. It carries:
 >
 > - the [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof),
 >   wherever a party's VMC identifier and its VRC identifier differ;
@@ -1668,23 +1667,18 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 > Separately, none of the digest-valued members fixed in
 > [Digest Encoding](#digest-encoding) is salted, so a digest over low-entropy
 > content can be reversed by enumeration where the referenced credential is not
-> disclosed. Blinding them is cross-cutting work with the same task force and
-> is tracked in
-> [#38](https://github.com/trustoverip/dtgwg-cred-spec/issues/38).
+> disclosed. Blinding them is cross-cutting work with the same task force.
 >
-> The ZKP task force's work on these is visible in its
-> [working draft](https://github.com/trustoverip/dtgwg-zkp-spec/pull/8) and
-> the accompanying
-> [construction catalogue](https://github.com/trustoverip/dtgwg-zkp-spec/discussions/9),
-> where records 007 (common control), 010 (community-anchored composition),
-> 020 (delegation chains) and 008 (blinded binders) bear on the dependencies
-> above. That draft is proposed rather than merged, and a record in the
-> catalogue is a statement, its witness requirements, and the open questions
-> around it, not a completed proof; nothing there closes #9 or #38, and the
-> shared-subject and VAC-chain cases in particular still need their own mapping
-> and evidence rather than inheriting one because common control appears in the
-> catalogue. Glossary cross-references will follow once that specification is
-> merged and its terms are published.
+> The [ZKP task force](https://github.com/trustoverip/dtgwg-zkp-spec)'s work on
+> these is visible in its working draft and construction catalogue, where
+> records for common control, community-anchored composition, delegation
+> chains and blinded binders bear on the dependencies above. That work is
+> proposed rather than merged, and a catalogue record is a statement, its
+> witness requirements, and the open questions around it, not a completed
+> proof; the shared-subject and VAC-chain cases in particular still need their
+> own mapping and evidence rather than inheriting one because common control
+> appears in the catalogue. Glossary cross-references will follow once that
+> specification is merged and its terms are published.
 >
 > **What holds until this work lands.** Nothing in this specification is
 > unverifiable in the meantime: every requirement here can be checked by
