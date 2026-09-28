@@ -1,7 +1,7 @@
 # DTG Credentials Core Specification
 
 _Version:_ 1.0  
-_Document Status:_ Working Draft 0.5.0  
+_Document Status:_ Working Draft 0.6.0  
 _GitHub:_ <https://github.com/trustoverip/dtgwg-cred-spec>
 <!-- _DOI:_ To be assigned when this specification reaches ToIP Approved Deliverable status. See https://lf-toip.atlassian.net/wiki/spaces/HOME/pages/767787009/ToIP+Approved+Deliverable+Process#Persistent-DOI-Link -->
 
