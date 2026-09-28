@@ -109,7 +109,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
       ],
       "source": "xref",
       "termId": "term:credential",
-      "lastUpdated": "2026-09-25T05:51:51.786Z"
+      "lastUpdated": "2026-09-28T12:44:41.114Z"
     }
   ]
 };</script>
@@ -674,7 +674,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example"</span><span class="token punctuation">,</span>
@@ -697,7 +697,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/2018/credentials/v1"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span><span class="token punctuation">,</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span><span class="token punctuation">,</span>
     <span class="token string">"https://w3id.org/security/data-integrity/v2"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
@@ -891,7 +891,7 @@ examples in this specification carry no declaration.</p>
 <p>All DTG credentials share this W3C VC structure (v2.0 shown; see <a href="#legacy-system-compatibility-v11">Legacy System Compatibility</a> for v1.1 compatibility):</p>
 <p><strong>Schema:</strong></p>
 <ul>
-<li><code>@context</code> (array, REQUIRED): MUST include <code>"https://www.w3.org/ns/credentials/v2"</code> and <code>"https://firstperson.network/credentials/dtg/v1"</code>, plus any additional contexts required by the proof type</li>
+<li><code>@context</code> (array, REQUIRED): MUST include <code>"https://www.w3.org/ns/credentials/v2"</code> and <code>"https://registry.trustoverip.org/dtg/context/v1"</code>, plus any additional contexts required by the proof type</li>
 <li><code>type</code> (array, REQUIRED): MUST include <code>"VerifiableCredential"</code>, <code>"DTGCredential"</code>, and exactly one concrete subtype</li>
 <li><code>issuer</code> (string, REQUIRED): DID of the issuing entity. Its <a class="term-reference" href="#term:correlation-scope">correlation scope</a> is declared by the holder rather than encoded in the identifier — see <a href="#correlation-scope">Correlation Scope</a></li>
 <li><code>validFrom</code> (string, REQUIRED): ISO 8601 datetime (<code>issuanceDate</code> in v1.1)</li>
@@ -910,7 +910,7 @@ examples in this specification carry no declaration.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:example:vtcCommunityDid"</span><span class="token punctuation">,</span>
@@ -990,7 +990,7 @@ examples in this specification carry no declaration.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"RelationshipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:peer:2.Ez6LSbysKZ..."</span><span class="token punctuation">,</span>
@@ -1064,7 +1064,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example"</span><span class="token punctuation">,</span>
@@ -1079,7 +1079,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"MembershipCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span><span class="token punctuation">,</span>
@@ -1202,7 +1202,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"DelegationCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:peer:2.Ez6LSbysKZ..."</span><span class="token punctuation">,</span>
@@ -1229,7 +1229,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"DelegationCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span><span class="token punctuation">,</span>
@@ -1314,7 +1314,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"InvitationCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkhaXgBZD..."</span><span class="token punctuation">,</span>
@@ -1346,7 +1346,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"PersonaCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkrKqT9pL..."</span><span class="token punctuation">,</span>
@@ -1364,7 +1364,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <p><strong>Editor’s note — this Working Draft.</strong> The VSC replaces the concrete <code>EndorsementCredential</code> and <code>WitnessCredential</code> subtypes of Working Draft 02, which are now the <a href="#the-dtgendorses-profile-vec"><code>dtg:endorses</code></a> and <a href="#the-dtgwitnessed-profile-vwc"><code>dtg:witnessed</code></a> profiles below. The names VEC and VWC are retained for those profiles. The type strings <code>EndorsementCredential</code> and <code>WitnessCredential</code> are not retained: a VSC carries exactly one channel of meaning, its <code>predicate</code>, so that a type string and a predicate can never disagree. See <a href="https://github.com/trustoverip/dtgwg-cred-spec/issues/45">issue #45</a>.</p>
 </blockquote>
 <blockquote>
-<p><strong>Notation.</strong> In this document <code>dtg:</code> abbreviates the DTG namespace <code>https://firstperson.network/credentials/dtg/v1#</code>, so that <code>dtg:witnessed</code> denotes <code>https://firstperson.network/credentials/dtg/v1#witnessed</code>. This is documentation notation only; on the wire a predicate is always the absolute IRI. The namespace shown is a placeholder: its home is decided in <a href="https://github.com/trustoverip/dtgwg-cred-spec/issues/48">issue #48</a>, and the final form carries no version segment, since predicate IRIs are compared byte-exact and must not change when a term is added (see <a href="https://github.com/trustoverip/dtgwg-cred-spec/issues/52">issue #52</a>).</p>
+<p><strong>Notation.</strong> In this document <code>dtg:</code> abbreviates a predicate’s current name in the DTG VSC Predicate Registry: <code>dtg:witnessed</code> denotes <code>https://registry.trustoverip.org/dtg/vsc/witnessed/1</code>. This is documentation notation only; on the wire a predicate is always the absolute IRI. The three DTG namespaces version differently: a <strong>predicate</strong> carries its own integer path segment (<code>.../witnessed/1</code>, <code>.../witnessed/2</code>, …), each <code>&lt;name&gt;/&lt;n&gt;</code> immutable and distinct; <strong>vocabulary</strong> — types and properties such as <code>DTGCredential</code> and <code>taskContext</code>, at the unversioned <code>https://registry.trustoverip.org/dtg/credentials#</code> — has no numbered-sibling convention, so a changed meaning would be a new term, not a new version; the <strong>context</strong>, <code>https://registry.trustoverip.org/dtg/context/v1</code>, versions as one frozen document per <code>vN</code>, with every prior version served forever.</p>
 </blockquote>
 <h3 id="statements-and-establishment" tabindex="-1"><a class="toc-anchor d-print-none" href="#statements-and-establishment">§</a> Statements and Establishment</h3>
 <p><em>This subsection is informative.</em></p>
@@ -1454,7 +1454,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <p><strong>Editor’s note — context terms.</strong> The DTG <code>@context</code> is not yet published (see the editor’s note in <a href="#declaring-scope">Declaring scope</a>). When it is, <code>predicate</code> is expected to be defined with <code>"@type": "@id"</code>, so that JSON-LD processors treat the value as the IRI it already is; <code>object.value</code> with <code>"@type": "@json"</code>, so that a structured payload is an opaque <code>rdf:JSON</code> literal canonicalized by JCS rather than a nested graph; and <code>object.id</code> as the node identifier it is. Until the context is published, verifiers apply <a href="#predicate-handling">Predicate Handling</a> to the <code>predicate</code> value as written.</p>
 </blockquote>
 <h3 id="the-dtg%3Aendorses-profile-(vec)" tabindex="-1"><a class="toc-anchor d-print-none" href="#the-dtg%3Aendorses-profile-(vec)">§</a> The <code>dtg:endorses</code> Profile (VEC)</h3>
-<p><strong>Predicate:</strong> <code>dtg:endorses</code> (<code>https://firstperson.network/credentials/dtg/v1#endorses</code>) — the issuer asserts something favourable about the subject: a skill, a standing, a reputation. A VSC under this profile is a <strong>verifiable endorsement credential</strong> (<a class="term-reference" href="#term:vec">VEC</a>).</p>
+<p><strong>Predicate:</strong> <code>dtg:endorses</code> (<code>https://registry.trustoverip.org/dtg/vsc/endorses/1</code>) — the issuer asserts something favourable about the subject: a skill, a standing, a reputation. A VSC under this profile is a <strong>verifiable endorsement credential</strong> (<a class="term-reference" href="#term:vec">VEC</a>).</p>
 <ul>
 <li><strong>Classification:</strong> evidence. The vocabulary of what may be endorsed, and what weight an endorsement carries, is defined by the governing <a class="term-reference" href="#term:vtc">VTC</a> or <a class="term-reference" href="#term:vtn">VTN</a>; the “verifiability” of an endorsement applies to the issuer’s signature, not to the truth of the assertion.</li>
 <li><strong>Object:</strong> <code>value</code>, whose structure is defined by the governing community’s endorsement vocabulary.</li>
@@ -1468,14 +1468,14 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"StatementCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkhaXgBZD..."</span><span class="token punctuation">,</span>
   <span class="token property">"validFrom"</span><span class="token operator">:</span> <span class="token string">"2026-01-06T10:00:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span><span class="token punctuation">,</span>
-    <span class="token property">"predicate"</span><span class="token operator">:</span> <span class="token string">"https://firstperson.network/credentials/dtg/v1#endorses"</span><span class="token punctuation">,</span>
+    <span class="token property">"predicate"</span><span class="token operator">:</span> <span class="token string">"https://registry.trustoverip.org/dtg/vsc/endorses/1"</span><span class="token punctuation">,</span>
     <span class="token property">"object"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token property">"value"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
         <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"SkillEndorsement"</span><span class="token punctuation">,</span>
@@ -1488,7 +1488,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <span class="token punctuation">}</span>
 </code></pre>
 <h3 id="the-dtg%3Awitnessed-profile-(vwc)" tabindex="-1"><a class="toc-anchor d-print-none" href="#the-dtg%3Awitnessed-profile-(vwc)">§</a> The <code>dtg:witnessed</code> Profile (VWC)</h3>
-<p><strong>Predicate:</strong> <code>dtg:witnessed</code> (<code>https://firstperson.network/credentials/dtg/v1#witnessed</code>) — the issuer attests that it observed the subject issue the credential the object names, under the conditions of a specific trust task exchange. A VSC under this profile is a <strong>verifiable witness credential</strong> (<a class="term-reference" href="#term:vwc">VWC</a>). The witness may be a person or a <a class="term-reference" href="#term:vta">VTA</a> applying the witnessing policies of a <a class="term-reference" href="#term:vtc">VTC</a> — for example, verifying that both parties were present at the same event, or provided proof of biometric liveness at the time of relationship formation.</p>
+<p><strong>Predicate:</strong> <code>dtg:witnessed</code> (<code>https://registry.trustoverip.org/dtg/vsc/witnessed/1</code>) — the issuer attests that it observed the subject issue the credential the object names, under the conditions of a specific trust task exchange. A VSC under this profile is a <strong>verifiable witness credential</strong> (<a class="term-reference" href="#term:vwc">VWC</a>). The witness may be a person or a <a class="term-reference" href="#term:vta">VTA</a> applying the witnessing policies of a <a class="term-reference" href="#term:vtc">VTC</a> — for example, verifying that both parties were present at the same event, or provided proof of biometric liveness at the time of relationship formation.</p>
 <p>Because the meaning of a witness attestation depends on the conditions under which the witnessing occurred, a VWC MUST be bound to the <a href="https://glossary.trustoverip.org/#term:trust-tasks">trust task</a> exchange in which it was issued via <code>taskContext</code> (see <a href="#trust-task-context-binding">Trust Task Context Binding</a>).</p>
 <p>A witnessed exchange of a complete <a class="term-reference" href="#term:dtg-edge">DTG edge</a> is bidirectional: two edge credentials, one in each direction, are formed in a single witnessing event — two VRCs for a peer-to-peer edge, or the two VMCs of a membership edge. For such exchanges the witness SHOULD issue one VWC per direction.</p>
 <p>A VWC’s <code>credentialSubject.id</code> and <code>taskContext</code> alone identify only the observed party and the trust task exchange, not the edge being witnessed. Binding a VWC to a specific edge therefore requires <code>object.digestMultibase</code>: a verifier holding the referenced edge credential can recover both endpoints of the edge (the credential’s <code>issuer</code> and <code>credentialSubject.id</code>) and confirm the exact credential the witness attested to. This binding is only as strong as the verifier’s access to that credential — a digest without the referenced credential to hand is an opaque hash, not an identified edge. Issuers and holders presenting a VWC as evidence of a specific edge SHOULD make the referenced edge credential available alongside it.</p>
@@ -1521,7 +1521,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"StatementCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:QmVzTd9hRkPqLu4WgXyN...:witness-service.example"</span><span class="token punctuation">,</span>
@@ -1530,7 +1530,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
   <span class="token property">"taskDigestMultibase"</span><span class="token operator">:</span> <span class="token string">"zQmWhCFfStzUE4HGseiQ1XWi2eEp1GTQEKnt2jyBe7uqzXD"</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span><span class="token punctuation">,</span>
-    <span class="token property">"predicate"</span><span class="token operator">:</span> <span class="token string">"https://firstperson.network/credentials/dtg/v1#witnessed"</span><span class="token punctuation">,</span>
+    <span class="token property">"predicate"</span><span class="token operator">:</span> <span class="token string">"https://registry.trustoverip.org/dtg/vsc/witnessed/1"</span><span class="token punctuation">,</span>
     <span class="token property">"object"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
       <span class="token property">"digestMultibase"</span><span class="token operator">:</span> <span class="token string">"zQmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n"</span>
     <span class="token punctuation">}</span><span class="token punctuation">,</span>
@@ -1549,7 +1549,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"StatementCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6Mk...observer"</span><span class="token punctuation">,</span>
@@ -1600,7 +1600,7 @@ node-type change raises has a bounded answer rather than an open one.</p>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span><span class="token punctuation">,</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span><span class="token punctuation">,</span>
     <span class="token string">"https://w3id.org/security/suites/ed25519-2020/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"StatementCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
@@ -1711,7 +1711,7 @@ party. See <a href="#withdrawal">Withdrawal</a>.</li>
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"AuthorityCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:webvh:z6Mkw...:example.com:rooms:7f3a"</span><span class="token punctuation">,</span>
@@ -1837,7 +1837,7 @@ and the reason a VAC and a <a class="term-reference" href="#term:vmc">VMC</a> st
 <pre class="language-json"><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://firstperson.network/credentials/dtg/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"AuthorityCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span><span class="token punctuation">,</span>
@@ -2396,15 +2396,15 @@ This work is licensed under a Creative Commons Attribution 4.0 International Lic
                 </div>
             </div>
             <hr id="external-ref-changes-divider" style="display: none;">
-            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 25 September 2026</p>
+            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 28 September 2026</p>
             <!-- Build Information Section -->
             <div class="ps-3 pe-3">
                 <p class="mb-2 fw-bold">Build Information:</p>
                 <div id="build-info" class="small text-muted">
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
-                        <time class="timestamp" datetime="2026-09-25T05:51:51.210Z">
-                            Generated: 2026-09-25T05:51:51.210Z
+                        <time class="timestamp" datetime="2026-09-28T12:44:40.552Z">
+                            Generated: 2026-09-28T12:44:40.552Z
                         </time>
                     </div>
                     <div class="d-flex align-items-center mb-1">
