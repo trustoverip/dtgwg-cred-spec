@@ -45,10 +45,10 @@ One `StatementCredential` type carrying a signed statement by one node about ano
 _Avoid_: attestation credential, assertion credential (collide with VAC); predicate credential (collides with VPC); the type strings `EndorsementCredential` and `WitnessCredential` (removed in WD03)
 
 **VEC (verifiable endorsement credential)**:
-A VSC under the `dtg:endorses` profile, attaching community-governed reputation/skill assertions to a party. Name retained for the profile; no longer a W3C type string.
+A VSC under the `dtg:endorses` profile (`https://registry.trustoverip.org/dtg/vsc/endorses/1`, whose normative definition is the registry entry), attaching community-governed reputation/skill assertions to a party. Name retained for the profile; no longer a W3C type string.
 
 **VWC (verifiable witness credential)**:
-A VSC under the `dtg:witnessed` profile: third-party attestation that the subject issued the credential named by `object.digestMultibase`, under the conditions of a specific trust task exchange. `taskContext` is REQUIRED by the profile. Its issuer is the witness's own DID (a member's, or a VTA's per VTC policy), which is `directed` at minimum. Name retained for the profile; no longer a W3C type string.
+A VSC under the `dtg:witnessed` profile (`https://registry.trustoverip.org/dtg/vsc/witnessed/1`, whose normative definition is the registry entry): third-party attestation that the subject issued the credential named by `object.digestMultibase`, under the conditions of a specific trust task exchange. `taskContext` is REQUIRED by the profile. Its issuer is the witness's own DID (a member's, or a VTA's per VTC policy), which is `directed` at minimum. Name retained for the profile; no longer a W3C type string.
 _Avoid_: W-DID (not a DTG identifier type)
 
 ### Identifiers
