@@ -957,7 +957,7 @@ A verifier that has not been configured to accept `https://vtc.example/vocab#` r
 
 A longer example, because it exercises every member of [Predicate Profiles](#predicate-profiles) and shows why a use case of this kind is a predicate of its own rather than a payload smuggled into an existing one.
 
-The use is peer identity vetting. An existing member of a community — the *vetter* — checks in person or on video that an *applicant* is who they claim to be and controls the identifier they will join with. The vetter records that check as a statement. The community collects several such statements and decides admission on them. The identifiers below are illustrative, and the predicate is defined in a namespace the community controls.
+The use is peer identity vetting. An existing member of a community — the *vetter* — checks in person or on video that an *applicant* is who they claim to be and controls the identifier they will join with. The vetter records that check as a statement. The community collects several such statements and decides admission on them. The identifiers below are illustrative, and the predicate is defined in a namespace the community controls, to show how a community defines a predicate of its own. The same profile is published in the [DTG VSC Predicate Registry](#related-specifications) as `dtg:vetted` (`https://registry.trustoverip.org/dtg/vsc/vetted/1`), and a community running peer vetting uses that IRI rather than minting a second identifier for the same concept.
 
 **Why its own predicate.** A vetting statement is a record of a procedure: a named member carried out a check, by a stated method, against stated classes of document, on a stated date. `dtg:endorses` says something favourable about the subject and leaves the vocabulary to the community — it would carry the payload, but it would also say that the vetter *endorses* the applicant, which is not what the vetter did and not what the community weighs. `dtg:witnessed` is about observing a credential being issued, not about checking a person. Giving the check its own predicate keeps the three meanings apart in the graph, so a community that recognizes one need not recognize the others, and a verifier reading a statement learns which question was actually answered.
 
@@ -969,14 +969,16 @@ It also removes a difficulty. A vetting statement is made before any edge exists
 - **Classification:** evidence, weighed by the community named in the object when it decides admission. A statement is not a decision, and a community may require several from distinct vetters.
 - **Object:** `value`, whose members are:
   - `community`: the identifier of the one community the statement was made for.
-  - `method`: how the check was made — for example `in-person`, `video` or `prior-acquaintance`.
+  - `method`: how the check was made — for example `inPerson`, `video` or `priorAcquaintance`.
   - `documentClasses`: the classes of identity document the vetter relied on, for example `passport`. Empty where the vetter relied on prior acquaintance alone. It never carries a document number, image or portrait.
   - `claimsVerified`: the claim *types* the vetter checked against the person, for example `name.legal`. Claim values do not appear.
   - `livenessConfirmed`: whether the vetter confirmed during the session that the person in front of them controlled `credentialSubject.id`, for example by both parties reading aloud a code derived from the session.
   - `identityCommitment`: a salted commitment to the identity claims the applicant presented. See *The identity commitment* below.
   - `cardDigestMultibase`: the digest of the signed card the applicant presented, computed as specified in [Digest Encoding](#digest-encoding) over the card exactly as the vetter received it. It lets a dispute or audit identify the exact card relied on, without the community ever receiving the card.
-  - `declaredRelationship`: the vetter's declared prior relationship to the applicant — for example `none`, `community-colleague`, `same-employer` or `family` — so a community can limit how many statements from related vetters it counts.
-  - `attestationTextDigest`: the digest of the governance text the vetter was shown before signing, so the version they attested under can be proven.
+  - `declaredRelationship`: the vetter's declared prior relationship to the applicant — for example `none`, `communityColleague`, `sameEmployer` or `family` — so a community can limit how many statements from related vetters it counts.
+  - `attestationTextDigest`: the digest of the governance text the vetter was shown before signing, so the version they attested under can be proven. Optional: a community that shows no attestation text has nothing to digest.
+
+  Enumerated values are camelCase, the convention the W3C Verifiable Credentials Data Model v2.0 and Data Integrity use for their own values (for example `assertionMethod`).
 - **Subject–object relationship:** none required. The subject is the identifier the applicant will join with, and the object describes the check rather than naming another credential.
 - **Additional members:** none beyond those [VSC (Verifiable Statement Credential)](#vsc-verifiable-statement-credential) defines.
 - **`taskContext`:** REQUIRED by this profile — the vetting exchange in which the check happened. The statement remains true afterwards, so it is a credential rather than a trust task artifact by the test in [Credentials versus Trust Task Artifacts](#credentials-versus-trust-task-artifacts), but the exchange is what a dispute would examine.
@@ -1000,6 +1002,7 @@ It also removes a difficulty. A vetting statement is made before any edge exists
   "validFrom": "2026-09-20T10:14:00Z",
   "validUntil": "2027-01-18T10:14:00Z",
   "taskContext": "urn:uuid:5b0c7e0e-3f7a-4c52-9d0e-2a7c1f6b9e41",
+  "taskDigestMultibase": "zQm...",
   "credentialSubject": {
     "id": "did:key:z6MkjRagNiMu...",
     "predicate": "https://vtc.example/vocab/vetting/v1#vetted",
@@ -1012,7 +1015,7 @@ It also removes a difficulty. A vetting statement is made before any edge exists
         "livenessConfirmed": true,
         "identityCommitment": "zQm...",
         "cardDigestMultibase": "zQm...",
-        "declaredRelationship": "community-colleague",
+        "declaredRelationship": "communityColleague",
         "attestationTextDigest": "zQm..."
       }
     }
