@@ -109,7 +109,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
       ],
       "source": "xref",
       "termId": "term:credential",
-      "lastUpdated": "2026-09-28T19:57:45.373Z"
+      "lastUpdated": "2026-09-30T12:13:42.809Z"
     }
   ]
 };</script>
@@ -1554,33 +1554,53 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <h4 id="worked-example%3A-an-identity-vetting-predicate" tabindex="-1"><a class="toc-anchor d-print-none" href="#worked-example%3A-an-identity-vetting-predicate">§</a> Worked Example: An Identity Vetting Predicate</h4>
 <p><em>This subsection is informative.</em></p>
 <p>A longer example, because it exercises every member of <a href="#predicate-profiles">Predicate Profiles</a> and shows why a use case of this kind is a predicate of its own rather than a payload smuggled into an existing one.</p>
-<p>The use is peer identity vetting. An existing member of a community — the <em>vetter</em> — checks in person or on video that an <em>applicant</em> is who they claim to be and controls the identifier they will join with. The vetter records that check as a statement. The community collects several such statements and decides admission on them. The identifiers below are illustrative, and the predicate is defined in a namespace the community controls.</p>
+<p>The use is peer identity vetting. An existing member of a community — the <em>vetter</em> — checks in person or on video that an <em>applicant</em> is who they claim to be and controls the identifier they will join with. The vetter records that check as a statement. The community collects several such statements and decides admission on them. The identifiers below are illustrative, and the predicate is defined in a namespace the community controls, to show how a community defines a predicate of its own. The same profile is also published in the <a href="#related-specifications">DTG VSC Predicate Registry</a> as <code>dtg:vetted</code> (<code>https://registry.trustoverip.org/dtg/vsc/vetted/1</code>), whose entry is its normative definition; this example is informative. A community running peer vetting can use that IRI when it wants its statements to interoperate with other communities’.</p>
 <p><strong>Why its own predicate.</strong> A vetting statement is a record of a procedure: a named member carried out a check, by a stated method, against stated classes of document, on a stated date. <code>dtg:endorses</code> says something favourable about the subject and leaves the vocabulary to the community — it would carry the payload, but it would also say that the vetter <em>endorses</em> the applicant, which is not what the vetter did and not what the community weighs. <code>dtg:witnessed</code> is about observing a credential being issued, not about checking a person. Giving the check its own predicate keeps the three meanings apart in the graph, so a community that recognizes one need not recognize the others, and a verifier reading a statement learns which question was actually answered.</p>
 <p>It also removes a difficulty. A vetting statement is made before any edge exists: the vetter and the applicant may share no relationship, and the applicant is not yet a member. A statement annotates a node, so nothing has to be invented to explain what edge the statement presumes.</p>
 <p><strong>The profile.</strong> As required by <a href="#predicate-profiles">Predicate Profiles</a>:</p>
 <ul>
-<li><strong>Predicate:</strong> <code>https://vtc.example/vocab/vetting/v1#vetted</code> — the issuer attests that it checked the subject’s claimed identity in a vetting session, by the method and against the document classes the object states.</li>
-<li><strong>Classification:</strong> evidence, weighed by the community named in the object when it decides admission. A statement is not a decision, and a community may require several from distinct vetters.</li>
-<li><strong>Object:</strong> <code>value</code>, whose members are:
+<li>
+<p><strong>Predicate:</strong> <code>https://vtc.example/vocab/vetting/v1#vetted</code> — the issuer attests that it checked the subject’s claimed identity in a vetting session, by the method and against the document classes the object states.</p>
+</li>
+<li>
+<p><strong>Classification:</strong> evidence, weighed by the community named in the object when it decides admission. A statement is not a decision, and a community may require several from distinct vetters.</p>
+</li>
+<li>
+<p><strong>Object:</strong> <code>value</code>, whose members are:</p>
 <ul>
 <li><code>community</code>: the identifier of the one community the statement was made for.</li>
-<li><code>method</code>: how the check was made — for example <code>in-person</code>, <code>video</code> or <code>prior-acquaintance</code>.</li>
+<li><code>method</code>: how the check was made — for example <code>inPerson</code>, <code>video</code> or <code>priorAcquaintance</code>.</li>
 <li><code>documentClasses</code>: the classes of identity document the vetter relied on, for example <code>passport</code>. Empty where the vetter relied on prior acquaintance alone. It never carries a document number, image or portrait.</li>
 <li><code>claimsVerified</code>: the claim <em>types</em> the vetter checked against the person, for example <code>name.legal</code>. Claim values do not appear.</li>
 <li><code>livenessConfirmed</code>: whether the vetter confirmed during the session that the person in front of them controlled <code>credentialSubject.id</code>, for example by both parties reading aloud a code derived from the session.</li>
 <li><code>identityCommitment</code>: a salted commitment to the identity claims the applicant presented. See <em>The identity commitment</em> below.</li>
 <li><code>cardDigestMultibase</code>: the digest of the signed card the applicant presented, computed as specified in <a href="#digest-encoding">Digest Encoding</a> over the card exactly as the vetter received it. It lets a dispute or audit identify the exact card relied on, without the community ever receiving the card.</li>
-<li><code>declaredRelationship</code>: the vetter’s declared prior relationship to the applicant — for example <code>none</code>, <code>community-colleague</code>, <code>same-employer</code> or <code>family</code> — so a community can limit how many statements from related vetters it counts.</li>
-<li><code>attestationTextDigest</code>: the digest of the governance text the vetter was shown before signing, so the version they attested under can be proven.</li>
+<li><code>declaredRelationship</code>: the vetter’s declared prior relationship to the applicant — for example <code>none</code>, <code>communityColleague</code>, <code>sameEmployer</code> or <code>family</code> — so a community can limit how many statements from related vetters it counts.</li>
+<li><code>attestationTextDigest</code>: the digest of the governance text the vetter was shown before signing, so the version they attested under can be proven. Optional: a community that shows no attestation text has nothing to digest.</li>
 </ul>
+<p>Enumerated values are camelCase, the convention the W3C Verifiable Credentials Data Model v2.0 and Data Integrity use for their own values (for example <code>assertionMethod</code>).</p>
 </li>
-<li><strong>Subject–object relationship:</strong> none required. The subject is the identifier the applicant will join with, and the object describes the check rather than naming another credential.</li>
-<li><strong>Additional members:</strong> none beyond those <a href="#vsc-verifiable-statement-credential">VSC (Verifiable Statement Credential)</a> defines.</li>
-<li><strong><code>taskContext</code>:</strong> REQUIRED by this profile — the vetting exchange in which the check happened. The statement remains true afterwards, so it is a credential rather than a trust task artifact by the test in <a href="#credentials-versus-trust-task-artifacts">Credentials versus Trust Task Artifacts</a>, but the exchange is what a dispute would examine.</li>
-<li><strong>Issuer scope:</strong> <code>directed</code> at minimum. The issuer must be recognizable to the community weighing the statement, so a <code>pairwise</code> declaration could not describe it truthfully.</li>
-<li><strong>Issuer:</strong> a member the community has made eligible to vet, issuing under the member identifier its <a class="term-reference" href="#term:vmc">VMC</a> names. Eligibility is the community’s to confer and to withdraw, and a verifier checks it under community policy rather than inferring it from this statement.</li>
-<li><strong>Verification establishes:</strong> that the named member states it carried out the described check on the subject’s claimed identity, in the exchange <code>taskContext</code> names.</li>
-<li><strong>Verification does not establish:</strong> that the applicant’s claimed identity is true; that the vetter was eligible to vet, which is a fact about the community and is checked separately; that the check was competent; or that the applicant has been admitted anywhere. Admission is a decision the community records, and this statement is one input to it.</li>
+<li>
+<p><strong>Subject–object relationship:</strong> none required. The subject is the identifier the applicant will join with, and the object describes the check rather than naming another credential.</p>
+</li>
+<li>
+<p><strong>Additional members:</strong> none beyond those <a href="#vsc-verifiable-statement-credential">VSC (Verifiable Statement Credential)</a> defines.</p>
+</li>
+<li>
+<p><strong><code>taskContext</code>:</strong> REQUIRED by this profile — the vetting exchange in which the check happened. The statement remains true afterwards, so it is a credential rather than a trust task artifact by the test in <a href="#credentials-versus-trust-task-artifacts">Credentials versus Trust Task Artifacts</a>, but the exchange is what a dispute would examine.</p>
+</li>
+<li>
+<p><strong>Issuer scope:</strong> <code>directed</code> at minimum. The issuer must be recognizable to the community weighing the statement, so a <code>pairwise</code> declaration could not describe it truthfully.</p>
+</li>
+<li>
+<p><strong>Issuer:</strong> a member the community has made eligible to vet, issuing under the member identifier its <a class="term-reference" href="#term:vmc">VMC</a> names. Eligibility is the community’s to confer and to withdraw, and a verifier checks it under community policy rather than inferring it from this statement.</p>
+</li>
+<li>
+<p><strong>Verification establishes:</strong> that the named member states it carried out the described check on the subject’s claimed identity, in the exchange <code>taskContext</code> names.</p>
+</li>
+<li>
+<p><strong>Verification does not establish:</strong> that the applicant’s claimed identity is true; that the vetter was eligible to vet, which is a fact about the community and is checked separately; that the check was competent; or that the applicant has been admitted anywhere. Admission is a decision the community records, and this statement is one input to it.</p>
+</li>
 </ul>
 <p><strong>Example:</strong></p>
 <pre><code class="language-json"><span class="token punctuation">{</span>
@@ -1595,6 +1615,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
   <span class="token property">"validFrom"</span><span class="token operator">:</span> <span class="token string">"2026-09-20T10:14:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"validUntil"</span><span class="token operator">:</span> <span class="token string">"2027-01-18T10:14:00Z"</span><span class="token punctuation">,</span>
   <span class="token property">"taskContext"</span><span class="token operator">:</span> <span class="token string">"urn:uuid:5b0c7e0e-3f7a-4c52-9d0e-2a7c1f6b9e41"</span><span class="token punctuation">,</span>
+  <span class="token property">"taskDigestMultibase"</span><span class="token operator">:</span> <span class="token string">"zQm..."</span><span class="token punctuation">,</span>
   <span class="token property">"credentialSubject"</span><span class="token operator">:</span> <span class="token punctuation">{</span>
     <span class="token property">"id"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkjRagNiMu..."</span><span class="token punctuation">,</span>
     <span class="token property">"predicate"</span><span class="token operator">:</span> <span class="token string">"https://vtc.example/vocab/vetting/v1#vetted"</span><span class="token punctuation">,</span>
@@ -1607,7 +1628,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
         <span class="token property">"livenessConfirmed"</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
         <span class="token property">"identityCommitment"</span><span class="token operator">:</span> <span class="token string">"zQm..."</span><span class="token punctuation">,</span>
         <span class="token property">"cardDigestMultibase"</span><span class="token operator">:</span> <span class="token string">"zQm..."</span><span class="token punctuation">,</span>
-        <span class="token property">"declaredRelationship"</span><span class="token operator">:</span> <span class="token string">"community-colleague"</span><span class="token punctuation">,</span>
+        <span class="token property">"declaredRelationship"</span><span class="token operator">:</span> <span class="token string">"communityColleague"</span><span class="token punctuation">,</span>
         <span class="token property">"attestationTextDigest"</span><span class="token operator">:</span> <span class="token string">"zQm..."</span>
       <span class="token punctuation">}</span>
     <span class="token punctuation">}</span>
@@ -2090,15 +2111,15 @@ This work is licensed under a Creative Commons Attribution 4.0 International Lic
                 </div>
             </div>
             <hr id="external-ref-changes-divider" style="display: none;">
-            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 28 September 2026</p>
+            <p class="d-none ps-3 pe-3" id="w3c-state">W3C Recommendation, 30 September 2026</p>
             <!-- Build Information Section -->
             <div class="ps-3 pe-3">
                 <p class="mb-2 fw-bold">Build Information:</p>
                 <div id="build-info" class="small text-muted">
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
-                        <time class="timestamp" datetime="2026-09-28T19:57:44.815Z">
-                            Generated: 2026-09-28T19:57:44.815Z
+                        <time class="timestamp" datetime="2026-09-30T12:13:42.418Z">
+                            Generated: 2026-09-30T12:13:42.418Z
                         </time>
                     </div>
                     <div class="d-flex align-items-center mb-1">
