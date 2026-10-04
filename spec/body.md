@@ -7,8 +7,8 @@ This section shows the formal type hierarchy of the DTG Core Credential types. E
 ```text
 VerifiableCredential
 └── DTGCredential
-    ├── MembershipCredential (VMC)
     ├── RelationshipCredential (VRC)
+    ├── MembershipCredential (VMC)
     ├── DelegationCredential (VDC)
     ├── InvitationCredential (VIC)
     ├── PersonaCredential (VPC)
@@ -18,33 +18,35 @@ VerifiableCredential
     └── AuthorityCredential (VAC)
 ```
 
-> **Note:** The [[ref: r-card]] (relationship card) that appeared in earlier drafts of this specification is a [[ref: verifiable data structure]] (VDS), not a `DTGCredential` subtype. It will be defined in the planned **DTG Verifiable Data Structures** specification (see [Related Specifications](#related-specifications)).
+> **Editors' Note:** The [[ref: r-card]] (relationship card) that appeared in earlier drafts of this specification is a [[ref: verifiable data structure]] (VDS), not a `DTGCredential` subtype. It will be defined in the planned **DTG Verifiable Data Structures** specification (see [Related Specifications](#related-specifications)).
 
 ## W3C Verifiable Credentials Version Support
 
-This section is normative.
+*This section is normative.*
 
 ### Primary Standard: v2.0
 
-This specification is written using **W3C Verifiable Credentials Data Model v2.0** syntax. All DTG implementations MUST support v2.0 credential verification and SHOULD support v2.0 credential issuance.
+This specification is written using **W3C Verifiable Credentials Data Model v2.0** syntax.
+
+- Verifiers MUST accept and verify v2.0 credentials
+- Issuers SHOULD issue v2.0 credentials
 
 ### Legacy System Compatibility: v1.1
 
-Many existing [[ref: identity verification providers]] (IDVPs), [trust registries](https://glossary.trustoverip.org/#term:trust-registry), and community infrastructure may only support W3C VC Data Model v1.1. To ensure broad interoperability and avoid forcing costly system migrations:
+Many existing [[ref: identity verification providers]] (IDVPs), [trust registries](https://glossary.trustoverip.org/#term:trust-registry), and community infrastructures only support W3C VC Data Model v1.1. To support broad interoperability and to avoid costly system migrations:
 
-- DTG implementations SHOULD accept and verify v1.1 credentials
-- Existing credential issuers MAY issue DTG-compliant credentials using v1.1 syntax
-- New implementations SHOULD prioritize v2.0 but MAY also issue v1.1 when required by ecosystem constraints
+- Verifiers SHOULD accept and verify v1.1 credentials
+- Issuers MAY issue v1.1 credentials
 
-> **Design Intent:** This dual-version support enables:
+> **Design Note:** This dual-version support enables:
 >
 > - Legacy IDVPs to issue [[ref: IDVCs]] (identity verification credentials) without system upgrades
-> - Existing [[ref: VTCs]] to participate in the DTG using their current infrastructure
+> - Existing [[ref: VTCs]] to serve as [[ref: DTG nodes]] using their current infrastructure
 > - Gradual ecosystem migration from v1.1 to v2.0 without breaking trust relationships
 
 ### Property Mapping
 
-The only differences between v1.1 and v2.0 DTG credentials are:
+The only differences between v1.1 and v2.0 DTG credentials are the property mappings below, plus the additional Data Integrity context a v1.1 credential lists (see the Implementation Note below):
 
 | Property | v1.1 | v2.0 |
 | ---------- | ------ | ------ |
@@ -54,11 +56,11 @@ The only differences between v1.1 and v2.0 DTG credentials are:
 
 All DTG-specific schemas (types, issuer requirements, credentialSubject structure) are identical.
 
-> **Implementation Note:** A DTG credential's `proof` is a `DataIntegrityProof` under either version (see [Base Structure](#base-structure)); a v1.1 credential additionally lists the Data Integrity context `https://w3id.org/security/data-integrity/v2`. Verifiers supporting both v1.1 and v2.0 credentials MUST be able to verify that proof under each version for every cryptosuite they accept. Issuers SHOULD use well-supported cryptosuites and include all necessary contexts.
+> **Implementation Note:** A DTG credential's `proof` is a `DataIntegrityProof` under either version (see [Base Structure](#base-structure)); a v1.1 credential additionally lists the Data Integrity context `https://w3id.org/security/data-integrity/v2` (see the v1.1 example in [Dual-Version Examples](#dual-version-examples)). Verifiers supporting both v1.1 and v2.0 credentials MUST be able to verify that proof under each version for every cryptosuite they accept. Issuers SHOULD use well-supported cryptosuites and include all necessary contexts.
 
 ### Dual-Version Examples
 
-For readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Every example declares its issuer's [[ref: correlation scope]] in `issuerScope`, and the value follows from who is issuing: a community, a witness service or another party that must be findable declares `public`; the reused member identifier declares `directed`, since it is used with the community and with other members; and the peers of a [[ref: VRC]] declare `pairwise`. A credential declares only its own issuer's scope, so the member's `directed` appears on the credentials the member issues, never on the community's grant to them — see [Correlation Scope](#correlation-scope).
+For improved readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Every example declares its issuer's [[ref: correlation scope]] in `issuerScope`, and the value follows from who is issuing: a community, a witness service or another party that must be findable declares `public`; the reused member identifier declares `directed`, since it is used with the community and with other members; and the peers of a [[ref: VRC]] declare `pairwise`. A credential declares only its own issuer's scope, so the member's `directed` appears on the credentials the member issues, never on the community's grant to them — see [Correlation Scope](#correlation-scope).
 
 **v2.0 (Primary):**
 
@@ -119,27 +121,36 @@ For readability, the examples throughout this specification reuse a single membe
 
 ## Correlation Scope
 
-This section is normative, except where a subsection is marked informative. Every DTG credential declares the **[[ref: correlation scope]]** of its issuer's identifier in the REQUIRED `issuerScope` property (see [Declaring scope](#declaring-scope) and [Base Structure](#base-structure)); the requirements of this section apply to that declaration.
+*This section is normative, except where a subsection is marked informative.*
 
-A [[ref: DTG verifiable identifier]] carries a declared correlation scope: the breadth over which its holder intends it to be correlated. Scope is declared by the holder, and is independent of the role the holder plays — which is established by the credentials the identifier appears in. A role may nonetheless constrain which scopes a holder can *truthfully* declare, as it does for a [[ref: VTC]]'s own identifier and for a [[ref: VWC]] witness's; a role never supplies the scope, it only rules some declarations out.
+A **[[ref: correlation scope]]** is how widely the issuer of a DTG credential intends the [[ref: DTG verifiable identifier]] it controls to be correlated. For every DTG credential, the scope of the **issuer's** identifier is declared by the issuer in the REQUIRED `issuerScope` property (see [Declaring scope](#declaring-scope) and [Base Structure](#base-structure)). The requirements of this section apply to that declaration.
 
-| Scope | Known to | Holder's intent |
+A declared scope is independent of the role the controller plays — which is established by the credentials the identifier appears in. What constrains a scope is instead what the identifier must be able to do: a [[ref: VTC]]'s identifier must be findable, so it can only *truthfully* be `public`; a [[ref: VWC]] witness's identifier must be recognizable to the community weighing the statement, so it is `directed` at minimum. A constraint never sets the scope; it only rules some declarations out.
+
+| Scope Value | Scope | Controller's Intent |
 |---|---|---|
 | `pairwise` | exactly one counterparty | correlation confined to this one relationship |
-| `directed` | a set of counterparties the holder chooses | deliberate correlation across that set and no further |
+| `directed` | a set of counterparties the controller chooses | deliberate correlation across that set and no further |
 | `public` | unbounded | correlation unbounded; ordinarily published so that it can be found |
 
-A *counterparty* here is a party to a relationship the identifier establishes or annotates. Disclosure to a party in a supporting role for that same relationship — a [[ref: VWC]] witness, an [[ref: IDVP]] performing identity proofing for a membership, or the resolution infrastructure the identifier depends on — does not by itself widen scope, though it does place the identifier beyond the holder's control; see [Privacy Considerations](#privacy-considerations).
+A *counterparty* is a party to the relationship the identifier is used in, and only counterparties count toward the scope. A [[ref: VWC]] witness, an [[ref: IDVP]] performing identity proofing for a membership, or the resolution infrastructure the identifier relies on are not counterparties, so disclosing the identifier to one of them does not change the declared scope. But it does mean the controller no longer controls who else sees the identifier; see [Privacy Considerations](#privacy-considerations).
 
-The values are **ordered**, narrowest first. Where this specification states a minimum scope for a purpose, a declaration narrower than that minimum does not satisfy it, and a verifier MUST NOT treat it as if it did; elsewhere a holder MAY declare any of the three. A verifier MUST NOT rely on an identifier's value, its DID method, or the context in which it was encountered as a substitute for a declaration.
+The three scope values are **ordered** from narrowest to widest. Where a minimum scope applies, a declaration narrower than that minimum does not satisfy the requirement, and a verifier MUST NOT treat it as if it did. Everywhere else, a controller MAY declare any of the three. A verifier MUST NOT infer the scope from the identifier's value, its DID method, or where it was encountered; the scope comes from the declaration alone.
 
-There are three values rather than four because each must answer the same question — *who may correlate this identifier?* — and answer it by the holder's own choice. `pairwise` confines correlation to one counterparty, `directed` confines it to a set the holder directs the identifier at, and `public` declines to confine it. There is deliberately no separate value for an identifier used within a community: an identifier a member uses only with the community is `pairwise`, and one the member also uses with other members is `directed`. A value bounded by the community would take its bound from a credential rather than from the holder — the conflation this section exists to remove — and would give a verifier two middle values it has no way to tell apart. What such a value appeared to capture is a property of the community rather than of the identifier; see [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
+> **Example:** a [[ref: VWC]] witness's identifier is `directed` at minimum — the witness must be recognizable to the community weighing its statement. A witness that declares `pairwise` has declared narrower than the minimum, and a verifier MUST NOT accept it.
+
+Each scope value answers one question — *how widely may this identifier be correlated?* — by the controller's own choice: `pairwise` confines correlation to one counterparty, `directed` to a set the controller chooses, `public` to no limit. A scope value bounded by a community is deliberately absent. It would add no value — an identifier a member uses only with their community is already `pairwise`, and one the member uses with other members too is `directed`. It would also take its scope from a credential rather than from the controller, the conflation this section removes. What such a value seemed to capture is a property of the community, not of the identifier; see [Scope the controller cannot declare alone](#scope-the-controller-cannot-declare-alone).
+
+> **Example:** Alice joins the Chess Club; her [[ref: VMC]] names the club as her community. Today, Alice *declares* her identifier's scope herself — `pairwise` (only the club), `directed` (club plus other members), or `public`. A "community" value would mean the scope is automatically "the Chess Club," because that's what the [[ref: VMC]] says — the scope would be *taken from the credential* rather than *chosen by Alice*.
+
 
 ### Roles are conferred by credentials
 
-An identifier is not "a membership identifier"; it is an identifier that *has* a [[ref: VMC]]. It is not "a persona identifier"; it is one that *has* a [[ref: VPC]]. Membership is still established by the VMC pair and a [[ref: persona]] is still asserted by a VPC; a scope declaration is orthogonal to both.
+An identifier is not "a membership identifier"; it is an identifier that appears in a [[ref: VMC]]. It is not "a persona identifier"; it is one that appears in a [[ref: VPC]]. Membership is still established by the VMC pair and a [[ref: persona]] is still asserted by a VPC; a scope declaration is orthogonal to both.
 
-The R-DID (relationship), M-DID (membership), C-DID (community) and P-DID (persona) identifier types used in drafts before WD02 are retired. Each named a role and a correlation width in one token, and the two can disagree — an identifier holding a VMC and issuing a VRC answered to two of the four names at once.
+The R-DID (relationship), M-DID (membership), C-DID (community) and P-DID (persona) identifier types used in drafts before WD02 are retired. Each named a role and a correlation width in one token, and the two can disagree — an identifier that is a [[ref: VMC]]'s subject and a [[ref: VRC]]'s issuer would fit two of the four names at once.
+
+
 
 ### Choosing a scope
 
@@ -1393,7 +1404,7 @@ This specification defines normative requirements, using the keywords defined in
 
 1. **Issuers** — entities that issue DTG credentials. A conforming issuer MUST produce credentials that satisfy the [Base Structure](#base-structure) and the schema of the concrete credential type — for a [[ref: VSC]], including the constraints of its predicate's profile — including the `taskContext` requirements of [Trust Task Context Binding](#trust-task-context-binding). A conforming issuer MUST declare the [[ref: correlation scope]] of its identifier in `issuerScope` on every credential it issues and MUST satisfy the declaration requirements of [Correlation Scope](#correlation-scope); a conforming issuer that is a [[ref: VTC]] issuing [[ref: VMCs]] MUST also publish its member-identifier disclosure practice as [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone) requires.
 2. **Holders** — entities that store and present DTG credentials. A conforming holder MUST present credentials without altering their contents and, when presenting a `taskContext`-bearing credential as evidence of task completion, MUST include matching outcome evidence with the presentation, as [Outcome Interpretability](#outcome-interpretability) requires.
-3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and MUST support W3C VC Data Model v2.0 verification per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support). A conforming verifier MUST reject a credential whose `issuerScope` is absent or invalid, as [Base Structure](#base-structure) requires, and MUST apply the verifier requirements of [Correlation Scope](#correlation-scope) to the declared scope. A verifier that accepts [[ref: VACs]] MUST additionally implement the chain verification rule of [Attenuation](#attenuation), the status-checking rule of [Withdrawal](#withdrawal), and the key-control rule of [Invocation](#invocation). A verifier that accepts [[ref: VSCs]] MUST additionally implement [Predicate Handling](#predicate-handling) and the bounds of [What Verification Establishes](#what-verification-establishes).
+3. **Verifiers** — entities that verify DTG credentials and presentations. A conforming verifier MUST implement the verification requirements of the [Security Considerations](#security-considerations) and the outcome interpretability rule of [Trust Task Context Binding](#trust-task-context-binding), and per [W3C Verifiable Credentials Version Support](#w3c-verifiable-credentials-version-support) MUST support W3C VC Data Model v2.0 verification and SHOULD accept and verify v1.1 credentials. A conforming verifier MUST reject a credential whose `issuerScope` is absent or invalid, as [Base Structure](#base-structure) requires, and MUST apply the verifier requirements of [Correlation Scope](#correlation-scope) to the declared scope. A verifier that accepts [[ref: VACs]] MUST additionally implement the chain verification rule of [Attenuation](#attenuation), the status-checking rule of [Withdrawal](#withdrawal), and the key-control rule of [Invocation](#invocation). A verifier that accepts [[ref: VSCs]] MUST additionally implement [Predicate Handling](#predicate-handling) and the bounds of [What Verification Establishes](#what-verification-establishes).
 
 ### Conformance Tests
 
