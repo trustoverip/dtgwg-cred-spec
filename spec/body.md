@@ -372,7 +372,7 @@ A VMC is issued in each direction of a membership edge. The two directions are d
   - For the member-issued VMC: whatever the member declared for the identifier the grant names
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
-    - For the community-issued VMC: DID of the member (a person, device, agent, service, or, for VTN membership, a member VTC or a member VTN)
+    - For the community-issued VMC: DID of the member (a person, device, agent, service, or, for VTN-to-VTC or VTN-to-VTN membership, a member VTC or a member VTN)
     - For the member-issued VMC: DID of the VTC or VTN
   - `digestMultibase` (string, REQUIRED on the member-issued VMC, MUST be omitted on the community-issued VMC): A cryptographic hash of the community-issued VMC being acknowledged, computed over the credential excluding its top-level `proof` member and encoded as specified in [Digest Encoding](#digest-encoding).
 
@@ -417,6 +417,49 @@ A community's own identifier can only truthfully be declared `public`: a communi
 }
 ```
 
+**Example (VTN-to-VTN membership — a national network's grant to a state network, and its acknowledgement):**
+
+Both ends are communities, so only `digestMultibase` tells the halves apart: the grant omits it, the acknowledgement carries the digest of the grant.
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://registry.trustoverip.org/dtg/context/v1"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
+  "issuer": "did:webvh:QmNat...:health-au.example",
+  "issuerScope": "public",
+  "validFrom": "2026-11-01T09:00:00Z",
+  "validUntil": "2027-11-01T09:00:00Z",
+  "credentialSubject": {
+    "id": "did:webvh:QmNsw...:health-nsw.example"
+  },
+  "proof": { "//": "..." }
+}
+```
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://registry.trustoverip.org/dtg/context/v1"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
+  "issuer": "did:webvh:QmNsw...:health-nsw.example",
+  "issuerScope": "public",
+  "validFrom": "2026-11-01T09:05:00Z",
+  "validUntil": "2027-11-01T09:00:00Z",
+  "credentialSubject": {
+    "id": "did:webvh:QmNat...:health-au.example",
+    "digestMultibase": "zQmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG"
+  },
+  "proof": { "//": "..." }
+}
+```
+
+The state network's membership of the national network says nothing about its membership of any network the national network belongs to (see [Membership Edge Completion](#membership-edge-completion)).
+
 #### Membership Edge Completion
 
 A membership edge is complete only when both VMCs of the pair exist and are valid: the community-issued VMC that grants membership, and the member-issued VMC that acknowledges it.
@@ -429,11 +472,13 @@ Where the subject of a community-issued VMC demonstrates possession of that cred
 
 Where a [[ref: VTC]], [[ref: VTN]], or any party other than the member asserts that an entity is a member, the verifier MUST require the member-issued VMC. A community-issued VMC alone MUST NOT be accepted as evidence that the named entity is a member. A community asserting an entity's membership MUST be able to produce the member-issued VMC that completes the edge. The third statement of a [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) is a claim of this kind; that section states what a verifier may conclude from it.
 
-A completed VMC pair establishes membership only between its two parties. Where the member is itself a [[ref: VTN]] — as when networks are nested — a verifier MUST NOT infer from a chain of VMC pairs that a party is a member of any network other than the one that issued its own grant. Each pair in such a chain MUST be evaluated independently under this section, and the completion of one MUST NOT be inferred from the completion of another.
+A completed VMC pair establishes membership only between its two parties. Where the member is itself a [[ref: VTN]], as when networks are nested, a verifier MUST NOT infer from a chain of VMC pairs that a party is a member of any network other than the one that issued its own grant. Each pair in such a chain is evaluated on its own under this section. A verifier MAY follow a chain of completed pairs only as its own policy directs (see [Edge Verifiability](#edge-verifiability)); such traversal is a verifier decision and is not an inference that the credentials license.
 
 The member-issued VMC is the member's consent artifact, and this is why the pair is required rather than a single directed credential. A community can always issue a credential naming someone as a member, but it cannot produce the acknowledgement without that party's signature. Requiring the acknowledgement therefore makes unconsented membership claims unprovable — and a community that cannot show one is visibly asserting a membership that was never agreed to.
 
-> **Editor's note — membership lifecycle:** Withdrawal, revocation, and re-issuance of either VMC, and the protocol by which the pair is exchanged, are deferred to the planned DTG Core Trust Task Protocols specification (see [Related Specifications](#related-specifications)). Because the member is the issuer of the member-issued VMC, withdrawal of consent is self-sovereign and requires no cooperation from the community. The open question left to that specification is where a verifier discovers the status of a member-issued VMC, which must be under the member's control rather than the community's trust registry, so that a member never depends on the community to invalidate their own credential. Until that mechanism exists, a verifier can confirm that an acknowledgement matches its grant but cannot learn that it has since been withdrawn. Two interim controls follow from `digestMultibase` binding the acknowledgement to the grant's claims: a short `validUntil` on the community-issued VMC forces periodic re-acknowledgement, because a re-issued grant carries different claims and therefore a different digest that the earlier acknowledgement no longer matches; and a short `validUntil` on the member-issued VMC bounds how long the community holds a presentable proof of the member's consent (see [Privacy Considerations](#privacy-considerations)). Where the member is itself a [[ref: VTC]] or [[ref: VTN]], the member already operates a status mechanism under its own control, and the member-issued VMC MAY carry a `credentialStatus` that the member maintains; a verifier that finds one MUST check it as for any other DTG credential.
+> **Editor's note — membership lifecycle:** Withdrawal, revocation, and re-issuance of either VMC, and the protocol by which the pair is exchanged, are deferred to the planned DTG Core Trust Task Protocols specification (see [Related Specifications](#related-specifications)). Because the member is the issuer of the member-issued VMC, withdrawal of consent is self-sovereign and requires no cooperation from the community. The open question left to that specification is where a verifier discovers the status of a member-issued VMC, which must be under the member's control rather than the community's trust registry, so that a member never depends on the community to invalidate their own credential. Until that mechanism exists, a verifier can confirm that an acknowledgement matches its grant but cannot learn that it has since been withdrawn. Two interim controls follow from `digestMultibase` binding the acknowledgement to the grant's claims: a short `validUntil` on the community-issued VMC forces periodic re-acknowledgement, because a re-issued grant carries different claims and therefore a different digest that the earlier acknowledgement no longer matches; and a short `validUntil` on the member-issued VMC bounds how long the community holds a presentable proof of the member's consent (see [Privacy Considerations](#privacy-considerations)).
+
+Where the member is itself a [[ref: VTC]] or [[ref: VTN]], the member-issued VMC MAY carry a `credentialStatus`. The status list MUST be one operated by the member, not by the community that issued the grant, so that withdrawing consent never depends on the community. A verifier checks it as [Security Considerations](#security-considerations) requires.
 
 #### Community-Anchored Zero-Knowledge Proof
 
@@ -661,7 +706,7 @@ This section is normative.
 - `type` (array, REQUIRED): MUST include `"InvitationCredential"`
 - `issuer` (string, REQUIRED):
   - For VTC invitation: DID of the VTC, or of an authorized member (per policy)
-  - For VTN invitation: DID of the VTN, or of a member VTC (per policy)
+  - For VTN invitation: DID of the VTN, or of a member VTC or member VTN (per policy)
 - `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); `public` where the issuer is the VTC or VTN itself
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
