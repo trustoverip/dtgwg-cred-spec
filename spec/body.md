@@ -18,11 +18,11 @@ VerifiableCredential
     └── AuthorityCredential (VAC)
 ```
 
-> **Editors' Note:** The [[ref: r-card]] (relationship card) that appeared in earlier drafts of this specification is a [[ref: verifiable data structure]] (VDS), not a `DTGCredential` subtype. It will be defined in the planned **DTG Verifiable Data Structures** specification (see [Related Specifications](#related-specifications)).
+> **Note:** The [[ref: r-card]] (relationship card) that appeared in earlier drafts of this specification is a [[ref: verifiable data structure]] (VDS), not a `DTGCredential` subtype. It will be defined in the planned **DTG Verifiable Data Structures** specification (see [Related Specifications](#related-specifications)).
 
 ## W3C Verifiable Credentials Version Support
 
-*This section is normative.*
+This section is normative.
 
 ### Primary Standard: v2.0
 
@@ -33,7 +33,7 @@ This specification is written using **W3C Verifiable Credentials Data Model v2.0
 
 ### Legacy System Compatibility: v1.1
 
-Many existing [[ref: identity verification providers]] (IDVPs), [trust registries](https://glossary.trustoverip.org/#term:trust-registry), and community infrastructures only support W3C VC Data Model v1.1. To support broad interoperability and to avoid costly system migrations:
+Many existing [[ref: identity verification providers]] (IDVPs), [trust registries](https://glossary.trustoverip.org/#term:trust-registry), and community infrastructures may only support W3C VC Data Model v1.1. To support broad interoperability and to avoid costly system migrations:
 
 - Verifiers SHOULD accept and verify v1.1 credentials
 - Issuers MAY issue v1.1 credentials
@@ -121,11 +121,11 @@ For improved readability, the examples throughout this specification reuse a sin
 
 ## Correlation Scope
 
-*This section is normative, except where a subsection is marked informative.*
+This section is normative, except where a subsection is marked informative.
 
-A **[[ref: correlation scope]]** is how widely the issuer of a DTG credential intends the [[ref: DTG verifiable identifier]] it controls to be correlated. In a conventional [[ref: VC]] the issuer is a third-party attesting to claims *about* a subject, a DTG credential's `issuerScope` is not a claim about the subject: the issuer declares the scope of its **own** identifier, a first-party declaration. For every DTG credential, the scope of the **issuer's** identifier is declared by the issuer in the REQUIRED `issuerScope` property (see [Declaring a scope](#declaring-a-scope) and [Base Structure](#base-structure)). The requirements of this section apply to that declaration.
+A **[[ref: correlation scope]]** is how widely the issuer of a DTG credential intends the [[ref: DTG verifiable identifier]] it controls to be correlated. Whereas in a conventional [[ref: VC]] the issuer is a third party attesting to claims *about* a subject, a DTG credential's `issuerScope` is not a claim about the subject: the issuer declares the scope of its **own** identifier, a first-party declaration. For every DTG credential, the scope of the **issuer's** identifier is declared by the issuer in the REQUIRED `issuerScope` property (see [Declaring a scope](#declaring-a-scope) and [Base Structure](#base-structure)). The requirements of this section apply to that declaration.
 
-> **Note:** Because a scope is a declared property of the identifier, it is the identifier's **controller** who declares it. As that identifier is the issuer's own, the controller and the issuer are the same party. In the remainder of this section, *the identifier* is the identifier whose scope is being declared, and *the controller* is the party that controls it.
+> **Note:** Because a scope is a declared property of the identifier, it is the identifier's **controller** who declares it, by issuing under that identifier. The controller is ordinarily the issuer itself, but need not be: a guardian may control a ward's identifier, for instance. Nor is the controller necessarily the holder of a credential the identifier appears in — in a community's membership grant, the community declares its own scope while the member holds the credential. In the remainder of this section, *the identifier* is the identifier whose scope is being declared, and *the controller* is the party that controls it.
 
 A declared correlation scope is independent of the role the controller plays — a role such as member or persona, established by the credentials the identifier appears in (see [Roles are conferred by credentials](#roles-are-conferred-by-credentials)). What constrains a scope is instead what is required of the identifier: a [[ref: VTC]]'s identifier must be findable, so it can only *truthfully* be `public`; a [[ref: VWC]] witness's identifier must be recognizable to the community weighing the statement, so it is `directed` at minimum. A constraint never sets the scope; it only rules some declarations out.
 
@@ -141,23 +141,23 @@ A *counterparty* is a party to the relationship the identifier is used in, and o
 
 The three scope values are **ordered** from narrowest to widest. Where a minimum scope applies, a declaration narrower than that minimum does not satisfy the requirement, and a verifier MUST NOT treat it as if it did. Everywhere else, a controller MAY declare any of the three. A verifier MUST NOT infer the scope from the identifier's value, its DID method, or where it was encountered; the scope comes from the declaration alone.
 
-> **Example:** a [[ref: VWC]] witness's identifier is `directed` at minimum — the witness must be recognizable to the community weighing its statement. A witness that declares `pairwise` has declared narrower than the minimum, and a verifier MUST NOT accept it.
+> **Example:** a [[ref: VWC]] witness's identifier is `directed` at minimum — the witness must be recognizable to the community weighing its statement. A witness that declares `pairwise` has declared narrower than the minimum, so under the rule above a verifier does not accept it.
 
-Each scope value answers one question — *how widely may this identifier be correlated?* — by the controller's own choice: `pairwise` confines correlation to one counterparty, `directed` to a set the controller chooses, `public` to no limit. A scope value bounded by a community is deliberately absent. It would add no value — an identifier a member uses only with their community is already `pairwise`, and one the member uses with other members too is `directed`. It would also take its scope from a credential rather than from the controller, which explains why a community-scoped value is absent. What such a value seemed to capture is a property of the community, not of the identifier; see [A scope the controller cannot declare alone](#a-scope-the-controller-cannot-declare-alone).
+Each scope value answers one question — *how widely may this identifier be correlated?* — by the controller's own choice: `pairwise` confines correlation to one counterparty, `directed` to a set the controller chooses, `public` to no limit. A scope value bounded by a community is deliberately absent. It would add no value — an identifier a member uses only with their community is already `pairwise`, and one the member uses with other members too is `directed`. It would also take its scope from a credential rather than from the controller. What such a value seemed to capture is a property of the community, not of the identifier; see [A scope the controller cannot declare alone](#a-scope-the-controller-cannot-declare-alone).
 
-> **Example:** Alice joins the Chess Club; her [[ref: VMC]] names the club as her community. Today, Alice *declares* her identifier's scope herself — `pairwise` (only the club), `directed` (club plus other members), or `public`. A "community" value would mean the scope is automatically "the Chess Club," because that's what the [[ref: VMC]] says — the scope would be *taken from the credential* rather than *chosen by Alice*.
+> **Example:** Alice joins the Chess Club; her [[ref: VMC]] names the club as her community. Alice *declares* her identifier's scope herself — `pairwise` (only the club), `directed` (club plus other members), or `public`. A "community" value would mean the scope is automatically "the Chess Club," because that's what the [[ref: VMC]] says — the scope would be *taken from the credential* rather than *chosen by Alice*.
 
 ### Roles are conferred by credentials
 
 An identifier is not "a membership identifier"; it is an identifier that appears in a [[ref: VMC]]. It is not "a persona identifier"; it is one that appears in a [[ref: VPC]]. Membership is still established by the VMC pair, and a [[ref: persona]] is still asserted by a VPC; a scope declaration is orthogonal to, and as such independent of, both.
 
-The R-DID (relationship), M-DID (membership), C-DID (community) and P-DID (persona) identifier types used in drafts before Working Draft 02 are retired. Each named a role and a correlation width in one token, and the both the role and the width can disagree — an identifier that is a [[ref: VMC]]'s subject and a [[ref: VRC]]'s issuer would fit two of the four names at once.
+The R-DID (relationship), M-DID (membership), C-DID (community) and P-DID (persona) identifier types used in drafts before Working Draft 02 are retired. Each named a role and a correlation width in one token, and the role and the width can disagree — an identifier that is a [[ref: VMC]]'s subject and a [[ref: VRC]]'s issuer would fit two of the four names at once.
 
 ### Choosing a scope
 
 *This subsection is informative.*
 
-Because a scope is the controller's choice, and a choice a person can be asked to make — at the moment of joining a community, and again for each relationship. Three values are few enough to put in front of a human being:
+Because a scope is the controller's choice, it is a choice a person can be asked to make — at the moment of joining a community, and again for each relationship. Three values are few enough to put in front of a human being:
 
 1. **`pairwise` — a single-counterparty pseudonym.** Known to this counterparty in a given relationship and to no one else, and not necessarily short-lived: a `pairwise` identifier toward a [[ref: VTC]] lasts as long as the membership. Where the counterparty is a VTC, that means known to the [[ref: VTA]] and not to fellow members.
 2. **`directed` — a private persona.** Known to this counterparty and to whoever else the controller chooses, which may include other members of the same community, or parties in other communities. This is the identifier under which a [[ref: persona]] is ordinarily asserted.
@@ -175,7 +175,7 @@ A VTC that issues VMCs MUST therefore publish, in its governance framework or it
 
 The same holds for any [[ref: DTG edge]] whose halves are held by different parties: a declaration constrains its own controller, and the disclosure an identifier actually experiences is the widest of the places either party puts it.
 
-**Consequence for relationships inside a community.** Where a member uses one `pairwise` identifier with the VTC and a second `pairwise` identifier with another member, the two differ by construction, and a [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) must then establish common control across them rather than reading a single identifier out of both credentials. Members who expect to prove community-anchored relationships will in practice declare `directed` for intra-community use — the VTA together with the members that member connect to — which is an accurate description of what that identifier is for.
+**Consequence for relationships inside a community.** Where a member uses one `pairwise` identifier with the VTC and a second `pairwise` identifier with another member, the two differ by construction, and a [Community-Anchored Zero-Knowledge Proof](#community-anchored-zero-knowledge-proof) must then establish common control across them rather than reading a single identifier out of both credentials. Members who expect to prove community-anchored relationships will in practice declare `directed` for intra-community use — the VTA together with the members they connect to — which is an accurate description of what that identifier is for.
 
 ### Declaring a scope
 
@@ -191,9 +191,9 @@ Two consequences follow:
 - A declaration is a property of the identifier, not of a credential. All credentials issued under one identifier MUST declare the same scope; a contradiction between two of them falsifies the declaration, on the same footing as reuse of a `pairwise` identifier.
 - A first-party declaration covers only an issuer's own identifier. A credential MUST NOT restate the scope of any other identifier it names, including its subject's; a verifier that needs the counterparty's scope reads it from a credential the counterparty issued, or does without. In a bidirectional [[ref: DTG edge]] the reciprocal credential supplies the other half, but until that half exists — a membership grant not yet acknowledged — the subject's scope is undeclared, and for [[ref: VICs]], [[ref: VPCs]], [[ref: VSCs]] and [[ref: VACs]] no credential declares the subject's scope at all.
 
-Every DTG credential type upholds this first-party rule: in each, the issuer and the subject are two different parties, so the scope a credential declares is the issuer's own.
+Every DTG credential type upholds this first-party rule: in each, the issuer and the subject are ordinarily different parties, and the scope a credential declares is always the issuer's own.
 
-| Credential type | Issuer — declares the scope of its **own** identifier | Subject — always a different party |
+| Credential type | Issuer — declares the scope of its **own** identifier | Subject — ordinarily a different party |
 |---|---|---|
 | [[ref: VRC]] | one peer | the other peer |
 | [[ref: VMC]] | the community (grant) or the member (acknowledgement) | the other party |
@@ -216,7 +216,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 - `@context` (array, REQUIRED): MUST list `"https://www.w3.org/ns/credentials/v2"` first and `"https://registry.trustoverip.org/dtg/context/v1"` second, followed by any contexts a proof type, a predicate profile or a community vocabulary requires. The DTG context IRI is compared as an exact string, in exactly those bytes: scheme `https`, host `registry.trustoverip.org` with no `www.`, no trailing slash. See [Context Versions](#context-versions) below
 - `type` (array, REQUIRED): MUST include `"VerifiableCredential"`, `"DTGCredential"`, and exactly one concrete subtype
 - `issuer` (string, REQUIRED): DID of the issuing entity. Its [[ref: correlation scope]] is declared in `issuerScope` rather than encoded in the identifier — see [Correlation Scope](#correlation-scope)
-- `issuerScope` (string, REQUIRED): the [[ref: correlation scope]] its holder declares for the identifier in `issuer`, exactly one of `pairwise`, `directed` or `public`, compared case-sensitively. A credential declares only its own issuer's scope, never that of its subject or counterparty ([Declaring a scope](#declaring-a-scope)). A verifier MUST reject a credential whose `issuerScope` is absent or is not one of the three values. The context defines `issuerScope` as a plain string; the constraint on its value is this specification's, and the schema of every concrete type carries it
+- `issuerScope` (string, REQUIRED): the [[ref: correlation scope]] its controller declares for the identifier in `issuer`, exactly one of `pairwise`, `directed` or `public`, compared case-sensitively. A credential declares only its own issuer's scope, never that of its subject or counterparty ([Declaring a scope](#declaring-a-scope)). A verifier MUST reject a credential whose `issuerScope` is absent or is not one of the three values. The context defines `issuerScope` as a plain string; the constraint on its value is this specification's, and the schema of every concrete type carries it
 - `validFrom` (string, REQUIRED): ISO 8601 datetime (`issuanceDate` in v1.1)
 - `validUntil` (string, OPTIONAL): ISO 8601 datetime (`expirationDate` in v1.1)
 - `credentialSubject` (object, REQUIRED):
@@ -283,7 +283,7 @@ Independence from a hosting location needs to be confirmed separately, because s
 
 Methods that resolve to a document with no verifiable history, such as `did:web`, satisfy rotation and endpoint discovery but provide neither verifiable history nor any commitment to successor keys. Such a document is rotated by republishing it, which leaves a verifier unable to distinguish a legitimate rotation from a key substituted by an attacker, and unable to establish which key was authoritative at issuance.
 
-**Narrow-scope identifiers (`pairwise` and `directed`).** A `pairwise` identifier is known to one counterparty; a `directed` identifier — a [[ref: persona]], for instance — is known to a set the holder chooses. Both exist to limit correlation, and both are expected to be created in quantity. A method used for these should provide:
+**Narrow-scope identifiers (`pairwise` and `directed`).** A `pairwise` identifier is known to one counterparty; a `directed` identifier — a [[ref: persona]], for instance — is known to a set its controller chooses. Both exist to limit correlation, and both are expected to be created in quantity. A method used for these should provide:
 
 - **Cheap creation with no registration step**, since a deployment may mint one identifier per relationship or per persona.
 - **No shared resolution origin**, so that resolving one identifier does not reveal the existence of, or a common controller for, the others. See [Privacy Considerations](#privacy-considerations).
@@ -358,7 +358,7 @@ What makes a credential an edge credential is that it is one half of such a pair
 }
 ```
 
-**Note:** a `pairwise` [[ref: correlation scope]] is RECOMMENDED for privacy. A wider declaration is permitted — `directed`, for a relationship the holder intends to be correlated with others they choose, including relationships inside a shared [[ref: VTC]] — but it is a disclosure the holder makes deliberately (see [Choosing a scope](#choosing-a-scope) and [Privacy Considerations](#privacy-considerations)).
+**Note:** a `pairwise` [[ref: correlation scope]] is RECOMMENDED for privacy. A wider declaration is permitted — `directed`, for a relationship the issuer intends to be correlated with others they choose, including relationships inside a shared [[ref: VTC]] — but it is a disclosure the issuer makes deliberately (see [Choosing a scope](#choosing-a-scope) and [Privacy Considerations](#privacy-considerations)).
 
 #### Unilateral Relationship Identification
 
@@ -724,7 +724,7 @@ This section is normative.
 
 - `type` (array, REQUIRED): MUST include `"PersonaCredential"`
 - `issuer` (string, REQUIRED): DID under which the persona is asserted
-- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); ordinarily `directed` — a persona exists to be recognized across a set of counterparties the holder chooses
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); ordinarily `directed` — a persona exists to be recognized across a set of counterparties its controller chooses
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the counterparty as used in the relationship
 
@@ -1363,9 +1363,9 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 
 ### Identifiers and correlation
 
-1. **Pairwise really means pairwise.** Reusing one identifier across counterparties creates exactly the correlation a `pairwise` declaration promises to avoid. As required in [Unilateral Relationship Identification](#unilateral-relationship-identification), such reuse is prohibited, and it also falsifies a declaration the holder made — which is the more useful thing for a verifier to be able to say. A holder who wants an identifier to reach more than one counterparty should declare `directed` and say so, rather than declare `pairwise` and reuse it.
-2. **Intentional correlation via personas.** Correlation across relationships should occur only through the holder's deliberate assertion of a [[ref: persona]] (via a [[ref: VPC]]) or through an identifier the holder has deliberately declared `directed` or `public` — never as a side effect of credential structure.
-3. **What a community does with a member's identifier.** A member's declared scope constrains the member's own disclosure and nothing else. A community that publishes a member directory, or that presents a member-issued [[ref: VMC]] to a third party, widens the exposure of an identifier its holder may have declared `pairwise`. This is why a VTC's governance is required to state its disclosure practice, and why a member's scope choice at join time is only as meaningful as that statement; see [A scope the controller cannot declare alone](#a-scope-the-controller-cannot-declare-alone).
+1. **Pairwise really means pairwise.** Reusing one identifier across counterparties creates exactly the correlation a `pairwise` declaration promises to avoid. As required in [Unilateral Relationship Identification](#unilateral-relationship-identification), such reuse is prohibited, and it also falsifies a declaration the controller made — which is the more useful thing for a verifier to be able to say. A controller who wants an identifier to reach more than one counterparty should declare `directed` and say so, rather than declare `pairwise` and reuse it.
+2. **Intentional correlation via personas.** Correlation across relationships should occur only through a controller's deliberate assertion of a [[ref: persona]] (via a [[ref: VPC]]) or through an identifier its controller has deliberately declared `directed` or `public` — never as a side effect of credential structure.
+3. **What a community does with a member's identifier.** A member's declared scope constrains the member's own disclosure and nothing else. A community that publishes a member directory, or that presents a member-issued [[ref: VMC]] to a third party, widens the exposure of an identifier the member may have declared `pairwise`. This is why a VTC's governance is required to state its disclosure practice, and why a member's scope choice at join time is only as meaningful as that statement; see [A scope the controller cannot declare alone](#a-scope-the-controller-cannot-declare-alone).
 4. **Correlation through the resolution layer.** Correlation does not require the credentials themselves. Where several of a party's narrow-scope identifiers resolve through common infrastructure — a shared web origin, a shared registry, or a shared set of DID log witnesses countersigning their updates — that infrastructure can associate identifiers that the credential structure was designed to keep apart, and can observe when each is used. Choosing a DID method for these is therefore a privacy decision as much as a key management one; see [DID Method Considerations](#did-method-considerations).
 
 ### Disclosure
