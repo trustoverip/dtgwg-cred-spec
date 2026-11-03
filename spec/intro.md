@@ -2,10 +2,9 @@
 
 *This section is informative.*
 
-A [[ref: decentralized trust graph]] (DTG) is a graph: a set of dots
-(the nodes) joined by lines (the edges) between them. In a DTG, the [[ref: DTG nodes]] represent [[ref: entities]], including people, communities, devices, and agents (such as AI agents), and the [[ref: DTG edges]] represent the trust relationships between them. Every node and every edge is cryptographically verifiable.
+A [[ref: decentralized trust graph]] (DTG) is a graph: a set of dots (the nodes) joined by lines (the edges) between them. In a DTG, the [[ref: DTG nodes]] represent [[ref: entities]], including people, communities, devices, and agents (such as AI agents), and the [[ref: DTG edges]] represent the trust relationships between them. Every node and every edge is cryptographically verifiable.
 
-This specification defines the **DTG Core Credentials**: seven [[ref: VC]] types that are used to onboard entities into communities, establish trust relationships between entities, attest to facts about those entities, and grant authority to act within named scopes. DTG Core Credentials are W3C-compliant verifiable credentials and may be presented using standard VC presentation methods when privacy preservation is not desired. Whenever privacy preservation is desired, they should, however, be presented as **privacy-preserving zero-knowledge proofs (ZKPs)**. A ZKP lets a holder prove a claim — personhood (that they are a real, unique person), community membership, or a fact about a relationship — without revealing the credential behind it, so the holder can prove the same claim in different contexts while keeping correlation to a minimum. Proof of Personhood is the motivating case: it is what [[ref: PHC]]s are for, and this specification recommends ZKP presentation for them (see [Personhood Credentials, Adler et al. 2024](https://arxiv.org/abs/2408.07892)).
+This specification defines the **DTG Core Credentials**: seven [[ref: VC]] types that are used to onboard entities into communities, establish trust relationships between entities, attest to facts about those entities, grant authority to act within named scopes, and appoint others to act in an entity's name. DTG Core Credentials are W3C-compliant verifiable credentials and may be presented using standard VC presentation methods when privacy preservation is not desired. Whenever privacy preservation is desired, they should, however, be presented as **privacy-preserving zero-knowledge proofs (ZKPs)**. A ZKP lets a holder prove a claim — personhood (that they are a real, unique person), community membership, or a fact about a relationship — without revealing the credential behind it, so the holder can prove the same claim in different contexts while keeping correlation to a minimum. Proof of Personhood is the motivating case: it is what [[ref: PHC]]s are for, and this specification recommends ZKP presentation for them (see [Personhood Credentials, Adler et al. 2024](https://arxiv.org/abs/2408.07892)).
 
 The seven credential types are:
 
@@ -15,11 +14,9 @@ The seven credential types are:
 | [[ref: VMC]] (Verifiable Membership Credential) | Attests to the membership of an entity in a community. A community-issued VMC can serve as a [[ref: PHC]] (personhood credential). |
 | [[ref: VDC]] (Verifiable Delegation Credential) | Attests that one entity has appointed another to act in its name, for a bounded set of acts. |
 | [[ref: VIC]] (Verifiable Invitation Credential) | Authorizes onboarding of an entity (a prospective member), bootstrapping that prospective member's node into a community. |
-| [[ref: VPC]] (Verifiable Persona Credential) | Links a [[ref: persona]] — an identity the holder controls to manage correlation — to a relationship. |
+| [[ref: VPC]] (Verifiable Persona Credential) | Links a [[ref: persona]] — an identity that is deliberately used across relationships to manage correlation — to a relationship. |
 | [[ref: VSC]] (Verifiable Statement Credential) | A signed statement about a node under a governed predicate; the [[ref: VEC]] (endorsement) and [[ref: VWC]] (witness attestation of an edge) are its first two predicate profiles. |
 | [[ref: VAC]] (Verifiable Authority Credential) | States what an entity may do at a named scope, and may be attenuated by its holder to equip an agent or device with strictly less authority than they hold themselves. |
-
-<br>
 
 The first three are [[ref: DTG edge credentials]]: each is one half of a bi-directional pair, and the pair forms a [[ref: DTG edge]]. For a [[ref: VMC]], the member's half is their consent to the membership. The other four are each complete on the issuer's signature alone. That is the only grouping this specification makes, and it is a property of the credentials rather than a taxonomy: it does not appear in credential schemas, and the formal type hierarchy has only one abstract parent, `DTGCredential`.
 
@@ -35,13 +32,17 @@ This specification is designed to work alongside the following companion specifi
 
 - **[Verifiable Trust Infrastructure (VTI)](https://github.com/trustoverip/dtgwg-vti-spec)** — the system specification into which DTG components are composed, published as a Working Draft. It binds the credentials of this specification to the nodes that issue, hold, present and verify them, and states the requirements that hold only across a composition — including what a relying party may conclude from a credential together with the outcome evidence of the exchange it cites.
 
-- **[DTG Core Trust Task Protocols](https://github.com/trustoverip/dtgwg-trust-tasks-spec)** — DTG-specific Trust Task specifications to offer, issue, request, present, and revoke the DTG Core Credentials defined in this specification.
+- **DTG Core Trust Task Protocols** *(planned)* — DTG-specific Trust Task specifications to offer, issue, request, present, and revoke the DTG Core Credentials defined in this specification.
 
 - **DTG Verifiable Data Structures** *(planned)* — will define [[ref: verifiable data structure]] (VDS) types that are exchanged over DTG relationships but are not DTG credentials, including:
     - [[ref: r-card]] (relationship card) — a combination of human-readable and machine-readable data describing its publisher, typically exchanged in conjunction with [[ref: VRC]]s; a modern, self-updating analog of a [vCard](https://en.wikipedia.org/wiki/VCard).
     - **Agent card** — a VDS describing an agent's identity and capabilities, similar in spirit to an r-card but modeled on the [Agent2Agent (A2A) protocol's AgentCard](https://agent2agent.info/docs/concepts/agentcard/) discovery document.
 
 - **[DTG VSC Predicate Registry](https://github.com/trustoverip/dtgwg-vsc-registry)** — a repo-driven registry rather than a specification, published at `https://registry.trustoverip.org/dtg/vsc/`: one definition file per [[ref: VSC]] predicate, generated into a human-readable vocabulary and a machine-readable accept-list for verifiers, governed by pull request under stated admission criteria. It holds every predicate profile in the DTG namespace, including the two core profiles this specification names, the VEC and the VWC. It also hosts and freezes the credential `@context` this specification requires (see [Context Versions](#context-versions)); the specification's editors decide what a context version contains. This specification defines the statement mechanism and how a verifier handles predicates; the registry defines what may be said.
+
+## Requirements Language
+
+The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in [IETF RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
 
 ## Specification Versioning
 
@@ -54,22 +55,23 @@ This specification distinguishes two version numbers that read as if they mean t
 
 Document Status follows [Semantic Versioning 2.0.0](https://semver.org/):
 
-- **MAJOR** — a change that breaks conformance for existing implementations, such as adding or removing a REQUIRED property, changing the semantics of an existing credential type, or removing a credential type.
-- **MINOR** — a backward-compatible addition, such as adding an OPTIONAL property, a new credential type, or a new informative section.
+- **MAJOR** — a change that breaks conformance for existing implementations.
+- **MINOR** — a backward-compatible addition.
 - **PATCH** — an editorial or clarifying change with no effect on conformance.
+
+[Compatibility Rules](#compatibility-rules) below states which changes fall into each class.
 
 ### Compatibility Rules
 
 A change to this Working Draft MUST be classified as breaking, backward-compatible or editorial:
 
-- A **breaking** change — for example, adding or removing a REQUIRED property, changing the semantics of an existing credential type, or removing a credential type — MUST result in a MAJOR increment to `Document Status`, with MINOR and PATCH reset to `0`.
-- A **backward-compatible** change — for example, adding an OPTIONAL property, a new credential type, or a new informative section — MUST result in a MINOR increment to `Document Status`, with PATCH reset to `0`.
+- A **breaking** change — for example, adding or removing a REQUIRED property, removing a permitted enumeration value, narrowing a constraint, changing the semantics of an existing credential type, or removing a credential type — MUST result in a MAJOR increment to `Document Status`, with MINOR and PATCH reset to `0`.
+- A **backward-compatible** change — for example, adding an OPTIONAL property, relaxing a constraint, adding a permitted enumeration value to a non-discriminating field, adding a new credential type, or adding a new informative section — MUST result in a MINOR increment to `Document Status`, with PATCH reset to `0`.
 - An **editorial or clarifying** change with no effect on conformance MUST result in a PATCH increment to `Document Status`.
 
+As an exception to the rule for breaking changes, before this Working Draft's first ratification a breaking change MUST be released as a MINOR increment instead of a MAJOR one, and `Document Status`'s MAJOR component MUST NOT advance past `0` until ratification — SemVer 2.0.0 §4 already treats `0.y.z` as carrying no compatibility guarantee, so there is no need to make a MAJOR increment confirming that. See [Ratification and the Stable Release Line](#ratification-and-the-stable-release-line) below for what happens to `Document Status` and `_Version:_` at and after ratification.
 
-Before this Working Draft's first ratification, a breaking change MUST be released as a MINOR increment and `Document Status`'s MAJOR component MUST NOT advance past `0` until ratification — SemVer 2.0.0 §4 already treats `0.y.z` as carrying no compatibility guarantee, so there is no need to make a MAJOR increment confirming that. See [Ratification and the Stable Release Line](#ratification-and-the-stable-release-line) below for what happens to `Document Status` and `_Version:_` at and after ratification.
-
-A holder or verifier conformant to Document Status `M.N` MUST accept a credential issued under any earlier Document Status `M.K` where `K ≤ N`, and SHOULD accept a credential carrying an OPTIONAL property it does not recognize — introduced by a later MINOR version than the one it implements — rather than rejecting the credential solely for that property's presence. This guarantee applies only after its first ratification. Before its first ratification, a MINOR increment may be breaking, so there is no obligation to accept earlier versions. This specification does not embed its own version number in a credential's `@context` or `type`. The credential `@context` is versioned on its own axis — one frozen document per version, `https://registry.trustoverip.org/dtg/context/v1` for this Working Draft (see [Context Versions](#context-versions)) — and a revision that adds, renames or retypes a term credentials carry is accompanied by a new context version, so that a credential issued under incompatible semantics is also structurally distinguishable. A verifier implementing one MAJOR version MUST NOT assume it can safely interpret a credential issued under a different one.
+A holder or verifier conformant to Document Status `M.N` MUST accept a credential issued under any earlier Document Status `M.K` where `K ≤ N`, and SHOULD accept a credential carrying an OPTIONAL property it does not recognize — introduced by a later MINOR version than the one it implements — rather than rejecting the credential solely for that property's presence. This guarantee applies only after this specification's first ratification; before it, a MINOR increment may be breaking, so there is no obligation to accept earlier versions. This specification does not embed its own version number in a credential's `@context` or `type`. The credential `@context` is versioned on its own axis — one frozen document per version, `https://registry.trustoverip.org/dtg/context/v1` for this Working Draft (see [Context Versions](#context-versions)) — and a revision that adds, renames or retypes a term credentials carry is accompanied by a new context version, so that a credential issued under incompatible semantics is also structurally distinguishable. A verifier implementing one MAJOR version MUST NOT assume it can safely interpret a credential issued under a different one.
 
 > **Note on cross-specification versioning:** The DTGWG's specifications — this specification and its companion specifications listed above — each follow their own semantic versioning process, and each uses the same `_Version:_` / `_Document Status:_` split. The editors have deliberately chosen **not** to synchronize Document Status numbers across specifications; a MAJOR release of one does not imply, require, or correspond to any particular release of another.
 >
@@ -80,7 +82,3 @@ A holder or verifier conformant to Document Status `M.N` MUST accept a credentia
 ### Ratification and the Stable Release Line
 
 At the moment a wider body ratifies this specification as a Working Group Approved Deliverable or ToIP Approved Deliverable, `Document Status`'s MAJOR component crosses from `0` to `1`, the header's status label changes from `Working Draft` to the ratified label, and `_Version:_` is confirmed at the matching `MAJOR.MINOR`. From that point on, `_Version:_` and `Document Status`'s `MAJOR.MINOR` carry the same value — they differ only in the status label — until a breaking change resumes drafting toward the next MAJOR: `Document Status` advances to the new `MAJOR.0.0` immediately, per [Compatibility Rules](#compatibility-rules), but `_Version:_` stays at the last-ratified release until that new line is itself ratified. This is the same convention adopted across the DTGWG's specifications; see [Ratification and the Stable Release Line](https://github.com/trustoverip/dtgwg-trust-tasks-spec/blob/main/spec/body.md#ratification-and-the-stable-release-line) in the Trust Tasks specification for the full rationale.
-
-## Requirements Language
-
-The key words “MUST”, “MUST NOT”, “REQUIRED”, “SHALL”, “SHALL NOT”, “SHOULD”, “SHOULD NOT”, “RECOMMENDED”, “MAY”, and “OPTIONAL” in this document are to be interpreted as described in [IETF RFC 2119](https://datatracker.ietf.org/doc/html/rfc2119).
