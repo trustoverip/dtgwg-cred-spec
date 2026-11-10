@@ -234,7 +234,7 @@ Each published version is byte-frozen. Their SHA-256 digests, as a Multihash enc
 | Version | Digest | Hexadecimal |
 |---|---|---|
 | `v1` | `zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh` | `3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448` |
-| `v2` | `zQmfCH5G4Abr1aPeoEyAw9Cue7iaaAZQwCGtwru1x5URAqv` | `fa719174a117ec878ade51e88dca84446f9fe75e2eb8a00daec0b167e653b209` |
+| `v2` | `zQmcoSakfDBfPW2DiLWH3eAAm6uJWDuLyifKQ9tCs8NuiH7` | `d6e096472559b01d199af52260d76863bd2be7580bc2398bcd18fc3a2b9f533a` |
 
 `v2` is `v1` with one term added, `purposes`, carrying its own protected context in which `scope` and `purposes` are defined, so that neither redefines the protected `scope` of `authority`. Verifiers SHOULD use a local copy of each context matching its digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
 
@@ -1111,7 +1111,7 @@ This ceiling and `maxAttenuation` are different controls and a chain MUST satisf
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://registry.trustoverip.org/dtg/context/v1"
+    "https://registry.trustoverip.org/dtg/context/v2"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
