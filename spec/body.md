@@ -60,7 +60,7 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
 
 ### Dual-Version Examples
 
-For improved readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Every example declares its issuer's [[ref: correlation scope]] in `issuerScope`, and the value follows from who is issuing: a community, a witness service or another party that must be findable declares `public`; the reused member identifier declares `directed`, since it is used with the community and with other members; and the peers of a [[ref: VRC]] declare `pairwise`. A credential declares only its own issuer's scope, so the member's `directed` appears on the credentials the member issues, never on the community's grant to them — see [Correlation Scope](#correlation-scope).
+For improved readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Every example declares its issuer's [[ref: correlation scope]] in `issuerScope`, and the value follows from who is issuing: a community open to outsiders, a witness service or another party that must be findable by anyone declares `public`; the reused member identifier declares `directed`, since it is used with the community and with other members; and the peers of a [[ref: VRC]] declare `pairwise`. A credential declares only its own issuer's scope, so the member's `directed` appears on the credentials the member issues, never on the community's grant to them — see [Correlation Scope](#correlation-scope).
 
 **v2.0 (Primary):**
 
@@ -127,7 +127,7 @@ A **[[ref: correlation scope]]** is how widely the issuer of a DTG credential in
 
 > **Note:** Because a scope is a declared property of the identifier, it is the identifier's **controller** who declares it, by issuing under that identifier. The controller is ordinarily the issuer itself, but need not be: a guardian may control a ward's identifier, for instance. Nor is the controller necessarily the holder of a credential the identifier appears in — in a community's membership grant, the community declares its own scope while the member holds the credential. In the remainder of this section, *the identifier* is the identifier whose scope is being declared, and *the controller* is the party that controls it.
 
-A declared correlation scope is independent of the role the controller plays — a role such as member or persona, established by the credentials the identifier appears in (see [Roles are conferred by credentials](#roles-are-conferred-by-credentials)). What constrains a scope is instead what is required of the identifier: a [[ref: VTC]]'s identifier must be findable, so it can only *truthfully* be `public`; a [[ref: VWC]] witness's identifier must be recognizable to the community weighing the statement, so it is `directed` at minimum. A constraint never sets the scope; it only rules some declarations out.
+A declared correlation scope is independent of the role the controller plays — a role such as member or persona, established by the credentials the identifier appears in (see [Roles are conferred by credentials](#roles-are-conferred-by-credentials)). What constrains a scope is instead what is required of the identifier: a [[ref: VTC]]'s identifier must be resolvable by every party that verifies its members' credentials, so it is `directed` at minimum and never `pairwise` (see [VMC](#vmc-verifiable-membership-credential)); a [[ref: VWC]] witness's identifier must be recognizable to the community weighing the statement, so it is `directed` at minimum. A constraint never sets the scope; it only rules some declarations out.
 
 The three values bound correlation differently:
 
@@ -255,9 +255,16 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 ### Context Versions
 
-The credential context is published by the [DTG VSC Predicate Registry](#related-specifications) as one frozen document per version. `https://registry.trustoverip.org/dtg/context/v1` is the version this Working Draft requires. Once published, a context version is never edited, not even editorially, and every version ever published stays served at its IRI; a change to what credentials carry — a term added, renamed or retyped, including an additional member of a predicate profile such as `witnessContext` — is a new version, listed in a new revision of this section. Every term the context defines is `@protected`, and every type and property IRI it defines is minted under the unversioned `https://registry.trustoverip.org/dtg/credentials#`, so a term keeps its IRI across context versions.
+The credential context is published by the [DTG VSC Predicate Registry](#related-specifications) as one frozen document per version. `https://registry.trustoverip.org/dtg/context/v1` is the version this Working Draft requires, except that a [[ref: VAC]] stating `purposes` (see [Purposes of Use](#purposes-of-use)) requires the context version that defines it, `https://registry.trustoverip.org/dtg/context/v2`; a credential that carries no member `v2` added MAY continue to list `v1`. Once published, a context version is never edited, not even editorially, and every version ever published stays served at its IRI; a change to what credentials carry — a term added, renamed or retyped, including an additional member of a predicate profile such as `witnessContext` — is a new version, listed in a new revision of this section. Every term the context defines is `@protected`, and every type and property IRI it defines is minted under the unversioned `https://registry.trustoverip.org/dtg/credentials#`, so a term keeps its IRI across context versions.
 
-The `v1` document is byte-frozen. Its SHA-256 digest, as a Multihash encoded in Multibase base-58-btc as [Digest Encoding](#digest-encoding) specifies, is `zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh` (hexadecimal `3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448`). Verifiers SHOULD use a local copy of the context matching this digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
+Each published version is byte-frozen. Their SHA-256 digests, as a Multihash encoded in Multibase base-58-btc as [Digest Encoding](#digest-encoding) specifies, are:
+
+| Version | Digest | Hexadecimal |
+|---|---|---|
+| `v1` | `zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh` | `3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448` |
+| `v2` | `zQmcoSakfDBfPW2DiLWH3eAAm6uJWDuLyifKQ9tCs8NuiH7` | `d6e096472559b01d199af52260d76863bd2be7580bc2398bcd18fc3a2b9f533a` |
+
+`v2` is `v1` with one term added, `purposes`, carrying its own protected context in which `scope` and `purposes` are defined, so that neither redefines the protected `scope` of `authority`. Verifiers SHOULD use a local copy of each context matching its digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
 
 The order of `@context` matters. Every term the DTG context defines is protected, including generic names — `predicate` and `object` at the top level, and `scope`, `parent`, `event` and `method` inside the objects that define them — and JSON-LD rejects a document in which a later context redefines a protected term at the level where it is protected. A proof suite, predicate profile or community context listed after the DTG context therefore MUST NOT redefine a term the DTG context defines at the same level; a profile or community that needs a term of its own chooses a name the DTG context does not define, or scopes it under a property the DTG context does not define.
 
@@ -267,9 +274,9 @@ Credentials issued before the Implementers Draft of this specification are not c
 
 *This subsection is informative.*
 
-This specification does not mandate a [decentralized identifier](https://glossary.trustoverip.org/#term:decentralized-identifier) method. What a method must supply depends on what the identifier is required to do — chiefly how long it must remain verifiable and how widely its holder intends it to be correlated (its [[ref: correlation scope]]) — and a deployment may use different methods for different purposes. What follows states those properties in terms of the identifier's job, so implementers can judge whether a candidate method is suitable for any identifier in a deployment, including ones this specification does not otherwise name.
+This specification does not mandate a [decentralized identifier](https://glossary.trustoverip.org/#term:decentralized-identifier) method. What a method must supply depends on what the identifier is required to do — chiefly how long it must remain verifiable and how widely its controller intends it to be correlated (its [[ref: correlation scope]]) — and a deployment may use different methods for different purposes. What follows states those properties in terms of the identifier's job, so implementers can judge whether a candidate method is suitable for any identifier in a deployment, including ones this specification does not otherwise name.
 
-**Durable identifiers.** A [[ref: VTC]]'s identifier — declared `public` — issues [[ref: VMCs]] and is expected to outlive any particular key, operator, or hosting arrangement, and a member's identifier must stay verifiable across the lifetime of that membership. The determining property is how long the identifier must remain verifiable: a [[ref: VTA]] issuing [[ref: VWCs]] on behalf of a VTC, which the [`dtg:witnessed` profile](#the-dtgwitnessed-profile-vwc) permits in place of the member's own identifier, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these purposes should provide:
+**Durable identifiers.** A [[ref: VTC]]'s identifier — declared `directed` or `public` — issues [[ref: VMCs]] and is expected to outlive any particular key, operator, or hosting arrangement, and a member's identifier must stay verifiable across the lifetime of that membership. The determining property is how long the identifier must remain verifiable: a [[ref: VTA]] issuing [[ref: VWCs]] on behalf of a VTC, which the [`dtg:witnessed` profile](#the-dtgwitnessed-profile-vwc) permits in place of the member's own identifier, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these purposes should provide:
 
 - **Verifiable key history**, so that a verifier can establish which key was authoritative when a credential was signed rather than only which key is authoritative now. This matters because a DTG credential may be presented long after issuance, and [Security Considerations](#security-considerations) requires verifiers to validate the verification method.
 - **Key rotation without changing the identifier**, so that an edge of the graph survives key compromise. An identifier that cannot rotate makes every credential issued under it unrecoverable on compromise.
@@ -291,7 +298,7 @@ Methods that resolve to a document with no verifiable history, such as `did:web`
 
 Peer and key-based methods such as `did:peer` and `did:key` satisfy these properties. A method requiring each identifier to be published at a web origin is a poor fit for these roles even where it is the right choice for a `public` identifier, because the origin is common to every identifier published under it.
 
-**Durability and scope are chosen independently.** The two groups above are not two ends of one dial, and an implementation that reads "narrow scope" as a synonym for "disposable" will get this wrong. An identifier a member uses only with their community is `pairwise`, and it must nevertheless remain verifiable for as long as the membership does — so it needs verifiable key history and rotation while still avoiding a shared resolution origin. Durability follows the lifetime of the credentials issued under an identifier; [[ref: correlation scope]] follows the holder's disclosure choice. A method has to be judged against both.
+**Durability and scope are chosen independently.** The two groups above are not two ends of one dial, and an implementation that reads "narrow scope" as a synonym for "disposable" will get this wrong. An identifier a member uses only with their community is `pairwise`, and it must nevertheless remain verifiable for as long as the membership does — so it needs verifiable key history and rotation while still avoiding a shared resolution origin. Durability follows the lifetime of the credentials issued under an identifier; [[ref: correlation scope]] follows the controller's disclosure choice. A method has to be judged against both.
 
 **Mixing methods.** Because the properties above pull in opposite directions — durability and recoverability against disposability and non-correlation — implementations should expect to use more than one method, rather than seeking a single method that serves every role. Nothing in this specification requires the `issuer` and `credentialSubject.id` of a credential to use the same method, and the examples throughout reflect this: durable issuers are shown with `did:webvh` and member and peer subjects with `did:key` or `did:peer`.
 ### Digest Encoding
@@ -396,7 +403,7 @@ A VMC is issued in each direction of a membership edge. The two directions are d
   - For the community-issued VMC (the membership grant): DID of the VTC or VTN
   - For the member-issued VMC (the membership acknowledgement): DID of the member — the same identifier the grant names as its subject
 - `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure):
-  - For the community-issued VMC: `public` — the only scope a community can truthfully declare (see below)
+  - For the community-issued VMC: `directed` at minimum, and `public` where the community is open to outsiders (see below)
   - For the member-issued VMC: whatever the member declared for the identifier the grant names
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
@@ -404,7 +411,11 @@ A VMC is issued in each direction of a membership edge. The two directions are d
     - For the member-issued VMC: DID of the VTC or VTN
   - `digestMultibase` (string, REQUIRED on the member-issued VMC, MUST be omitted on the community-issued VMC): A cryptographic hash of the community-issued VMC being acknowledged, computed over the credential excluding its top-level `proof` member and encoded as specified in [Digest Encoding](#digest-encoding).
 
-A community's own identifier can only truthfully be declared `public`: a community that cannot be found cannot be joined. The member's identifier carries whatever [[ref: correlation scope]] the member declared for it, and this specification does not constrain that choice — see [Choosing a scope](#choosing-a-scope) and [a scope the controller cannot declare alone](#a-scope-the-controller-cannot-declare-alone).
+A community's own identifier is `directed` at minimum, and `public` where the community chooses to be discoverable by anyone; it can never truthfully be `pairwise`, since a community has more than one member. What the community's identifier must be is *resolvable* by every party that verifies its members' credentials, and every such verifier is a party the community's identifier is directed at — which is what `directed` means. Resolvability and correlation scope are distinct properties: scope says how widely the identifier may be correlated, not whether it can be fetched. Nor does joining require the community to be found by anyone: a prospective member is ordinarily invited, and the [[ref: VIC]] that invites them carries the community's identifier.
+
+Whether to declare `public` is therefore the community's choice. An open community — a public project, a company, a nation state — will ordinarily declare `public` so that third parties can find and verify it. A restricted community, such as a family or a support group, is ordinarily better served by `directed`: the community's identifier is disclosed in every proof of membership in it, so a `public` identifier lets any observer correlate that membership across a member's presentations.
+
+The member's identifier carries whatever [[ref: correlation scope]] the member declared for it, and this specification does not constrain that choice — see [Choosing a scope](#choosing-a-scope) and [A scope the controller cannot declare alone](#a-scope-the-controller-cannot-declare-alone).
 
 **Example (community-issued VMC — membership grant):**
 
@@ -686,7 +697,7 @@ This section is normative.
 - `issuer` (string, REQUIRED):
   - For VTC invitation: DID of the VTC, or of an authorized member (per policy)
   - For VTN invitation: DID of the VTN, or of a member VTC (per policy)
-- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); `public` where the issuer is the VTC or VTN itself
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); where the issuer is the VTC or VTN itself, the scope that community declares for its own identifier — `directed` at minimum (see [VMC](#vmc-verifiable-membership-credential))
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
     - For VTC invitation: DID of the prospective member, or of a prospective member VTC
@@ -1060,6 +1071,7 @@ The distinction that matters most is between a VAC and a [[ref: VSC]] — an end
     - `actions` (array of strings, REQUIRED): the permitted actions, drawn from a vocabulary the governing party defines. MUST NOT be empty — an empty array is not a wildcard, and a verifier MUST treat it as conferring nothing. Action strings are compared as exact, case-sensitive strings; a verifier MUST NOT infer that one action implies another (`"admin"` does not grant `"write"` unless the governing party's VAC says both).
     - `parent` (string, OPTIONAL): the digest of the VAC this one was attenuated from, encoded as specified in [Digest Encoding](#digest-encoding). Absent means this VAC was issued directly by the governing party.
     - `maxAttenuation` (integer, OPTIONAL): the number of further attenuations permitted below this VAC. `0` prohibits attenuating it at all. When absent, attenuation is permitted as far as the maximum chain depth allows. This is the opposite default from the [[ref: VDC]]'s `maxDepth`, which prohibits re-delegation unless it is set; the field is named differently for that reason. See [Attenuation](#attenuation).
+  - `purposes` (object, OPTIONAL): what the subject may use content it obtains under this authority **for** — its purposes of use. Exactly one of `{"scope": "any"}` or `{"scope": "listed", "purposes": [...]}`, the list non-empty and naming each purpose once. Absent means `any`. See [Purposes of Use](#purposes-of-use).
 - `validUntil` (string, REQUIRED): ISO 8601 datetime (`expirationDate` in v1.1). Unlike the base structure, `validUntil` is REQUIRED for a VAC, as it is for a [[ref: VDC]] and for a reason the VAC feels more sharply: nothing about the subject's current standing is consulted when a VAC is verified, so authority that does not expire is authority nobody can withdraw by waiting. Expiry is also the one withdrawal mechanism that costs a verifier no network access; see [Withdrawal](#withdrawal).
 - `credentialStatus` (object, CONDITIONAL): a W3C VC status mechanism through which a verifier can determine whether this VAC has been revoked. A VAC MUST carry `credentialStatus` where its validity period exceeds the freshness window the party governing the scope defines for authority at that scope, and MAY omit it otherwise. The status mechanism is determined by that governing party. See [Withdrawal](#withdrawal).
 
@@ -1110,9 +1122,10 @@ An attenuated VAC:
 - MUST NOT specify a `validUntil` later than the parent's.
 - MUST NOT widen `scope`.
 - MUST NOT bear a `maxAttenuation` greater than one less than its parent's, where the parent carries one; and MUST NOT exist at all where the parent bears `0`.
+- MUST NOT state `purposes` its parent does not grant; see [Purposes of Use](#purposes-of-use).
 - SHOULD carry a `validUntil` short enough that expiry alone bounds the exposure. An attenuating holder is often a person, a device, or an agent rather than an operator of a status list, and may be unreachable at the moment its grant needs taking back; see [Withdrawal](#withdrawal).
 
-**Verification.** A verifier presented with a VAC that carries `parent` MUST verify the entire chain to a VAC issued by the governing party, and MUST reject the chain if any link widens what its parent conferred, in actions, scope, or validity period, if any link's `issuer` is not the `credentialSubject.id` of its parent, if any link lies further below an ancestor than that ancestor's `maxAttenuation` permits, or if any link that carries `credentialStatus` has been revoked (see [Withdrawal](#withdrawal)). The second check is what gives the first its meaning: without it, a chain could cite a VAC its issuer never held, and "narrowing" would be satisfiable by anyone holding a copy of a governing party's VAC. A verifier that checks only the presented credential has verified nothing: attenuation is only a narrowing if somebody walks the chain.
+**Verification.** A verifier presented with a VAC that carries `parent` MUST verify the entire chain to a VAC issued by the governing party, and MUST reject the chain if any link widens what its parent conferred, in actions, scope, or validity period, if any link's `issuer` is not the `credentialSubject.id` of its parent, if any link lies further below an ancestor than that ancestor's `maxAttenuation` permits, if any link states `purposes` wider than those of its parent (see [Purposes of Use](#purposes-of-use)), or if any link that carries `credentialStatus` has been revoked (see [Withdrawal](#withdrawal)). The second check is what gives the first its meaning: without it, a chain could cite a VAC its issuer never held, and "narrowing" would be satisfiable by anyone holding a copy of a governing party's VAC. A verifier that checks only the presented credential has verified nothing: attenuation is only a narrowing if somebody walks the chain.
 
 **The holder presents the chain; the verifier does not fetch it.** A presentation carrying an attenuated VAC MUST include every VAC from the presented one up to and including the one issued by the governing party, and a verifier MUST reject a chain it cannot complete from the presentation alone.
 
@@ -1130,7 +1143,7 @@ This ceiling and `maxAttenuation` are different controls and a chain MUST satisf
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://registry.trustoverip.org/dtg/context/v1"
+    "https://registry.trustoverip.org/dtg/context/v2"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
@@ -1144,13 +1157,28 @@ This ceiling and `maxAttenuation` are different controls and a chain MUST satisf
       "actions": ["read"],
       "parent": "zQmSfwf25HTvhmHve5VVWjwmQ9z7LFDWsB9hTweoieva2cd",
       "maxAttenuation": 0
-    }
+    },
+    "purposes": { "scope": "listed", "purposes": ["taskExecution"] }
   },
   "proof": { "//": "..." }
 }
 ```
 
-The `parent` value above is the digest of the preceding example, computed as specified in [Digest Encoding](#digest-encoding).
+The `parent` value above is the digest of the preceding example, computed as specified in [Digest Encoding](#digest-encoding). The preceding example states no `purposes`, so it grants `any`; this one narrows its agent to `taskExecution`, which `any` grants. A VAC stating `purposes` lists the context version that defines the member; see [Context Versions](#context-versions).
+
+### Purposes of Use
+
+`authority` says what the subject may do, and where. `purposes` says what for: the purposes for which the subject may use content it obtains by exercising that authority — a record it reads, a file it opens. A grant of `read` to an agent equipping it to complete a task has not thereby granted the same content for analytics, or for training a model on it. The member has the meaning the [VTI specification](https://trustoverip.github.io/dtgwg-vti-spec/) gives an access control entry's purposes (VTI-ACL-100 – VTI-ACL-110), so authority carried by a VAC and authority carried by an entry are narrowed the same way.
+
+**Shape.** `purposes` is `{"scope": "any"}` or `{"scope": "listed", "purposes": [...]}`. The list MUST NOT be empty, and an empty list is not `any`: a VAC carrying one, or a `purposes` of any other shape, MUST be rejected. Each purpose is either a name registered in the VTI specification's purpose registry — `personalisation`, `taskExecution`, `analytics` and `modelTraining` at the time of writing — or an absolute IRI naming a purpose defined elsewhere, such as a purpose of the W3C Data Privacy Vocabulary. Purposes are compared as exact, case-sensitive strings, and a verifier MUST NOT treat a purpose it does not recognise as equal to any other: it grants only a request naming exactly that purpose.
+
+**`any` never includes `modelTraining`.** Training, fine-tuning or evaluating a machine-learning model on content changes what the content can do after the authority ends: it outlives expiry, revocation and deletion in a form nobody can withdraw. That purpose is granted only by a VAC whose effective purposes name it. A VAC that states no `purposes` grants `any`, and so does not grant it.
+
+**Purposes along a chain.** A link that states no `purposes` takes its parent's, and the root, where it states none, grants `any`. A link MUST NOT state purposes its parent does not grant: it MUST NOT state `any` beneath a parent whose effective purposes are a list, MUST NOT list a purpose its parent's list does not name, and MUST NOT list `modelTraining` unless its parent's effective purposes name it. A verifier MUST reject a chain in which any link violates this, as it rejects one that widens `actions`. The **effective purposes** of a chain are those of its presented VAC, so determined; a verifier reports them with the authority the chain confers.
+
+**Verification.** Every operation a VAC authorizes that discloses content to its presenter is held to the chain's effective purposes, whether or not the chain states any: a chain stating none grants `any`, and `any` does not grant `modelTraining`. A verifier MUST refuse such an operation where the request names a purpose the effective purposes do not grant, and where the request names none and the effective purposes list more than one. Where they list exactly one, a request naming none is read as naming it; where they are `any`, a request naming none is served, its purpose unstated. The refusal discloses no content, and is distinguishable from a refusal of the authority itself. Which operations disclose content, how a request names its purpose, and what the verifier records are defined where the authority is exercised — for the VTI, in VTI-ACL-102 – VTI-ACL-106 and VTI-ACL-110 — rather than here.
+
+A purpose is a declaration, not a proof: no verifier can see what a subject does with content once it has it. What the member makes possible is holding the subject to what was declared, and recording it at the moment it was declared. A governing party that wants an agent's use of content bounded states the purposes on the VAC it issues, or its holder states them on the link it attenuates to the agent; an agent's link that states none inherits its attenuator's.
 
 ### Invocation
 
@@ -1357,6 +1385,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 20. **Authority revocation latency (VAC).** A VAC is the answer to the permission question rather than a pointer to it, so nothing about the subject's current standing is consulted at verification and expiry or revocation are the only ways authority is taken back. The usefulness of revocation is bounded by how recently the verifier checked: a verifier holding a cached status accepts an act performed after revocation, and one that fails hard on an unreachable status endpoint turns the issuer's outage into a denial of the scope it governs. Issuers should keep `validUntil` as short as the purpose allows, so that expiry gives a bounded and stated exposure window even where status is unavailable, and governing parties should state the freshness window within which a status check must have been made.
 21. **Bearer use of a VAC.** A VAC presented without a demonstration of key control by its subject proves only that authority was conferred on someone. Because a chain is presented in full on every use, a captured presentation is a captured chain, and a verifier that accepts possession as identification lets whoever captured it exercise the whole of what the chain confers. Verifiers must enforce [Invocation](#invocation); a VAC names no second party whose presentation would be accepted instead, so a verifier that skips the key-control demonstration has no weaker check to fall back on.
 22. **Revocation cascades down a chain, and is invisible where status is absent (VAC).** Revoking a VAC withdraws everything attenuated from it, which is what lets a governing party withdraw derivations it never saw. The reverse is the exposure: a verifier presented with a chain whose links carry no `credentialStatus` cannot learn that an ancestor was revoked, and will accept an attenuation until the shortest `validUntil` in the chain expires. Holders attenuating authority should keep that period short, and a governing party that cannot tolerate the gap should require status on the VACs it issues.
+23. **Purposes widened along a chain, or read as wider than stated (VAC).** A verifier that does not walk `purposes` down a chain accepts an agent's link stating `any` beneath a principal narrowed to a list, and one that reads an absent `purposes` as more than `any`, or `any` as including `modelTraining`, grants the one purpose whose consequences outlive the authority. Verifiers must apply [Purposes of Use](#purposes-of-use) to every link, and must not treat an unrecognised purpose as equal to a recognised one.
 ## Privacy Considerations
 
 *This section is informative.*
@@ -1439,7 +1468,7 @@ Conformance test suites for this specification have not yet been defined and are
 - [W3C Verifiable Credential Data Integrity v1.0](https://www.w3.org/TR/vc-data-integrity/)
 - [W3C Data Integrity EdDSA Cryptosuites v1.0](https://www.w3.org/TR/vc-di-eddsa/) — `eddsa-jcs-2022`
 - [Trust Tasks](https://github.com/trustoverip/dtgwg-trust-tasks-spec) — the DTGWG Trust Tasks specification, Working Draft; see [Trust Task Context Binding](#trust-task-context-binding) for the minimum Document Status required
-- [DTG VSC Predicate Registry](https://registry.trustoverip.org/dtg) — the registry that defines the two core profiles, [`https://registry.trustoverip.org/dtg/vsc/endorses/1`](https://registry.trustoverip.org/dtg/vsc/endorses/1) and [`https://registry.trustoverip.org/dtg/vsc/witnessed/1`](https://registry.trustoverip.org/dtg/vsc/witnessed/1), and publishes the credential context [`https://registry.trustoverip.org/dtg/context/v1`](https://registry.trustoverip.org/dtg/context/v1) that [Base Structure](#base-structure) requires; its immutability and versioning rules are in its GOVERNANCE.md
+- [DTG VSC Predicate Registry](https://registry.trustoverip.org/dtg) — the registry that defines the two core profiles, [`https://registry.trustoverip.org/dtg/vsc/endorses/1`](https://registry.trustoverip.org/dtg/vsc/endorses/1) and [`https://registry.trustoverip.org/dtg/vsc/witnessed/1`](https://registry.trustoverip.org/dtg/vsc/witnessed/1), and publishes the credential contexts [`https://registry.trustoverip.org/dtg/context/v1`](https://registry.trustoverip.org/dtg/context/v1) and [`https://registry.trustoverip.org/dtg/context/v2`](https://registry.trustoverip.org/dtg/context/v2) that [Base Structure](#base-structure) and [Context Versions](#context-versions) require; its immutability and versioning rules are in its GOVERNANCE.md
 - [W3C Controlled Identifiers (CIDs) v1.0](https://www.w3.org/TR/cid-1.0/)
 - [W3C JSON-LD 1.1](https://www.w3.org/TR/json-ld11/)
 - [IETF RFC 3987: Internationalized Resource Identifiers (IRIs)](https://www.rfc-editor.org/rfc/rfc3987)
@@ -1449,7 +1478,7 @@ Conformance test suites for this specification have not yet been defined and are
 
 - [ToIP Trust Registry Query Protocol](https://trustoverip.github.io/tswg-trust-registry-protocol/)
 - [ToIP Governance Metamodel Specification V1.0](https://trustoverip.org/wp-content/uploads/ToIP-Governance-Metamodel-Specification-V1.0-2021-12-21.pdf)
-- [Trust Tasks (ToIP Glossary)](https://glossary.trustoverip.org/#term:trust-tasks) and the community proposals at [trusttasks.org](https://www.trusttasks.org)
+- [Trust Tasks (ToIP Glossary)](https://glossary.trustoverip.org/#term:trust-tasks) and the community proposals at [trusttasks.org](https://trusttasks.org/)
 - [IETF RFC 7095: jCard: The JSON Format for vCard](https://datatracker.ietf.org/doc/html/rfc7095)
 - [Agent2Agent (A2A) Protocol: AgentCard](https://agent2agent.info/docs/concepts/agentcard/)
 - [Personhood Credentials (arXiv:2408.07892)](https://arxiv.org/abs/2408.07892)
@@ -1459,4 +1488,4 @@ Conformance test suites for this specification have not yet been defined and are
 - [W3C RDF Schema 1.1](https://www.w3.org/TR/rdf-schema/)
 - [W3C Bitstring Status List v1.0](https://www.w3.org/TR/vc-bitstring-status-list/)
 - [Verifiable Trust Infrastructure (VTI)](https://github.com/trustoverip/dtgwg-vti-spec) — the DTGWG system specification composing this specification with Trust Tasks, Working Draft
-- [DTG Credentials v0.3 proposal draft](https://github.com/trustoverip/dtgwg-cred-tf/blob/main/dtg.md) (superseded by this specification)
+- [DTG Credentials v0.3 proposal draft](https://github.com/trustoverip/dtgwg-cred-tf/blob/200acbaa47a422b173652ed2c3dc961c4fbc9e7a/dtg.md) (superseded by this specification)
