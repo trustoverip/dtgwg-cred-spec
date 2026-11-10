@@ -229,9 +229,14 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 The credential context is published by the [DTG VSC Predicate Registry](#related-specifications) as one frozen document per version. `https://registry.trustoverip.org/dtg/context/v1` is the version this Working Draft requires, except that a [[ref: VAC]] stating `purposes` (see [Purposes of Use](#purposes-of-use)) requires the context version that defines it, `https://registry.trustoverip.org/dtg/context/v2`; a credential that carries no member `v2` added MAY continue to list `v1`. Once published, a context version is never edited, not even editorially, and every version ever published stays served at its IRI; a change to what credentials carry — a term added, renamed or retyped, including an additional member of a predicate profile such as `witnessContext` — is a new version, listed in a new revision of this section. Every term the context defines is `@protected`, and every type and property IRI it defines is minted under the unversioned `https://registry.trustoverip.org/dtg/credentials#`, so a term keeps its IRI across context versions.
 
-> **Editor's note — `v2` is not yet published.** `v2` is `v1` with `purposes` added to the VAC's `credentialSubject`, its own `scope` and `purposes` defined within it so that neither redefines the protected `scope` of `authority`. Its digest is recorded here when the registry publishes it, and until then a VAC stating `purposes` cannot list a context that defines the member.
+Each published version is byte-frozen. Their SHA-256 digests, as a Multihash encoded in Multibase base-58-btc as [Digest Encoding](#digest-encoding) specifies, are:
 
-The `v1` document is byte-frozen. Its SHA-256 digest, as a Multihash encoded in Multibase base-58-btc as [Digest Encoding](#digest-encoding) specifies, is `zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh` (hexadecimal `3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448`). Verifiers SHOULD use a local copy of the context matching this digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
+| Version | Digest | Hexadecimal |
+|---|---|---|
+| `v1` | `zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh` | `3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448` |
+| `v2` | `zQmcoSakfDBfPW2DiLWH3eAAm6uJWDuLyifKQ9tCs8NuiH7` | `d6e096472559b01d199af52260d76863bd2be7580bc2398bcd18fc3a2b9f533a` |
+
+`v2` is `v1` with one term added, `purposes`, carrying its own protected context in which `scope` and `purposes` are defined, so that neither redefines the protected `scope` of `authority`. Verifiers SHOULD use a local copy of each context matching its digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
 
 The order of `@context` matters. Every term the DTG context defines is protected, including generic names — `predicate` and `object` at the top level, and `scope`, `parent`, `event` and `method` inside the objects that define them — and JSON-LD rejects a document in which a later context redefines a protected term at the level where it is protected. A proof suite, predicate profile or community context listed after the DTG context therefore MUST NOT redefine a term the DTG context defines at the same level; a profile or community that needs a term of its own chooses a name the DTG context does not define, or scopes it under a property the DTG context does not define.
 
@@ -1106,7 +1111,7 @@ This ceiling and `maxAttenuation` are different controls and a chain MUST satisf
 {
   "@context": [
     "https://www.w3.org/ns/credentials/v2",
-    "https://registry.trustoverip.org/dtg/context/v1"
+    "https://registry.trustoverip.org/dtg/context/v2"
   ],
   "type": ["VerifiableCredential", "DTGCredential", "AuthorityCredential"],
   "issuer": "did:key:z6MkpTHR8VNs...",
@@ -1431,7 +1436,7 @@ Conformance test suites for this specification have not yet been defined and are
 - [W3C Verifiable Credential Data Integrity v1.0](https://www.w3.org/TR/vc-data-integrity/)
 - [W3C Data Integrity EdDSA Cryptosuites v1.0](https://www.w3.org/TR/vc-di-eddsa/) — `eddsa-jcs-2022`
 - [Trust Tasks](https://github.com/trustoverip/dtgwg-trust-tasks-spec) — the DTGWG Trust Tasks specification, Working Draft; see [Trust Task Context Binding](#trust-task-context-binding) for the minimum Document Status required
-- [DTG VSC Predicate Registry](https://registry.trustoverip.org/dtg) — the registry that defines the two core profiles, [`https://registry.trustoverip.org/dtg/vsc/endorses/1`](https://registry.trustoverip.org/dtg/vsc/endorses/1) and [`https://registry.trustoverip.org/dtg/vsc/witnessed/1`](https://registry.trustoverip.org/dtg/vsc/witnessed/1), and publishes the credential context [`https://registry.trustoverip.org/dtg/context/v1`](https://registry.trustoverip.org/dtg/context/v1) that [Base Structure](#base-structure) requires; its immutability and versioning rules are in its GOVERNANCE.md
+- [DTG VSC Predicate Registry](https://registry.trustoverip.org/dtg) — the registry that defines the two core profiles, [`https://registry.trustoverip.org/dtg/vsc/endorses/1`](https://registry.trustoverip.org/dtg/vsc/endorses/1) and [`https://registry.trustoverip.org/dtg/vsc/witnessed/1`](https://registry.trustoverip.org/dtg/vsc/witnessed/1), and publishes the credential contexts [`https://registry.trustoverip.org/dtg/context/v1`](https://registry.trustoverip.org/dtg/context/v1) and [`https://registry.trustoverip.org/dtg/context/v2`](https://registry.trustoverip.org/dtg/context/v2) that [Base Structure](#base-structure) and [Context Versions](#context-versions) require; its immutability and versioning rules are in its GOVERNANCE.md
 - [W3C Controlled Identifiers (CIDs) v1.0](https://www.w3.org/TR/cid-1.0/)
 - [W3C JSON-LD 1.1](https://www.w3.org/TR/json-ld11/)
 - [IETF RFC 3987: Internationalized Resource Identifiers (IRIs)](https://www.rfc-editor.org/rfc/rfc3987)
