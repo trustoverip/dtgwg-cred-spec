@@ -109,7 +109,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
       ],
       "source": "xref",
       "termId": "term:credential",
-      "lastUpdated": "2026-11-10T21:26:56.705Z"
+      "lastUpdated": "2026-11-10T22:06:29.948Z"
     }
   ]
 };</script>
@@ -543,7 +543,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 </dd><dt data-sourcefile="terms-definitions/verifiable_trust_community.md" class="term-local"><span id="term:verifiable-trust-communities"><span id="term:vtcs"><span id="term:verifiable-trust-community"><span id="term:vtc">verifiable trust community <span class="term-local-parenthetical-terms">(VTCs, verifiable trust communities, <span class="term-local-original-term term-original-term" title="original term">VTC</span>)</span></span></span></span></span></dt><dd>
 <p>A <a href="https://glossary.trustoverip.org/#term:trust-community">trust community</a> identified with a <a href="https://glossary.trustoverip.org/#term:verifiable-identifier">verifiable identifier</a> (VID) that serves as a <a class="term-reference" href="#term:dtg-node">DTG node</a>. A VTC does not identify a person, agent, or device; rather it identifies a logical entity that has persons, devices, AI agents, and/or other VTCs as members. A VTC is represented digitally by a <a class="term-reference" href="#term:vta">VTA</a>—usually (but not always) a <a class="term-reference" href="#term:cloud-vta">cloud VTA</a>.</p>
 </dd><dd>
-<p>A VTC may be created for any size or purpose, from a family to a social group to an open source project to a company to a nation state. The verifiable identifier for a VTC can only truthfully be declared with a <code>public</code> <a class="term-reference" href="#term:correlation-scope">correlation scope</a>: a community that cannot be found cannot be joined. Membership in a VTC is defined by a pair of <a class="term-reference" href="#term:vmcs">VMCs</a>, one issued in each direction. A <a class="term-reference" href="#term:vtc-member">VTC member</a> may be invited to join using a <a class="term-reference" href="#term:vtc-invitation-credential">VTC invitation credential</a>.</p>
+<p>A VTC may be created for any size or purpose, from a family to a social group to an open source project to a company to a nation state. The verifiable identifier for a VTC is declared with a <code>directed</code> <a class="term-reference" href="#term:correlation-scope">correlation scope</a> at minimum, since every party that verifies its members’ credentials must be able to resolve it, and <code>public</code> where the community is open to outsiders. It can never truthfully be declared <code>pairwise</code>, since a community has more than one member. Membership in a VTC is defined by a pair of <a class="term-reference" href="#term:vmcs">VMCs</a>, one issued in each direction. A <a class="term-reference" href="#term:vtc-member">VTC member</a> may be invited to join using a <a class="term-reference" href="#term:vtc-invitation-credential">VTC invitation credential</a>.</p>
 </dd><dd>
 <p>VTCs can be nested, in which case they form a <a href="https://en.wikipedia.org/wiki/Hierarchy">hierarchy</a>. However since a VTC can be a member of any number of other VTCs, VTCs can also be connected in a <a href="https://en.wikipedia.org/wiki/Heterarchy">heterarchy</a>.</p>
 </dd><dt data-sourcefile="terms-definitions/verifiable_trust_network.md" class="term-local"><span id="term:verifiable-trust-networks"><span id="term:vtns"><span id="term:verifiable-trust-network"><span id="term:vtn">verifiable trust network <span class="term-local-parenthetical-terms">(VTNs, verifiable trust networks, <span class="term-local-original-term term-original-term" title="original term">VTN</span>)</span></span></span></span></span></dt><dd>
@@ -747,7 +747,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <p><strong>Implementation Note:</strong> A DTG credential’s <code>proof</code> is a <code>DataIntegrityProof</code> under either version (see <a href="#base-structure">Base Structure</a>); a v1.1 credential additionally lists the Data Integrity context <code>https://w3id.org/security/data-integrity/v2</code>. Verifiers supporting both v1.1 and v2.0 credentials MUST be able to verify that proof under each version for every cryptosuite they accept. Issuers SHOULD use well-supported cryptosuites and include all necessary contexts.</p>
 </blockquote>
 <h3 id="dual-version-examples" tabindex="-1"><a class="toc-anchor d-print-none" href="#dual-version-examples">§</a> Dual-Version Examples</h3>
-<p>For readability, the examples throughout this specification reuse a single member identifier across a community’s credentials. Every example declares its issuer’s <a class="term-reference" href="#term:correlation-scope">correlation scope</a> in <code>issuerScope</code>, and the value follows from who is issuing: a community, a witness service or another party that must be findable declares <code>public</code>; the reused member identifier declares <code>directed</code>, since it is used with the community and with other members; and the peers of a <a class="term-reference" href="#term:vrc">VRC</a> declare <code>pairwise</code>. A credential declares only its own issuer’s scope, so the member’s <code>directed</code> appears on the credentials the member issues, never on the community’s grant to them — see <a href="#correlation-scope">Correlation Scope</a>.</p>
+<p>For readability, the examples throughout this specification reuse a single member identifier across a community’s credentials. Every example declares its issuer’s <a class="term-reference" href="#term:correlation-scope">correlation scope</a> in <code>issuerScope</code>, and the value follows from who is issuing: a community open to outsiders, a witness service or another party that must be findable by anyone declares <code>public</code>; the reused member identifier declares <code>directed</code>, since it is used with the community and with other members; and the peers of a <a class="term-reference" href="#term:vrc">VRC</a> declare <code>pairwise</code>. A credential declares only its own issuer’s scope, so the member’s <code>directed</code> appears on the credentials the member issues, never on the community’s grant to them — see <a href="#correlation-scope">Correlation Scope</a>.</p>
 <p><strong>v2.0 (Primary):</strong></p>
 <pre><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
@@ -936,7 +936,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <h3 id="did-method-considerations" tabindex="-1"><a class="toc-anchor d-print-none" href="#did-method-considerations">§</a> DID Method Considerations</h3>
 <p><em>This subsection is informative.</em></p>
 <p>This specification does not mandate a <a href="https://glossary.trustoverip.org/#term:decentralized-identifier">decentralized identifier</a> method. What a method must supply depends on what the identifier is required to do — chiefly how long it must remain verifiable and how widely its holder intends it to be correlated (its <a class="term-reference" href="#term:correlation-scope">correlation scope</a>) — and a deployment may use different methods for different purposes. What follows states those properties in terms of the identifier’s job, so implementers can judge whether a candidate method is suitable for any identifier in a deployment, including ones this specification does not otherwise name.</p>
-<p><strong>Durable identifiers.</strong> A <a class="term-reference" href="#term:vtc">VTC</a>'s identifier — declared <code>public</code> — issues <a class="term-reference" href="#term:vmcs">VMCs</a> and is expected to outlive any particular key, operator, or hosting arrangement, and a member’s identifier must stay verifiable across the lifetime of that membership. The determining property is how long the identifier must remain verifiable: a <a class="term-reference" href="#term:vta">VTA</a> issuing <a class="term-reference" href="#term:vwcs">VWCs</a> on behalf of a VTC, which the <a href="#the-dtgwitnessed-profile-vwc"><code>dtg:witnessed</code> profile</a> permits in place of the member’s own identifier, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these purposes should provide:</p>
+<p><strong>Durable identifiers.</strong> A <a class="term-reference" href="#term:vtc">VTC</a>'s identifier — declared <code>directed</code> or <code>public</code> — issues <a class="term-reference" href="#term:vmcs">VMCs</a> and is expected to outlive any particular key, operator, or hosting arrangement, and a member’s identifier must stay verifiable across the lifetime of that membership. The determining property is how long the identifier must remain verifiable: a <a class="term-reference" href="#term:vta">VTA</a> issuing <a class="term-reference" href="#term:vwcs">VWCs</a> on behalf of a VTC, which the <a href="#the-dtgwitnessed-profile-vwc"><code>dtg:witnessed</code> profile</a> permits in place of the member’s own identifier, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these purposes should provide:</p>
 <ul>
 <li><strong>Verifiable key history</strong>, so that a verifier can establish which key was authoritative when a credential was signed rather than only which key is authoritative now. This matters because a DTG credential may be presented long after issuance, and <a href="#security-considerations">Security Considerations</a> requires verifiers to validate the verification method.</li>
 <li><strong>Key rotation without changing the identifier</strong>, so that an edge of the graph survives key compromise. An identifier that cannot rotate makes every credential issued under it unrecoverable on compromise.</li>
@@ -1038,7 +1038,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 </li>
 <li><code>issuerScope</code> (string, REQUIRED): <code>pairwise</code>, <code>directed</code> or <code>public</code>, per <a href="#base-structure">Base Structure</a>:
 <ul>
-<li>For the community-issued VMC: <code>public</code> — the only scope a community can truthfully declare (see below)</li>
+<li>For the community-issued VMC: <code>directed</code> at minimum, and <code>public</code> where the community is open to outsiders (see below)</li>
 <li>For the member-issued VMC: whatever the member declared for the identifier the grant names</li>
 </ul>
 </li>
@@ -1054,7 +1054,9 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 </ul>
 </li>
 </ul>
-<p>A community’s own identifier can only truthfully be declared <code>public</code>: a community that cannot be found cannot be joined. The member’s identifier carries whatever <a class="term-reference" href="#term:correlation-scope">correlation scope</a> the member declared for it, and this specification does not constrain that choice — see <a href="#choosing-a-scope">Choosing a scope</a> and <a href="#scope-the-holder-cannot-declare-alone">Scope the holder cannot declare alone</a>.</p>
+<p>A community’s own identifier is <code>directed</code> at minimum, and <code>public</code> where the community chooses to be discoverable by anyone; it can never truthfully be <code>pairwise</code>, since a community has more than one member. What the community’s identifier must be is <em>resolvable</em> by every party that verifies its members’ credentials, and every such verifier is a party the community’s identifier is directed at — which is what <code>directed</code> means. Resolvability and correlation scope are distinct properties: scope says how widely the identifier may be correlated, not whether it can be fetched. Nor does joining require the community to be found by anyone: a prospective member is ordinarily invited, and the <a class="term-reference" href="#term:vic">VIC</a> that invites them carries the community’s identifier.</p>
+<p>Whether to declare <code>public</code> is therefore the community’s choice. An open community — a public project, a company, a nation state — will ordinarily declare <code>public</code> so that third parties can find and verify it. A restricted community, such as a family or a support group, is ordinarily better served by <code>directed</code>: the community’s identifier is disclosed in every proof of membership in it, so a <code>public</code> identifier lets any observer correlate that membership across a member’s presentations.</p>
+<p>The member’s identifier carries whatever <a class="term-reference" href="#term:correlation-scope">correlation scope</a> the member declared for it, and this specification does not constrain that choice — see <a href="#choosing-a-scope">Choosing a scope</a> and <a href="#scope-the-holder-cannot-declare-alone">Scope the holder cannot declare alone</a>.</p>
 <p><strong>Example (community-issued VMC — membership grant):</strong></p>
 <pre><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
@@ -1299,7 +1301,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <li>For VTN invitation: DID of the VTN, or of a member VTC (per policy)</li>
 </ul>
 </li>
-<li><code>issuerScope</code> (string, REQUIRED): <code>pairwise</code>, <code>directed</code> or <code>public</code>, per <a href="#base-structure">Base Structure</a>; <code>public</code> where the issuer is the VTC or VTN itself</li>
+<li><code>issuerScope</code> (string, REQUIRED): <code>pairwise</code>, <code>directed</code> or <code>public</code>, per <a href="#base-structure">Base Structure</a>; where the issuer is the VTC or VTN itself, the scope that community declares for its own identifier — <code>directed</code> at minimum (see <a href="#vmc-verifiable-membership-credential">VMC</a>)</li>
 <li><code>credentialSubject</code> (object, REQUIRED):
 <ul>
 <li><code>id</code> (string, REQUIRED):
@@ -2118,8 +2120,8 @@ This work is licensed under a Creative Commons Attribution 4.0 International Lic
                 <div id="build-info" class="small text-muted">
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
-                        <time class="timestamp" datetime="2026-11-10T21:26:56.236Z">
-                            Generated: 2026-11-10T21:26:56.236Z
+                        <time class="timestamp" datetime="2026-11-10T22:06:29.435Z">
+                            Generated: 2026-11-10T22:06:29.435Z
                         </time>
                     </div>
                     <div class="d-flex align-items-center mb-1">
