@@ -58,7 +58,7 @@ All DTG-specific schemas (types, issuer requirements, credentialSubject structur
 
 ### Dual-Version Examples
 
-For readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Every example declares its issuer's [[ref: correlation scope]] in `issuerScope`, and the value follows from who is issuing: a community, a witness service or another party that must be findable declares `public`; the reused member identifier declares `directed`, since it is used with the community and with other members; and the peers of a [[ref: VRC]] declare `pairwise`. A credential declares only its own issuer's scope, so the member's `directed` appears on the credentials the member issues, never on the community's grant to them — see [Correlation Scope](#correlation-scope).
+For readability, the examples throughout this specification reuse a single member identifier across a community's credentials. Every example declares its issuer's [[ref: correlation scope]] in `issuerScope`, and the value follows from who is issuing: a community open to outsiders, a witness service or another party that must be findable by anyone declares `public`; the reused member identifier declares `directed`, since it is used with the community and with other members; and the peers of a [[ref: VRC]] declare `pairwise`. A credential declares only its own issuer's scope, so the member's `directed` appears on the credentials the member issues, never on the community's grant to them — see [Correlation Scope](#correlation-scope).
 
 **v2.0 (Primary):**
 
@@ -248,7 +248,7 @@ Credentials issued before the Implementers Draft of this specification are not c
 
 This specification does not mandate a [decentralized identifier](https://glossary.trustoverip.org/#term:decentralized-identifier) method. What a method must supply depends on what the identifier is required to do — chiefly how long it must remain verifiable and how widely its holder intends it to be correlated (its [[ref: correlation scope]]) — and a deployment may use different methods for different purposes. What follows states those properties in terms of the identifier's job, so implementers can judge whether a candidate method is suitable for any identifier in a deployment, including ones this specification does not otherwise name.
 
-**Durable identifiers.** A [[ref: VTC]]'s identifier — declared `public` — issues [[ref: VMCs]] and is expected to outlive any particular key, operator, or hosting arrangement, and a member's identifier must stay verifiable across the lifetime of that membership. The determining property is how long the identifier must remain verifiable: a [[ref: VTA]] issuing [[ref: VWCs]] on behalf of a VTC, which the [`dtg:witnessed` profile](#the-dtgwitnessed-profile-vwc) permits in place of the member's own identifier, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these purposes should provide:
+**Durable identifiers.** A [[ref: VTC]]'s identifier — declared `directed` or `public` — issues [[ref: VMCs]] and is expected to outlive any particular key, operator, or hosting arrangement, and a member's identifier must stay verifiable across the lifetime of that membership. The determining property is how long the identifier must remain verifiable: a [[ref: VTA]] issuing [[ref: VWCs]] on behalf of a VTC, which the [`dtg:witnessed` profile](#the-dtgwitnessed-profile-vwc) permits in place of the member's own identifier, must be verifiable for as long as the attestations it issued are relied upon, and so belongs here too. A method used for these purposes should provide:
 
 - **Verifiable key history**, so that a verifier can establish which key was authoritative when a credential was signed rather than only which key is authoritative now. This matters because a DTG credential may be presented long after issuance, and [Security Considerations](#security-considerations) requires verifiers to validate the verification method.
 - **Key rotation without changing the identifier**, so that an edge of the graph survives key compromise. An identifier that cannot rotate makes every credential issued under it unrecoverable on compromise.
@@ -375,7 +375,7 @@ A VMC is issued in each direction of a membership edge. The two directions are d
   - For the community-issued VMC (the membership grant): DID of the VTC or VTN
   - For the member-issued VMC (the membership acknowledgement): DID of the member — the same identifier the grant names as its subject
 - `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure):
-  - For the community-issued VMC: `public` — the only scope a community can truthfully declare (see below)
+  - For the community-issued VMC: `directed` at minimum, and `public` where the community is open to outsiders (see below)
   - For the member-issued VMC: whatever the member declared for the identifier the grant names
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
@@ -383,7 +383,11 @@ A VMC is issued in each direction of a membership edge. The two directions are d
     - For the member-issued VMC: DID of the VTC or VTN
   - `digestMultibase` (string, REQUIRED on the member-issued VMC, MUST be omitted on the community-issued VMC): A cryptographic hash of the community-issued VMC being acknowledged, computed over the credential excluding its top-level `proof` member and encoded as specified in [Digest Encoding](#digest-encoding).
 
-A community's own identifier can only truthfully be declared `public`: a community that cannot be found cannot be joined. The member's identifier carries whatever [[ref: correlation scope]] the member declared for it, and this specification does not constrain that choice — see [Choosing a scope](#choosing-a-scope) and [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
+A community's own identifier is `directed` at minimum, and `public` where the community chooses to be discoverable by anyone; it can never truthfully be `pairwise`, since a community has more than one member. What the community's identifier must be is *resolvable* by every party that verifies its members' credentials, and every such verifier is a party the community's identifier is directed at — which is what `directed` means. Resolvability and correlation scope are distinct properties: scope says how widely the identifier may be correlated, not whether it can be fetched. Nor does joining require the community to be found by anyone: a prospective member is ordinarily invited, and the [[ref: VIC]] that invites them carries the community's identifier.
+
+Whether to declare `public` is therefore the community's choice. An open community — a public project, a company, a nation state — will ordinarily declare `public` so that third parties can find and verify it. A restricted community, such as a family or a support group, is ordinarily better served by `directed`: the community's identifier is disclosed in every proof of membership in it, so a `public` identifier lets any observer correlate that membership across a member's presentations.
+
+The member's identifier carries whatever [[ref: correlation scope]] the member declared for it, and this specification does not constrain that choice — see [Choosing a scope](#choosing-a-scope) and [Scope the holder cannot declare alone](#scope-the-holder-cannot-declare-alone).
 
 **Example (community-issued VMC — membership grant):**
 
@@ -665,7 +669,7 @@ This section is normative.
 - `issuer` (string, REQUIRED):
   - For VTC invitation: DID of the VTC, or of an authorized member (per policy)
   - For VTN invitation: DID of the VTN, or of a member VTC (per policy)
-- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); `public` where the issuer is the VTC or VTN itself
+- `issuerScope` (string, REQUIRED): `pairwise`, `directed` or `public`, per [Base Structure](#base-structure); where the issuer is the VTC or VTN itself, the scope that community declares for its own identifier — `directed` at minimum (see [VMC](#vmc-verifiable-membership-credential))
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED):
     - For VTC invitation: DID of the prospective member, or of a prospective member VTC
