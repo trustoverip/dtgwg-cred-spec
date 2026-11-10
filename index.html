@@ -109,7 +109,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
       ],
       "source": "xref",
       "termId": "term:credential",
-      "lastUpdated": "2026-11-10T05:19:34.739Z"
+      "lastUpdated": "2026-11-10T21:26:56.705Z"
     }
   ]
 };</script>
@@ -908,10 +908,29 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 </code></pre>
 <h3 id="context-versions" tabindex="-1"><a class="toc-anchor d-print-none" href="#context-versions">§</a> Context Versions</h3>
 <p>The credential context is published by the <a href="#related-specifications">DTG VSC Predicate Registry</a> as one frozen document per version. <code>https://registry.trustoverip.org/dtg/context/v1</code> is the version this Working Draft requires, except that a <a class="term-reference" href="#term:vac">VAC</a> stating <code>purposes</code> (see <a href="#purposes-of-use">Purposes of Use</a>) requires the context version that defines it, <code>https://registry.trustoverip.org/dtg/context/v2</code>; a credential that carries no member <code>v2</code> added MAY continue to list <code>v1</code>. Once published, a context version is never edited, not even editorially, and every version ever published stays served at its IRI; a change to what credentials carry — a term added, renamed or retyped, including an additional member of a predicate profile such as <code>witnessContext</code> — is a new version, listed in a new revision of this section. Every term the context defines is <code>@protected</code>, and every type and property IRI it defines is minted under the unversioned <code>https://registry.trustoverip.org/dtg/credentials#</code>, so a term keeps its IRI across context versions.</p>
-<blockquote>
-<p><strong>Editor’s note — <code>v2</code> is not yet published.</strong> <code>v2</code> is <code>v1</code> with <code>purposes</code> added to the VAC’s <code>credentialSubject</code>, its own <code>scope</code> and <code>purposes</code> defined within it so that neither redefines the protected <code>scope</code> of <code>authority</code>. Its digest is recorded here when the registry publishes it, and until then a VAC stating <code>purposes</code> cannot list a context that defines the member.</p>
-</blockquote>
-<p>The <code>v1</code> document is byte-frozen. Its SHA-256 digest, as a Multihash encoded in Multibase base-58-btc as <a href="#digest-encoding">Digest Encoding</a> specifies, is <code>zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh</code> (hexadecimal <code>3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448</code>). Verifiers SHOULD use a local copy of the context matching this digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.</p>
+<p>Each published version is byte-frozen. Their SHA-256 digests, as a Multihash encoded in Multibase base-58-btc as <a href="#digest-encoding">Digest Encoding</a> specifies, are:</p>
+<div class="table-responsive-md"><table class="table table-striped table-bordered table-hover">
+<thead>
+<tr>
+<th>Version</th>
+<th>Digest</th>
+<th>Hexadecimal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>v1</code></td>
+<td><code>zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh</code></td>
+<td><code>3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448</code></td>
+</tr>
+<tr>
+<td><code>v2</code></td>
+<td><code>zQmcoSakfDBfPW2DiLWH3eAAm6uJWDuLyifKQ9tCs8NuiH7</code></td>
+<td><code>d6e096472559b01d199af52260d76863bd2be7580bc2398bcd18fc3a2b9f533a</code></td>
+</tr>
+</tbody>
+</table>
+</div><p><code>v2</code> is <code>v1</code> with one term added, <code>purposes</code>, carrying its own protected context in which <code>scope</code> and <code>purposes</code> are defined, so that neither redefines the protected <code>scope</code> of <code>authority</code>. Verifiers SHOULD use a local copy of each context matching its digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.</p>
 <p>The order of <code>@context</code> matters. Every term the DTG context defines is protected, including generic names — <code>predicate</code> and <code>object</code> at the top level, and <code>scope</code>, <code>parent</code>, <code>event</code> and <code>method</code> inside the objects that define them — and JSON-LD rejects a document in which a later context redefines a protected term at the level where it is protected. A proof suite, predicate profile or community context listed after the DTG context therefore MUST NOT redefine a term the DTG context defines at the same level; a profile or community that needs a term of its own chooses a name the DTG context does not define, or scopes it under a property the DTG context does not define.</p>
 <p>Credentials issued before the Implementers Draft of this specification are not conformant to it, whatever context IRI they list. Contexts published before <code>v1</code> under other IRIs are not recognized, and a verifier is not required to process a credential that lists one.</p>
 <h3 id="did-method-considerations" tabindex="-1"><a class="toc-anchor d-print-none" href="#did-method-considerations">§</a> DID Method Considerations</h3>
@@ -1694,7 +1713,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <pre><code class="language-json"><span class="token punctuation">{</span>
   <span class="token property">"@context"</span><span class="token operator">:</span> <span class="token punctuation">[</span>
     <span class="token string">"https://www.w3.org/ns/credentials/v2"</span><span class="token punctuation">,</span>
-    <span class="token string">"https://registry.trustoverip.org/dtg/context/v1"</span>
+    <span class="token string">"https://registry.trustoverip.org/dtg/context/v2"</span>
   <span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"type"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"VerifiableCredential"</span><span class="token punctuation">,</span> <span class="token string">"DTGCredential"</span><span class="token punctuation">,</span> <span class="token string">"AuthorityCredential"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
   <span class="token property">"issuer"</span><span class="token operator">:</span> <span class="token string">"did:key:z6MkpTHR8VNs..."</span><span class="token punctuation">,</span>
@@ -1953,7 +1972,7 @@ customElements.define("slide-panels",class extends HTMLElement{static get observ
 <li><a href="https://www.w3.org/TR/vc-data-integrity/">W3C Verifiable Credential Data Integrity v1.0</a></li>
 <li><a href="https://www.w3.org/TR/vc-di-eddsa/">W3C Data Integrity EdDSA Cryptosuites v1.0</a> — <code>eddsa-jcs-2022</code></li>
 <li><a href="https://github.com/trustoverip/dtgwg-trust-tasks-spec">Trust Tasks</a> — the DTGWG Trust Tasks specification, Working Draft; see <a href="#trust-task-context-binding">Trust Task Context Binding</a> for the minimum Document Status required</li>
-<li><a href="https://registry.trustoverip.org/dtg">DTG VSC Predicate Registry</a> — the registry that defines the two core profiles, <a href="https://registry.trustoverip.org/dtg/vsc/endorses/1"><code>https://registry.trustoverip.org/dtg/vsc/endorses/1</code></a> and <a href="https://registry.trustoverip.org/dtg/vsc/witnessed/1"><code>https://registry.trustoverip.org/dtg/vsc/witnessed/1</code></a>, and publishes the credential context <a href="https://registry.trustoverip.org/dtg/context/v1"><code>https://registry.trustoverip.org/dtg/context/v1</code></a> that <a href="#base-structure">Base Structure</a> requires; its immutability and versioning rules are in its <a href="http://GOVERNANCE.md">GOVERNANCE.md</a></li>
+<li><a href="https://registry.trustoverip.org/dtg">DTG VSC Predicate Registry</a> — the registry that defines the two core profiles, <a href="https://registry.trustoverip.org/dtg/vsc/endorses/1"><code>https://registry.trustoverip.org/dtg/vsc/endorses/1</code></a> and <a href="https://registry.trustoverip.org/dtg/vsc/witnessed/1"><code>https://registry.trustoverip.org/dtg/vsc/witnessed/1</code></a>, and publishes the credential contexts <a href="https://registry.trustoverip.org/dtg/context/v1"><code>https://registry.trustoverip.org/dtg/context/v1</code></a> and <a href="https://registry.trustoverip.org/dtg/context/v2"><code>https://registry.trustoverip.org/dtg/context/v2</code></a> that <a href="#base-structure">Base Structure</a> and <a href="#context-versions">Context Versions</a> require; its immutability and versioning rules are in its <a href="http://GOVERNANCE.md">GOVERNANCE.md</a></li>
 <li><a href="https://www.w3.org/TR/cid-1.0/">W3C Controlled Identifiers (CIDs) v1.0</a></li>
 <li><a href="https://www.w3.org/TR/json-ld11/">W3C JSON-LD 1.1</a></li>
 <li><a href="https://www.rfc-editor.org/rfc/rfc3987">IETF RFC 3987: Internationalized Resource Identifiers (IRIs)</a></li>
@@ -2099,8 +2118,8 @@ This work is licensed under a Creative Commons Attribution 4.0 International Lic
                 <div id="build-info" class="small text-muted">
                     <div class="d-flex align-items-center mb-1">
                         <i class="bi bi-calendar-event me-2" aria-hidden="true"></i>
-                        <time class="timestamp" datetime="2026-11-10T05:19:34.138Z">
-                            Generated: 2026-11-10T05:19:34.138Z
+                        <time class="timestamp" datetime="2026-11-10T21:26:56.236Z">
+                            Generated: 2026-11-10T21:26:56.236Z
                         </time>
                     </div>
                     <div class="d-flex align-items-center mb-1">
