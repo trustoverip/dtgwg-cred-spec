@@ -1139,7 +1139,7 @@ The `parent` value above is the digest of the preceding example, computed as spe
 
 **Purposes along a chain.** A link that states no `purposes` takes its parent's, and the root, where it states none, grants `any`. A link MUST NOT state purposes its parent does not grant: it MUST NOT state `any` beneath a parent whose effective purposes are a list, MUST NOT list a purpose its parent's list does not name, and MUST NOT list `modelTraining` unless its parent's effective purposes name it. A verifier MUST reject a chain in which any link violates this, as it rejects one that widens `actions`. The **effective purposes** of a chain are those of its presented VAC, so determined; a verifier reports them with the authority the chain confers.
 
-**Verification.** Where the operation a VAC authorizes discloses content to its presenter, and the request names the purpose for which the presenter will use it, a verifier MUST refuse the operation unless the chain's effective purposes grant that purpose; where they list exactly one purpose, a request naming none is read as naming it; where they list more than one, a request naming none MUST be refused. The refusal discloses no content, and is distinguishable from a refusal of the authority itself. Which operations disclose content, how a request names its purpose, and what the verifier records are defined where the authority is exercised — for the VTI, in VTI-ACL-102 – VTI-ACL-106 and VTI-ACL-110 — rather than here.
+**Verification.** Every operation a VAC authorizes that discloses content to its presenter is held to the chain's effective purposes, whether or not the chain states any: a chain stating none grants `any`, and `any` does not grant `modelTraining`. A verifier MUST refuse such an operation where the request names a purpose the effective purposes do not grant, and where the request names none and the effective purposes list more than one. Where they list exactly one, a request naming none is read as naming it; where they are `any`, a request naming none is served, its purpose unstated. The refusal discloses no content, and is distinguishable from a refusal of the authority itself. Which operations disclose content, how a request names its purpose, and what the verifier records are defined where the authority is exercised — for the VTI, in VTI-ACL-102 – VTI-ACL-106 and VTI-ACL-110 — rather than here.
 
 A purpose is a declaration, not a proof: no verifier can see what a subject does with content once it has it. What the member makes possible is holding the subject to what was declared, and recording it at the moment it was declared. A governing party that wants an agent's use of content bounded states the purposes on the VAC it issues, or its holder states them on the link it attenuates to the agent; an agent's link that states none inherits its attenuator's.
 
@@ -1441,7 +1441,7 @@ Conformance test suites for this specification have not yet been defined and are
 
 - [ToIP Trust Registry Query Protocol](https://trustoverip.github.io/tswg-trust-registry-protocol/)
 - [ToIP Governance Metamodel Specification V1.0](https://trustoverip.org/wp-content/uploads/ToIP-Governance-Metamodel-Specification-V1.0-2021-12-21.pdf)
-- [Trust Tasks (ToIP Glossary)](https://glossary.trustoverip.org/#term:trust-tasks) and the community proposals at [trusttasks.org](https://www.trusttasks.org)
+- [Trust Tasks (ToIP Glossary)](https://glossary.trustoverip.org/#term:trust-tasks) and the community proposals at [trusttasks.org](https://trusttasks.org/)
 - [IETF RFC 7095: jCard: The JSON Format for vCard](https://datatracker.ietf.org/doc/html/rfc7095)
 - [Agent2Agent (A2A) Protocol: AgentCard](https://agent2agent.info/docs/concepts/agentcard/)
 - [Personhood Credentials (arXiv:2408.07892)](https://arxiv.org/abs/2408.07892)
@@ -1451,4 +1451,4 @@ Conformance test suites for this specification have not yet been defined and are
 - [W3C RDF Schema 1.1](https://www.w3.org/TR/rdf-schema/)
 - [W3C Bitstring Status List v1.0](https://www.w3.org/TR/vc-bitstring-status-list/)
 - [Verifiable Trust Infrastructure (VTI)](https://github.com/trustoverip/dtgwg-vti-spec) — the DTGWG system specification composing this specification with Trust Tasks, Working Draft
-- [DTG Credentials v0.3 proposal draft](https://github.com/trustoverip/dtgwg-cred-tf/blob/main/dtg.md) (superseded by this specification)
+- [DTG Credentials v0.3 proposal draft](https://github.com/trustoverip/dtgwg-cred-tf/blob/200acbaa47a422b173652ed2c3dc961c4fbc9e7a/dtg.md) (superseded by this specification)
