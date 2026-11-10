@@ -685,6 +685,14 @@ Each half of an edge is issued and signed by its own issuer, and is evaluated in
 
 **Note:** The identity linkage on which the proof route depends — that the party controlling the identifier appearing in the credential is the party holding the VMC under a different identifier — is not yet encoded by this credential model. Until that encoding is specified, the proof route states an intended design goal rather than an implementable construction, and implementations SHOULD expect the encoding to constrain the proof's witness data. It does not affect whether an edge established by that route counts.
 
+#### Relationship Admissibility
+
+Whether a [[ref: VRC]] issued by a member is accepted by that member's community depends on the community's policy: which [[ref: correlation scopes]] it accepts for the subject identifier, and whether it admits a subject that is not itself a member. An edge between members of two communities needs both communities' policies to admit it, and neither party can tell from the other's credentials whether they will. Without more, the first sign that an edge is inadmissible is a rejection after one half has already been issued — by which point its issuer has named a party who cannot reciprocate.
+
+A VTC whose members issue VRCs SHOULD therefore publish, in its governance framework or its trust registry, the correlation scopes it accepts for the subject of a VRC its members issue, and whether it admits subjects that are not members. These are properties of the community's policy rather than of any member, so publishing them discloses nothing about membership. A [[ref: VTA]] SHOULD make a counterparty community's published admissibility available to a member before the member issues its half of a cross-community edge.
+
+Where admissibility cannot be established in advance, the intended ordering is that neither party issues its half until both halves are known to be admissible — for example, by exchanging and checking a commitment to each half before either is issued. That exchange is a trust task, and its definition is left to the planned DTG Core Trust Task Protocols specification (see [Related Specifications](#related-specifications)). Proving mutual admissibility without either party revealing its policy is zero-knowledge work and is not specified here.
+
 ## VIC (Verifiable Invitation Credential)
 
 This section is normative.
@@ -1427,6 +1435,7 @@ This specification deliberately delegates most policy decisions to the governanc
 7. Action vocabularies for [[ref: VACs]] at a scope, the status mechanism used for their revocation, the freshness window that determines when a VAC must carry `credentialStatus` and how recently a verifier must have checked it, and whether status is required outright for a class of authority, are defined by the party governing that scope — a VTC or VTN through its governance framework, or another [[ref: DTG node]] through whatever it publishes for the scope it governs. See [Withdrawal](#withdrawal).
 8. Whether the subject of an attenuated [[ref: VAC]] must independently qualify — hold a [[ref: VMC]] at the scope, or meet whatever the scope asks of any other actor — before authority derived from another party's grant is honoured, is a governance determination rather than a property of the VAC. Attenuation establishes only that the authority was narrowed by someone entitled to narrow it; whether the party now holding it is one the scope will deal with is a separate question, and the counterpart of the same determination for delegates in item 6. See [Attenuation](#attenuation).
 9. New credential types proposed by higher-layer trust task protocol specifications are expected to be coordinated between the DTGWG task forces responsible for credentials and trust tasks.
+10. Which correlation scopes a VTC accepts for the subject of a member-issued [[ref: VRC]], and whether it admits subjects that are not members, are governance determinations; that a VTC publish them is what lets a counterparty determine admissibility before issuing its own half of an edge. See [Relationship Admissibility](#relationship-admissibility).
 
 ## Internationalization Considerations
 
