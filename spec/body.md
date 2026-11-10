@@ -185,7 +185,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 
 **Schema:**
 
-- `@context` (array, REQUIRED): MUST list `"https://www.w3.org/ns/credentials/v2"` first and `"https://registry.trustoverip.org/dtg/context/v1"` second, followed by any contexts a proof type, a predicate profile or a community vocabulary requires. The DTG context IRI is compared as an exact string, in exactly those bytes: scheme `https`, host `registry.trustoverip.org` with no `www.`, no trailing slash. See [Context Versions](#context-versions) below
+- `@context` (array, REQUIRED): MUST list `"https://www.w3.org/ns/credentials/v2"` first and a DTG context version that [Context Versions](#context-versions) admits — `"https://registry.trustoverip.org/dtg/context/v1"` or a later version — second, followed by any contexts a proof type, a predicate profile or a community vocabulary requires. The DTG context IRI is compared as an exact string, in exactly those bytes: scheme `https`, host `registry.trustoverip.org` with no `www.`, no trailing slash. See [Context Versions](#context-versions) below
 - `type` (array, REQUIRED): MUST include `"VerifiableCredential"`, `"DTGCredential"`, and exactly one concrete subtype
 - `issuer` (string, REQUIRED): DID of the issuing entity. Its [[ref: correlation scope]] is declared in `issuerScope` rather than encoded in the identifier — see [Correlation Scope](#correlation-scope)
 - `issuerScope` (string, REQUIRED): the [[ref: correlation scope]] its holder declares for the identifier in `issuer`, exactly one of `pairwise`, `directed` or `public`, compared case-sensitively. A credential declares only its own issuer's scope, never that of its subject or counterparty ([Declaring scope](#declaring-scope)). A verifier MUST reject a credential whose `issuerScope` is absent or is not one of the three values. The context defines `issuerScope` as a plain string; the constraint on its value is this specification's, and the schema of every concrete type carries it
@@ -194,6 +194,7 @@ All DTG credentials share this W3C VC structure (v2.0 shown; see [Legacy System 
 - `credentialSubject` (object, REQUIRED):
   - `id` (string, REQUIRED): DID of the subject
   - Additional type-specific properties
+- `salt` (string, REQUIRED under context `v3` and later; MUST NOT be present under `v1` or `v2`, which do not define it — see [Context Versions](#context-versions)): a blinding value inside what the proof and every digest of this credential cover, so that a digest referencing the credential cannot be tested against guessed content (see [Digest Encoding](#digest-encoding)). An issuer MUST generate it as exactly 32 bytes from a cryptographically secure random number generator, fresh for each credential, never reused and never derived from any other member of the credential, and MUST encode it as Multibase base-58-btc (prefix `z`). Re-proofing a credential with identical claims keeps its salt; re-issuing it draws a new one, and with it a new digest. A verifier MUST reject a credential that lists a context version defining `salt` and either carries none or carries one that does not decode to 32 bytes. Where a selective-disclosure suite is used, `salt` MUST be a mandatory-disclosure member: a derived credential without it cannot be matched to any digest that references it
 - `taskContext` (string, OPTIONAL unless a credential type or profile requires it): the `id` of the document that initiated the innermost [trust task](https://glossary.trustoverip.org/#term:trust-tasks) exchange attesting what this credential states. See [Trust Task Context Binding](#trust-task-context-binding).
 - `taskDigestMultibase` (string, REQUIRED wherever `taskContext` is REQUIRED, OPTIONAL otherwise): the task digest of the document `taskContext` names. `taskContext` locates the exchange; `taskDigestMultibase` binds the credential to it. See [The `taskDigestMultibase` Property](#the-taskdigestmultibase-property).
 - `proof` (object, REQUIRED): a [W3C Data Integrity](https://www.w3.org/TR/vc-data-integrity/) proof. `proof.type` MUST be `DataIntegrityProof`, with the cryptographic suite named in `proof.cryptosuite`, so that changing suite changes a value rather than the schema. The RECOMMENDED suite is [`eddsa-jcs-2022`](https://www.w3.org/TR/vc-di-eddsa/): its JSON Canonicalization Scheme ([RFC 8785](https://datatracker.ietf.org/doc/html/rfc8785)) transformation needs no `@context` resolution at verification time, so a credential stays verifiable offline — including one formed in person and synchronized later — and it is the canonicalization this specification already uses for digests ([Digest Encoding](#digest-encoding)). A governing [[ref: VTC]] or [[ref: VTN]] MAY require another registered suite. Selective-disclosure and zero-knowledge presentation mechanisms are not carried by this property; see [Zero-Knowledge and Selective Disclosure](#zero-knowledge-and-selective-disclosure)
@@ -236,7 +237,9 @@ Each published version is byte-frozen. Their SHA-256 digests, as a Multihash enc
 | `v1` | `zQmSWyCagdx8oPfXn3piSUx6yqVy5MZ7ZG7nW1TC64QvKZh` | `3e1376acf401016a0162c1cdb31e44a85a7dd56749caed94a1dc0a0be6cbb448` |
 | `v2` | `zQmcoSakfDBfPW2DiLWH3eAAm6uJWDuLyifKQ9tCs8NuiH7` | `d6e096472559b01d199af52260d76863bd2be7580bc2398bcd18fc3a2b9f533a` |
 
-`v2` is `v1` with one term added, `purposes`, carrying its own protected context in which `scope` and `purposes` are defined, so that neither redefines the protected `scope` of `authority`. Verifiers SHOULD use a local copy of each context matching its digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
+`v2` is `v1` with one term added, `purposes`, carrying its own protected context in which `scope` and `purposes` are defined, so that neither redefines the protected `scope` of `authority`. `v3` is `v2` with one term added, the top-level `salt` that [Base Structure](#base-structure) defines. Once `v3`'s digest is recorded above, every DTG credential MUST list `v3` or a later version, and so carries a salt; `v1` and `v2` remain served and are not reissued.
+
+> **Editor's note — `v3` is not yet published.** Its digest is recorded here when the registry publishes it. Until then no published context defines `salt`, so issuers MUST NOT emit it, the requirement to list `v3` has no effect, and the examples in this specification list `v1` or `v2` without a salt — except the salted pair in [Digest Encoding](#digest-encoding), which shows the form `v3` makes REQUIRED. The examples are updated when the digest is recorded. Verifiers SHOULD use a local copy of each context matching its digest and SHOULD NOT dereference the IRI at verification time; the RECOMMENDED proof suite needs no context resolution to verify a credential, and a copy checked once against the digest is a copy that cannot change underneath a verifier.
 
 The order of `@context` matters. Every term the DTG context defines is protected, including generic names — `predicate` and `object` at the top level, and `scope`, `parent`, `event` and `method` inside the objects that define them — and JSON-LD rejects a document in which a later context redefines a protected term at the level where it is protected. A proof suite, predicate profile or community context listed after the DTG context therefore MUST NOT redefine a term the DTG context defines at the same level; a profile or community that needs a term of its own chooses a name the DTG context does not define, or scopes it under a property the DTG context does not define.
 
@@ -296,7 +299,58 @@ Issuers MUST use base-58-btc so that a single canonical form exists for any give
 
 Where a governing [[ref: VTC]] or [[ref: VTN]] requires a stronger hash, it MAY permit additional Multihash algorithm identifiers registered in [CID v1.0 §2.5](https://www.w3.org/TR/cid-1.0/#multihash). Because the algorithm is carried in the value itself, such a change does not alter the format of the property. Verifiers MUST reject a digest whose Multihash identifies an algorithm they do not accept, rather than treating it as a mismatch.
 
-> **Editor's note:** A digest over low-entropy content can be reversed by enumeration where the referenced credential is not disclosed, because an observer who knows the schema and the governing vocabulary can try the plausible values. None of the digest-valued members above is salted in this version. The `predicate` of a [[ref: VSC]] is a blinding target for the same reason: a term drawn from a small vocabulary is enumerable. Blinding them is cross-cutting work with the ZKP task force; this section fixes the encoding so that a blinding scheme can later change what is hashed without a second encoding migration.
+#### Salting
+
+A digest over low-entropy content can be reversed by enumeration where the referenced credential is not disclosed: an observer who knows the schema, the identifiers involved and the governing vocabulary can try plausible values until one reproduces the digest. Every DTG credential therefore carries a `salt` (see [Base Structure](#base-structure)), and because the salt is part of what step 1 canonicalizes, every digest of that credential covers it. One salt protects every reference to the credential at once — an acknowledgement, an acceptance, a statement about it, or a child in a chain — and changes nothing in how a reference is produced or matched: a party holding the referenced credential recomputes the digest exactly as above.
+
+**Example (a salted membership grant, and the acknowledgement that references it):**
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://registry.trustoverip.org/dtg/context/v3"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
+  "issuer": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
+  "issuerScope": "public",
+  "validFrom": "2026-01-06T10:00:00Z",
+  "salt": "zAtpL11vzB5mR79xkVZvZB8uhmX12KCU8xhZMiktywt6Q",
+  "credentialSubject": {
+    "id": "did:key:z6MkpTHR8VNs..."
+  },
+  "proof": { "//": "..." }
+}
+```
+
+```json
+{
+  "@context": [
+    "https://www.w3.org/ns/credentials/v2",
+    "https://registry.trustoverip.org/dtg/context/v3"
+  ],
+  "type": ["VerifiableCredential", "DTGCredential", "MembershipCredential"],
+  "issuer": "did:key:z6MkpTHR8VNs...",
+  "issuerScope": "directed",
+  "validFrom": "2026-01-06T10:05:00Z",
+  "salt": "zCR9PkEvaSzJsy8sCVzx8xSYTmz1RGRuHHgKQSWdgbqJh",
+  "credentialSubject": {
+    "id": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
+    "digestMultibase": "zQmbkPY32fN33xPXWjn4z2jCyXojqjCeQfdS3J7WTwgN4nM"
+  },
+  "proof": { "//": "..." }
+}
+```
+
+The acknowledgement's `digestMultibase` is the digest of the grant exactly as printed, truncated identifiers included and `proof` removed, so it reproduces. Without its `salt` the same grant digests to `zQmQMdYmuEYKbqp8rd56AysDLTamaUu41Me1Ew2huGkLPPF`, a value anyone who knows the community's identifier, the member's identifier and a plausible `validFrom` can reach by trying candidates — and so learn from the acknowledgement alone who joined what. With the salt, no candidate can be tested without the grant itself. The acknowledgement carries a salt of its own, so a credential that later references it is protected in the same way.
+
+What a salt does not do is equally part of the design:
+
+- **It does not make presentations unlinkable.** A salted digest is still the same value every time the referencing credential is shown, so two presentations of that credential are linked by it as by its signature and identifiers. Unlinkable presentation is zero-knowledge work; see [Zero-Knowledge and Selective Disclosure](#zero-knowledge-and-selective-disclosure).
+- **It does not protect `taskDigestMultibase`.** That member references a Trust Task document, not a DTG credential, and the document carries no DTG salt.
+- **It does not blind a [[ref: VSC]]'s `predicate`.** A term drawn from a small vocabulary is enumerable whatever is hashed elsewhere, and blinding it is work for the ZKP task force.
+
+A predicate profile that defines a digest of its own over another object SHOULD either reference an object that carries a salt of at least the strength required here, or state why enumerating that digest's preimage is not a concern.
 
 ## Edge Credentials
 
@@ -1013,7 +1067,7 @@ It also removes a difficulty. A vetting statement is made before any edge exists
 
 **Scoped to one community.** `object.value.community` names the community whose vocabulary gives the statement its meaning. Another community reading the same statement has no defined meaning for it, and would count it only under a recognition policy of its own; one community's recognition does not carry to a third. The same applies to eligibility: that the issuer was eligible to vet is a fact about the named community.
 
-**The identity commitment.** The editor's note in [Digest Encoding](#digest-encoding) records that a digest over low-entropy content can be reversed by enumeration, and a digest of a legal name is exactly that. This profile salts its own member and leaves the members that section covers to the ZKP task force's blinding work.
+**The identity commitment.** [Salting](#salting) records that a digest over low-entropy content can be reversed by enumeration, and a digest of a legal name is exactly that. The credential's own `salt` protects digests *of* the statement, not a digest the statement carries over something else, so this profile salts its own member.
 
 - The applicant's software generates a random 32-byte salt once per application, and puts the same salt on every card of that application.
 - `identityCommitment` is the digest, encoded as in [Digest Encoding](#digest-encoding), of the JCS canonical form of an object holding the salt and the identity claims.
@@ -1313,7 +1367,7 @@ A grant is a PHC whether or not the member has acknowledged it. The member may p
 >
 > [Correlation Scope](#correlation-scope) makes the first of these the ordinary case rather than an edge case. A member who declares `pairwise` toward their community and `pairwise` toward a counterparty holds two identifiers that differ by construction, so a community-anchored proof must cross them rather than read one identifier out of both credentials.
 >
-> Separately, none of the digest-valued members fixed in [Digest Encoding](#digest-encoding) is salted, so a digest over low-entropy content can be reversed by enumeration where the referenced credential is not disclosed. Blinding them is cross-cutting work with the same task force.
+> Separately, the `salt` every credential carries (see [Salting](#salting)) stops a digest-valued member being reversed by enumeration, but a salted digest is still a stable value that links presentations of the credential carrying it, and a [[ref: VSC]]'s `predicate` stays enumerable. Hiding either is cross-cutting work with the same task force.
 >
 > The [ZKP task force](https://github.com/trustoverip/dtgwg-zkp-spec)'s work on these is visible in its working draft and construction catalogue, where records for common control, community-anchored composition, delegation chains and blinded binders bear on the dependencies above. That work is proposed rather than merged, and a catalogue record is a statement, its witness requirements, and the open questions around it, not a completed proof; the shared-subject and VAC-chain cases in particular still need their own mapping and evidence rather than inheriting one because common control appears in the catalogue. Glossary cross-references will follow once that specification is merged and its terms are published.
 >
