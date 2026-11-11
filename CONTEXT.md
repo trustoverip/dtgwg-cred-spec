@@ -60,7 +60,7 @@ _Avoid_: R-DID, M-DID, C-DID, P-DID (retired identifier types), W-DID
 ### Proofs
 
 **Salt**:
-A top-level `salt` on every DTG credential from context `v3`: 32 fresh CSPRNG bytes, base-58-btc multibase, covered by the proof and by every digest of the credential, so a digest reference cannot be reversed by enumerating plausible content. Mandatory-disclosure under selective-disclosure suites. It stops enumeration only: a salted digest still links presentations, and a VSC `predicate` stays enumerable (ZKP work). Not emitted under `v1`/`v2`, which do not define it.
+A top-level `salt` on every DTG credential from context `v3`: 32 fresh CSPRNG bytes, base-58-btc multibase, covered by the proof and by every digest of the credential, so a digest reference cannot be reversed by enumerating plausible content. Mandatory-disclosure under selective-disclosure suites. It stops enumeration only: a salted digest still links presentations, as does the salt itself, and a VSC `predicate` stays enumerable (ZKP work). Not emitted under `v1`/`v2`, which do not define it.
 
 **Pairwise ZKP**:
 A ZKP construction available to any two VRC holders, regardless of shared community membership. Selectively discloses attributes (e.g., `directed` persona identifiers) while hiding the `pairwise` ones; confers no community-level assurance by itself.
