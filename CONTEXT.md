@@ -38,7 +38,7 @@ _Avoid_: delegation, acting on behalf of, appointment (for what a VAC confers); 
 Authorizes onboarding of a prospective member into a VTC or VTN: it bootstraps a node into a community rather than forming an edge. One W3C type (`InvitationCredential`); the glossary's VTC/VTN invitation subtypes are prose distinctions expressed via issuer/subject rules, not separate type strings.
 
 **VPC (verifiable persona credential)**:
-Links a persona to an existing relationship, enabling intentional correlation under holder control. The persona is asserted under an identifier its holder ordinarily declares `directed`.
+Links a persona to an existing relationship, enabling intentional correlation that the persona's controller chooses. The persona is asserted under an identifier its controller ordinarily declares `directed`.
 
 **VSC (verifiable statement credential)**:
 One `StatementCredential` type carrying a signed statement by one node about another: `credentialSubject.id` (subject), `predicate` (an absolute IRI from a governed vocabulary), `object` (`id` | `digestMultibase` | `value`). A VSC attests and never establishes; each predicate's constraints are a **predicate profile**, not a type. Verifiers fail closed on any predicate not in a configured vocabulary. `dtg:` is documentation notation for a predicate's current name in the DTG VSC Predicate Registry (`https://registry.trustoverip.org/dtg/vsc/<name>/<n>`, integer-versioned per predicate), never a wire form; non-predicate vocabulary lives at the separate, unversioned `https://registry.trustoverip.org/dtg/credentials#`. Predicates beyond the two core profiles live in the same registry (`dtgwg-vsc-registry`), which also hosts the frozen credential `@context` (`https://registry.trustoverip.org/dtg/context/v1`; the spec pins its digest in *Context Versions*).
@@ -54,7 +54,7 @@ _Avoid_: W-DID (not a DTG identifier type)
 ### Identifiers
 
 **DTG verifiable identifier (VID)**:
-A verifiable identifier for a DTG node; this spec version uses DIDs. A VID is not typed by the role its holder plays — roles are conferred by credentials. What a VID carries is a declared **correlation scope**, one of three monotonic values: `pairwise` (one counterparty), `directed` (a set the holder chooses) or `public` (unbounded). The declaration is the top-level `issuerScope` property, REQUIRED on every DTG credential from 0.6.0, declaring the scope of that credential's `issuer` and nobody else's; a verifier rejects a credential whose `issuerScope` is missing or not one of the three values.
+A verifiable identifier for a DTG node; this spec version uses DIDs. A VID is not typed by the role the identified party plays — roles are conferred by credentials. What a VID carries is a declared **correlation scope**, one of three monotonic values: `pairwise` (one counterparty), `directed` (a set its controller chooses) or `public` (unbounded). The declaration is the top-level `issuerScope` property, REQUIRED on every DTG credential from 0.6.0, declaring the scope of that credential's `issuer` and nobody else's; a verifier rejects a credential whose `issuerScope` is missing or not one of the three values.
 _Avoid_: R-DID, M-DID, C-DID, P-DID (retired identifier types), W-DID
 
 ### Proofs
