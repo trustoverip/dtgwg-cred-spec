@@ -1155,7 +1155,7 @@ This ceiling and `maxAttenuation` are different controls and a chain MUST satisf
     "authority": {
       "scope": "did:webvh:z6Mkw...:example.com:rooms:7f3a",
       "actions": ["read"],
-      "parent": "zQmSfwf25HTvhmHve5VVWjwmQ9z7LFDWsB9hTweoieva2cd",
+      "parent": "zQmTmZDsQv1koUkjQe4BRskbks9dEt9wJ9sJmkrfREz5BQA",
       "maxAttenuation": 0
     },
     "purposes": { "scope": "listed", "purposes": ["taskExecution"] }
