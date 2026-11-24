@@ -515,7 +515,7 @@ The member's identifier carries whatever [[ref: correlation scope]] the member d
   "validFrom": "2026-01-06T10:05:00Z",
   "credentialSubject": {
     "id": "did:webvh:QmSbCcXWDDJmqE8m1nZ...:chess-club.example",
-    "digestMultibase": "zQmZ3zhk4n6yVDrJwbo4FX5ou27L2tgNnuFRxYrQrGQfUUN"
+    "digestMultibase": "zQmVravSbajT8mJSuiqzbfkHdHpzsb95eJCXNMeK4Qmkboc"
   },
   "proof": { "//": "..." }
 }
@@ -732,7 +732,7 @@ Credentials expressing authority are defined separately: the [[ref: VAC]] is one
   "credentialSubject": {
     "id": "did:peer:2.Ez6LSbysKZ...",
     "delegation": {
-      "accepts": "zQmdfTbBqBPQ7VNxZEYEj14VmRuZBkqFbiwReogJgS1zR1n"
+      "accepts": "zQmayYjXD6kAGoo7JkNJQZ85XpSn3S1QpKHGvuFC5iJYEDB"
     }
   },
   "proof": { "//": "..." }
