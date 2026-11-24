@@ -491,7 +491,7 @@ Both ends are communities, so only `digestMultibase` tells the halves apart: the
   "validUntil": "2027-11-01T09:00:00Z",
   "credentialSubject": {
     "id": "did:webvh:QmNat...:health-au.example",
-    "digestMultibase": "zQmYwAPJzv5CZsnA625s3Xf2nemtYgPpHdWEz79ojWnPbdG"
+    "digestMultibase": "zQmQ2m37PpKMUqNJ8YJm4KopdjbniCy3ckR2AWqPLFSrfz3"
   },
   "proof": { "//": "..." }
 }
